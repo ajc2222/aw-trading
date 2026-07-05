@@ -169,7 +169,7 @@ footer{background:var(--bg);color:var(--muted);border-top:1px solid var(--line);
 .hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(700px 520px at 60% 30%,#000 15%,transparent 75%);opacity:.35;pointer-events:none}
 .hero-grid{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
 .hero h1{font-size:clamp(2.6rem,5.4vw,4.4rem);font-weight:900;line-height:1.02;letter-spacing:-.035em;margin:22px 0 20px;font-stretch:105%;text-shadow:0 0 40px var(--white-glow)}
-.hero h1 em{font-style:normal;position:relative;white-space:nowrap}
+.hero h1 em{font-style:normal;position:relative;white-space:nowrap;isolation:isolate}
 .hero h1 em::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.12em;background:var(--blue);border-radius:2px;z-index:-1;transform:scaleX(0);transform-origin:left;animation:underline .9s .5s cubic-bezier(.2,.8,.2,1) forwards;box-shadow:0 0 20px var(--blue-glow)}
 @keyframes underline{to{transform:scaleX(1)}}
 .hero p{color:var(--muted);font-size:1.1rem;max-width:480px;margin-bottom:32px}
