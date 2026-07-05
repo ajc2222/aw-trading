@@ -150,10 +150,17 @@ const GIVEAWAY_END = new Date('2026-07-31T20:00:00');
       document.body.removeChild(ta);
     }
 
+    function withTimeout(promise, ms) {
+      return Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('clipboard timeout')), ms))
+      ]);
+    }
+
     btns.forEach((b) => b.addEventListener('click', async () => {
       const code = b.dataset.code;
       if (navigator.clipboard && window.isSecureContext) {
-        try { await navigator.clipboard.writeText(code); }
+        try { await withTimeout(navigator.clipboard.writeText(code), 500); }
         catch (e) { fallbackCopy(code); }
       } else {
         fallbackCopy(code);
