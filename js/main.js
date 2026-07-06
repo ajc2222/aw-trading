@@ -83,6 +83,7 @@ const GIVEAWAY_END = new Date('2026-07-31T20:00:00');
       lastFocused = document.activeElement;
       overlay.classList.add('open');
       burger.setAttribute('aria-expanded', 'true');
+      burger.setAttribute('aria-label', 'Close navigation');
       document.body.classList.add('nav-locked');
       const first = overlay.querySelector('a, button');
       if (first) first.focus();
@@ -92,6 +93,7 @@ const GIVEAWAY_END = new Date('2026-07-31T20:00:00');
     function closeNav() {
       overlay.classList.remove('open');
       burger.setAttribute('aria-expanded', 'false');
+      burger.setAttribute('aria-label', 'Open navigation');
       document.body.classList.remove('nav-locked');
       document.removeEventListener('keydown', onKeydown);
       if (lastFocused) lastFocused.focus();

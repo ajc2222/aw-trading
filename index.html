@@ -13,7 +13,7 @@
   --panel:#0c0c10;
   --panel-2:#111116;
   --white:#F5F6F8;
-  --muted:#9298A6;
+  --muted:#A8ADB8;
   --dim:#6A6F7C;
   --line:rgba(255,255,255,.12);
   --line-strong:rgba(255,255,255,.26);
@@ -38,6 +38,8 @@ ul{list-style:none}
 .eyebrow::before{content:"";width:26px;height:2px;background:var(--blue);box-shadow:0 0 12px var(--blue-glow)}
 h1,h2,h3{font-family:var(--disp);letter-spacing:-.02em}
 :focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
+.skip-link{position:absolute;top:-100%;left:1rem;background:#2E6BFF;color:#fff;padding:.5rem 1rem;z-index:9999;border-radius:0 0 4px 4px;font-family:var(--mono);font-size:.875rem}
+.skip-link:focus{top:0}
 ::-webkit-scrollbar{width:9px}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:99px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -273,6 +275,7 @@ footer{border-top:1px solid var(--line);padding:44px 0}
 </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Skip to content</a>
 
 <div class="liquid" aria-hidden="true">
   <div class="blob b1"></div>
@@ -281,6 +284,7 @@ footer{border-top:1px solid var(--line);padding:44px 0}
 </div>
 <div class="grain" aria-hidden="true"></div>
 
+<header>
 <nav>
   <div class="wrap nav-in">
     <a href="/" class="logo"><span class="logo-mark"><span>AW</span></span>AW&nbsp;Trading</a>
@@ -292,8 +296,9 @@ footer{border-top:1px solid var(--line);padding:44px 0}
     <div class="glow-ring"><a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="btn btn-white nav-cta">Join AW Trading</a></div>
   </div>
 </nav>
+</header>
 
-<main id="main">
+<main id="main-content">
 <header class="hero">
   <div class="wrap hero-grid">
     <div class="hero-copy">

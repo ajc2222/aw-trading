@@ -42,7 +42,7 @@
   --bg:#070709;
   --card:#0F1013;
   --white:#F5F6F8;
-  --muted:#8B8F9C;
+  --muted:#A8ADB8;
   --line:rgba(255,255,255,.10);
   --line-strong:rgba(255,255,255,.22);
   --white-glow:rgba(255,255,255,.10);
@@ -68,8 +68,8 @@ h1,h2,h3{font-family:var(--disp);letter-spacing:-.02em}
 :focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
 
 /* == skip link == */
-.skip-link{position:absolute;top:-100px;left:16px;z-index:1000;background:var(--white);color:#0A0A0B;font-family:var(--mono);font-size:.8rem;font-weight:600;padding:12px 18px;border-radius:8px;transition:top .2s}
-.skip-link:focus{top:16px}
+.skip-link{position:absolute;top:-100%;left:1rem;background:#2E6BFF;color:#fff;padding:.5rem 1rem;z-index:9999;border-radius:0 0 4px 4px;font-family:var(--mono);font-size:.875rem}
+.skip-link:focus{top:0}
 
 /* == buttons == */
 .btn{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:.95rem;padding:15px 28px;border-radius:8px;cursor:pointer;border:none;transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .3s,border-color .3s;font-family:var(--disp)}

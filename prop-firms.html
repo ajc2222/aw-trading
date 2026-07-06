@@ -24,7 +24,7 @@
   --panel:#0c0c10;
   --panel-2:#111116;
   --white:#F5F6F8;
-  --muted:#9298A6;
+  --muted:#A8ADB8;
   --dim:#6A6F7C;
   --line:rgba(255,255,255,.12);
   --line-strong:rgba(255,255,255,.26);
@@ -52,8 +52,8 @@ h1,h2,h3{font-family:var(--disp);letter-spacing:-.02em}
 ::-webkit-scrollbar{width:9px}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:99px}
 ::-webkit-scrollbar-track{background:transparent}
-.skip-link{position:absolute;left:-9999px;top:0;background:var(--blue);color:#fff;padding:10px 16px;border-radius:8px;z-index:999}
-.skip-link:focus{left:16px;top:16px}
+.skip-link{position:absolute;top:-100%;left:1rem;background:#2E6BFF;color:#fff;padding:.5rem 1rem;z-index:9999;border-radius:0 0 4px 4px;font-family:var(--mono);font-size:.875rem}
+.skip-link:focus{top:0}
 
 /* ---------- LIQUID LAYER ---------- */
 .liquid{position:fixed;inset:0;z-index:0;pointer-events:none;filter:blur(80px) saturate(1.1);opacity:.36}
@@ -156,7 +156,7 @@ footer{border-top:1px solid var(--line);padding:44px 0}
 </style>
 </head>
 <body>
-<a href="#main" class="skip-link">Skip to content</a>
+<a href="#main-content" class="skip-link">Skip to content</a>
 
 <div class="liquid" aria-hidden="true">
   <div class="blob b1"></div>
@@ -165,6 +165,7 @@ footer{border-top:1px solid var(--line);padding:44px 0}
 </div>
 <div class="grain" aria-hidden="true"></div>
 
+<header>
 <nav>
   <div class="wrap nav-in">
     <a href="/" class="logo"><span class="logo-mark"><span>AW</span></span>AW&nbsp;Trading</a>
@@ -176,8 +177,9 @@ footer{border-top:1px solid var(--line);padding:44px 0}
     <div class="glow-ring"><a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="btn btn-white nav-cta">Join AW Trading</a></div>
   </div>
 </nav>
+</header>
 
-<main id="main">
+<main id="main-content">
 <header class="page-hero">
   <div class="wrap">
     <div class="eyebrow">Partner Discounts</div>
