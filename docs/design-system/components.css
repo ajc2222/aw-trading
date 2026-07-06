@@ -1,0 +1,151 @@
+/* =========================================================
+   DESIGN SYSTEM — CORE COMPONENTS
+   Buttons, badges, cards, forms, nav, accordion, modal.
+   Requires tokens.css (and motion.css for hover/keyframes).
+   ========================================================= */
+
+/* ---------- BUTTONS ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  font-weight:700;font-size:var(--text-sm);padding:15px 28px;
+  border-radius:var(--radius-pill);cursor:pointer;border:none;
+  font-family:var(--font-display);
+  transition:transform var(--duration-fast) var(--ease-standard),box-shadow var(--duration-base),border-color var(--duration-base);
+}
+.btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
+.btn-small{padding:9px 16px;font-size:.82rem}
+.btn-icon{padding:11px;border-radius:50%}
+
+/* primary — elevated light surface, use for the ONE main action per view */
+.btn-primary{
+  background:linear-gradient(180deg,#FFFFFF,#DCE2F0);color:#0A0A0B;
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 1px 0 rgba(255,255,255,.95) inset,0 -8px 16px -10px rgba(0,0,0,.22) inset,0 12px 34px -12px var(--glow-neutral-hard);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 1px 0 rgba(255,255,255,.95) inset,0 -8px 16px -10px rgba(0,0,0,.22) inset,0 18px 44px -10px var(--accent-glow)}
+
+/* accent — solid, use for secondary emphasis or on light backgrounds */
+.btn-accent{background:var(--accent);color:var(--accent-ink);border:1px solid transparent;box-shadow:0 12px 34px -14px var(--accent-glow)}
+.btn-accent:hover{transform:translateY(-2px);box-shadow:0 16px 40px -12px var(--accent-glow)}
+
+/* ghost — glass outline, use for secondary/tertiary actions */
+.btn-ghost{
+  background:linear-gradient(160deg,var(--glass-hi),var(--glass-lo));
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  color:var(--text);border:1px solid var(--line-strong);
+  box-shadow:0 1px 0 rgba(255,255,255,.14) inset;
+}
+.btn-ghost:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 1px 0 rgba(255,255,255,.14) inset,0 12px 34px -12px var(--accent-glow)}
+
+.btn .arrow{display:inline-block;transition:transform var(--duration-fast)}
+.btn:hover .arrow{transform:translateX(4px)}
+
+/* glow-ring — wrap any single .btn to mark it as THE call to action on the page */
+.glow-ring{position:relative;display:inline-flex;border-radius:var(--radius-pill)}
+.glow-ring::before{content:"";position:absolute;inset:-3px;border-radius:inherit;border:1.5px solid var(--accent);animation:rim-pulse 2s ease-in-out infinite;pointer-events:none}
+.glow-ring .btn{position:relative;z-index:1}
+
+/* ---------- BADGES / PILLS ---------- */
+.badge{font-family:var(--font-mono);font-size:.52rem;letter-spacing:.05em;text-transform:uppercase;padding:1px 8px;border-radius:var(--radius-pill);display:inline-block}
+.badge-accent{background:var(--accent);color:#fff;box-shadow:0 0 8px var(--accent-glow)}
+.badge-success{background:var(--success);color:#052e13;box-shadow:0 0 8px var(--success-glow)}
+.badge-warning{background:var(--warning);color:#3a2200;box-shadow:0 0 8px var(--warning-glow)}
+.badge-danger{background:var(--danger);color:#2e0708;box-shadow:0 0 8px var(--danger-glow)}
+.badge-neutral{background:rgba(255,255,255,.12);color:var(--text);border:1px solid var(--line)}
+
+/* status dot — "online"/"live" indicator, pair with .motion:blink via inline style or utility class below */
+.dot{width:7px;height:7px;border-radius:50%;flex:none}
+.dot-live{background:var(--accent);box-shadow:0 0 12px var(--accent-glow);animation:blink 1.6s ease infinite}
+
+/* ---------- CARDS ---------- */
+.card{border-radius:var(--radius-md);padding:24px 20px;position:relative;overflow:hidden}
+.card-hover{transition:transform var(--duration-base) var(--ease-standard),box-shadow var(--duration-base),border-color var(--duration-base)}
+.card-hover:hover{transform:translateY(-4px);box-shadow:var(--shadow-inset-hi),0 22px 50px -22px var(--accent-glow)}
+
+/* sweep-on-hover — diagonal light bar, use sparingly (testimonials, feature spotlights) */
+.card-sweep::after{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:0;
+  background:linear-gradient(115deg,transparent 30%,rgba(46,107,255,.35) 48%,rgba(234,241,255,.55) 52%,rgba(46,107,255,.35) 56%,transparent 70%);
+  background-size:220% 100%;background-position:130% 0;
+}
+.card-sweep:hover::after{opacity:1;animation:card-sweep 1.1s ease-in-out}
+
+/* ---------- AVATAR ---------- */
+.avatar{flex:none;border-radius:50%;background:var(--panel-2);border:1px solid var(--line);display:grid;place-items:center;font-weight:700}
+.avatar-sm{width:28px;height:28px;font-size:.6rem}
+.avatar-md{width:32px;height:32px;font-size:.66rem}
+.avatar-lg{width:44px;height:44px;font-size:.8rem}
+
+/* ---------- LOGO MARK (brand chip w/ looping sheen) ---------- */
+.logo-mark{
+  width:26px;height:26px;background:linear-gradient(180deg,#FFFFFF,#DCE2F0);color:#0A0A0B;
+  border-radius:var(--radius-sm);display:grid;place-items:center;font-family:var(--font-mono);
+  font-size:.62rem;font-weight:600;position:relative;overflow:hidden;
+  box-shadow:0 0 18px var(--glow-neutral),0 1px 0 rgba(255,255,255,.9) inset;
+}
+.logo-mark::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,var(--accent) 50%,transparent 70%);transform:translateX(-100%);animation:sheen 4s ease infinite;mix-blend-mode:screen}
+.logo-mark span{position:relative;z-index:1}
+
+/* ---------- NAV ---------- */
+.nav{
+  position:sticky;top:0;left:0;right:0;z-index:100;
+  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+  backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);
+  border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(255,255,255,.08) inset;
+}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:68px}
+.nav-links{display:flex;gap:30px;font-size:.9rem;font-weight:500;color:var(--text-muted)}
+.nav-links a{transition:color var(--duration-fast)}
+.nav-links a:hover{color:var(--text)}
+@media(max-width:900px){.nav-links{display:none}}
+
+/* ---------- FORMS ---------- */
+.field{display:flex;flex-direction:column;gap:8px}
+.field-wide{grid-column:1/-1}
+.field label{font-size:.8rem;color:var(--text-muted);font-weight:600}
+.field input,.field select,.field textarea{
+  font-family:var(--font-display);font-size:.9rem;color:var(--text);
+  background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;
+  padding:11px 13px;resize:vertical;
+  transition:border-color var(--duration-fast),box-shadow var(--duration-fast);
+}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.field select{
+  appearance:none;color-scheme:dark;
+  background-image:linear-gradient(45deg,transparent 50%,var(--text-muted) 50%),linear-gradient(135deg,var(--text-muted) 50%,transparent 50%);
+  background-position:calc(100% - 18px) center,calc(100% - 13px) center;background-size:5px 5px,5px 5px;background-repeat:no-repeat;
+}
+.field select option{background:var(--panel-2);color:var(--text)}
+
+/* reveal-gate — locked/blurred content behind a single CTA (gated forms, paywalled previews) */
+.reveal-gate{position:relative}
+.reveal-gate-content.locked{filter:blur(10px) saturate(.7);opacity:.7;pointer-events:none;user-select:none;transition:filter var(--duration-slow) var(--ease-standard),opacity var(--duration-slow) ease}
+.reveal-gate-overlay{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  color:var(--text);font-weight:700;font-size:.9rem;text-align:center;z-index:5;
+  transition:opacity var(--duration-base) ease;text-shadow:0 2px 14px rgba(0,0,0,.7);
+}
+.reveal-gate-overlay.hidden{opacity:0;pointer-events:none}
+
+/* ---------- ACCORDION (FAQ, course syllabus, comment threads) ---------- */
+.accordion{display:flex;flex-direction:column;gap:12px}
+.accordion details{border-radius:var(--radius-md);padding:18px 22px;transition:border-color var(--duration-fast)}
+.accordion summary{cursor:pointer;font-weight:700;font-size:.96rem;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.accordion summary::-webkit-details-marker{display:none}
+.accordion summary::after{content:"+";color:var(--accent);font-size:1.2rem;transition:transform var(--duration-fast)}
+.accordion details[open] summary::after{transform:rotate(45deg)}
+.accordion p{color:var(--text-muted);font-size:.9rem;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+
+/* ---------- MODAL / LIGHTBOX ---------- */
+.modal{position:fixed;inset:0;background:rgba(3,3,6,.9);z-index:300;display:none;align-items:center;justify-content:center;padding:40px}
+.modal.active{display:flex}
+.modal-lightbox{cursor:zoom-out}
+.modal img{max-width:90vw;max-height:88vh;border-radius:var(--radius-md);box-shadow:0 40px 90px -20px rgba(0,0,0,.85)}
+
+/* ---------- SECTION HEADERS ---------- */
+.section{padding:100px 0;position:relative;z-index:1}
+.section-panel{background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.005));border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sec-head{max-width:640px;margin-bottom:52px}
+.sec-head h2{font-size:var(--text-2xl);font-weight:800;margin-bottom:14px}
+.sec-head p{color:var(--text-muted);font-size:1rem}
+.sec-head h2 em{font-style:normal;color:var(--accent);text-shadow:0 0 30px var(--accent-glow)}

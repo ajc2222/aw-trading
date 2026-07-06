@@ -1,0 +1,107 @@
+/* =========================================================
+   DESIGN SYSTEM — COMPOSITE PATTERNS
+   Larger reusable widgets built from tokens + core components.
+   Named generically so they transfer across domains:
+     - .scroll-track   → certs marquee / testimonials / logos / stories
+     - .chat-panel     → Discord widget / any live-community or DM UI
+     - .leaderboard    → prop-firm podium / rankings / gamified badges
+     - .stat-tile      → mini-tabs / dashboard KPIs
+     - .bar-chart      → indicator candles / any small inline chart
+   ========================================================= */
+
+/* ---------- STAT TILES (quick-glance metrics row) ---------- */
+.stat-row{display:flex;gap:14px;flex-wrap:wrap}
+.stat-tile{flex:1;min-width:150px;border-radius:var(--radius-md);padding:16px 18px;position:relative;overflow:hidden;
+  transition:transform var(--duration-base),box-shadow var(--duration-base),border-color var(--duration-base)}
+.stat-tile:hover{transform:translateY(-4px);box-shadow:var(--shadow-inset-hi),0 20px 48px -20px var(--accent-glow);border-color:var(--line-strong)}
+.stat-tile b{display:block;font-size:.86rem;font-weight:800;margin-bottom:2px}
+.stat-tile span{font-size:.76rem;color:var(--text-muted)}
+
+/* ---------- SCROLL TRACK (auto-drifting horizontal strip, tie to scroll via JS) ---------- */
+.scroll-track-wrap{
+  overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+}
+.scroll-track{display:flex;gap:18px;width:max-content}
+.scroll-track img{height:150px;width:auto;border-radius:var(--radius-md);border:1px solid var(--line);
+  box-shadow:0 16px 40px -20px rgba(0,0,0,.7);flex:none;user-select:none;cursor:zoom-in;
+  transition:transform var(--duration-fast),box-shadow var(--duration-fast)}
+.scroll-track img:hover{transform:scale(1.05);box-shadow:0 20px 50px -18px var(--accent-glow)}
+.scroll-track .card{flex:none;width:300px}
+@media(max-width:640px){.scroll-track img{height:100px}.scroll-track .card{width:250px}}
+/*
+  JS driver (framework-agnostic):
+  function initScrollTrack(track, direction){
+    if(!track) return;
+    let target=0, current=0, lastY=window.scrollY, half=track.scrollWidth/2;
+    window.addEventListener('resize', ()=>{ half = track.scrollWidth/2; }, {passive:true});
+    (function loop(){
+      const y=window.scrollY;
+      target += direction*(y-lastY); lastY=y;
+      current += (target-current)*0.08;
+      const pos = ((current % half) + half) % half;
+      track.style.transform = `translateX(${-pos}px)`;
+      requestAnimationFrame(loop);
+    })();
+  }
+  // duplicate track children once (so `half` is a clean loop point), then:
+  initScrollTrack(track, 1);   // drifts one way on scroll
+  initScrollTrack(track2, -1); // opposite direction reads as intentional, not random
+*/
+
+/* ---------- CHAT / LIVE COMMUNITY PANEL ---------- */
+.chat-panel{border-radius:var(--radius-lg);overflow:hidden;position:relative}
+.chat-topbar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.03)}
+.chat-topbar p{font-size:.78rem;color:var(--text-muted)}
+.chat-topbar p b{color:var(--text)}
+.chat-topbar .count-pill{margin-left:auto;font-family:var(--font-mono);font-size:.62rem;color:var(--text-muted);border:1px solid var(--line);padding:3px 9px;border-radius:var(--radius-pill)}
+.chat-app{display:grid;grid-template-columns:56px 150px 1fr;height:380px}
+@media(max-width:560px){.chat-app{grid-template-columns:48px 1fr}.chat-channels{display:none}}
+
+.chat-rail{background:rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:10px;border-right:1px solid var(--line)}
+.chat-rail-icon{width:36px;height:36px;border-radius:13px;background:linear-gradient(180deg,#FFFFFF,#DCE2F0);color:#0A0A0B;display:grid;place-items:center;font-family:var(--font-mono);font-weight:700;font-size:.64rem;box-shadow:0 0 0 2px var(--accent),0 0 16px var(--accent-glow)}
+.chat-rail-sep{width:22px;height:2px;background:var(--line);border-radius:2px}
+.chat-rail-add{width:36px;height:36px;border-radius:50%;border:1px dashed var(--line-strong);color:var(--text-muted);display:grid;place-items:center;font-size:1.05rem}
+
+.chat-channels{background:rgba(255,255,255,.02);border-right:1px solid var(--line);overflow-y:auto;padding:10px 6px;scrollbar-width:thin}
+.chat-cat{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.1em;color:var(--text-dim);padding:8px 8px 4px}
+.chat-chan{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:7px;color:var(--text-muted);font-size:.78rem;cursor:pointer;transition:background .15s,color .15s}
+.chat-chan:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.chat-chan.active{background:rgba(255,255,255,.07);color:var(--text);box-shadow:inset 2px 0 0 var(--accent)}
+.chat-chan .lock{margin-left:auto;opacity:.5;font-size:.68rem}
+
+.chat-body-wrap{display:flex;flex-direction:column;overflow:hidden}
+.chat-head{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.chat-head h4{font-size:.86rem;font-weight:800}
+.chat-messages{flex:1;overflow-y:auto;padding:12px 14px}
+.chat-msg{display:flex;gap:10px;padding:7px 4px;border-radius:8px}
+.chat-msg:hover{background:rgba(255,255,255,.02)}
+.chat-msg .line1{display:flex;align-items:baseline;gap:6px;margin-bottom:2px;flex-wrap:wrap}
+.chat-msg .name{font-weight:700;font-size:.8rem}
+.chat-msg .time{font-size:.62rem;color:var(--text-dim)}
+.chat-msg .text{font-size:.8rem;color:#D6D9E0;line-height:1.45}
+.chat-msg .img{margin-top:6px;display:block;max-width:100%;width:200px;border-radius:8px;border:1px solid var(--line)}
+.chat-composer{padding:10px 14px 14px}
+.chat-composer-in{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:9px 14px;color:var(--text-dim);font-size:.76rem}
+
+/* ---------- LEADERBOARD / PODIUM (rankings, gamified badges, top-contributor rows) ---------- */
+.leaderboard{display:flex;align-items:flex-end;justify-content:center;gap:22px}
+.rank-tile{width:84px;height:84px;border-radius:20px;display:grid;place-items:center;position:relative;color:var(--text-muted);transition:transform var(--duration-base)}
+.rank-tile:hover{transform:translateY(-4px)}
+.rank-tile.rank-1{width:110px;height:110px;color:var(--text);border-color:var(--line-strong);box-shadow:var(--shadow-inset-hi),0 0 0 2px var(--accent),0 30px 70px -20px var(--accent-glow)}
+.rank-tile.rank-2,.rank-tile.rank-3{margin-bottom:10px}
+.rank-badge{position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-family:var(--font-mono);font-weight:700;font-size:.72rem;display:grid;place-items:center;box-shadow:0 0 14px var(--accent-glow)}
+.rank-tile.rank-2 .rank-badge,.rank-tile.rank-3 .rank-badge{background:rgba(255,255,255,.12);color:var(--text)}
+
+/* ---------- MINI BAR / CANDLE CHART (inline data viz, any domain: progress, activity, price) ---------- */
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:130px}
+.bar-chart .bar{position:relative;width:14px;border-radius:3px 3px 2px 2px}
+.bar-chart .bar::before{content:"";position:absolute;left:50%;top:-22%;bottom:-22%;width:2px;background:currentColor;transform:translateX(-50%);opacity:.55}
+.bar-chart .bar.up{background:linear-gradient(180deg,#fff,var(--accent));color:var(--accent)}
+.bar-chart .bar.down{background:rgba(255,255,255,.16);color:var(--text-muted)}
+
+/* ---------- FEATURE LIST ROW (icon + label, e.g. plan features, course modules) ---------- */
+.feature-row{display:flex;align-items:center;gap:14px}
+.feature-icon{flex:none;width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid var(--line);display:grid;place-items:center;color:var(--accent)}
+.feature-row span{font-size:.9rem;color:var(--text)}

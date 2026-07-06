@@ -1,0 +1,55 @@
+/* =========================================================
+   DESIGN SYSTEM — MOTION
+   Every animation used across the system, named by intent
+   rather than by the component it first appeared on, so any
+   component can borrow any effect.
+   ========================================================= */
+
+/* ---- ambient drift (background blobs / decorative shapes) ---- */
+@keyframes drift-a{from{transform:translate(0,0) scale(1)}to{transform:translate(10vmax,8vmax) scale(1.1)}}
+@keyframes drift-b{from{transform:translate(0,0) scale(1.05)}to{transform:translate(-9vmax,-7vmax) scale(.9)}}
+@keyframes drift-c{from{transform:translate(0,0)}to{transform:translate(9vmax,-6vmax)}}
+.motion-drift-a{animation:drift-a 28s ease-in-out infinite alternate}
+.motion-drift-b{animation:drift-b 34s ease-in-out infinite alternate}
+.motion-drift-c{animation:drift-c 24s ease-in-out infinite alternate}
+
+/* ---- rim pulse (draws the eye to the single most important CTA on screen) ---- */
+@keyframes rim-pulse{
+  0%,100%{box-shadow:0 0 6px 0 var(--accent),0 0 14px 2px var(--accent-glow);opacity:.7;border-color:var(--accent)}
+  50%{box-shadow:0 0 12px 2px var(--accent),0 0 26px 6px var(--accent-glow);opacity:1;border-color:#a9c2ff}
+}
+
+/* ---- sheen sweep (logo marks, brand chips — a light bar crossing the shape on loop) ---- */
+@keyframes sheen{0%,60%{transform:translateX(-100%)}80%,100%{transform:translateX(100%)}}
+
+/* ---- card sweep (diagonal shimmer on hover, e.g. testimonial/quote cards) ---- */
+@keyframes card-sweep{0%{background-position:130% 0}100%{background-position:-30% 0}}
+
+/* ---- live/blink (status dots for "online now" or "live" indicators) ---- */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ---- underline reveal (emphasis word in a heading draws in on load) ---- */
+@keyframes underline-reveal{to{transform:scaleX(1)}}
+.motion-underline{
+  position:relative;
+}
+.motion-underline::after{
+  content:"";position:absolute;left:0;right:0;bottom:.06em;height:.1em;
+  background:var(--accent);border-radius:2px;z-index:-1;
+  transform:scaleX(0);transform-origin:left;
+  animation:underline-reveal .9s .4s var(--ease-standard) forwards;
+  box-shadow:0 0 24px var(--accent-glow);
+}
+
+/* ---- standard interactive transitions ---- */
+.motion-lift{transition:transform var(--duration-base) var(--ease-standard),box-shadow var(--duration-base),border-color var(--duration-base)}
+.motion-lift:hover{transform:translateY(-4px)}
+
+.motion-press{transition:transform var(--duration-fast) var(--ease-standard),box-shadow var(--duration-base),border-color var(--duration-base)}
+.motion-press:hover{transform:translateY(-2px)}
+
+.motion-fade{transition:opacity var(--duration-base) ease, filter var(--duration-slow) var(--ease-standard)}
+
+/* ---- horizontal auto-scroll track (logos, quotes, avatars — see components.css .scroll-track) ---- */
+/* driven from JS: see index.html `initScrollTrack()` — ties track position to page scroll,
+   two tracks running opposite directions read as a single considered layout, not noise. */
