@@ -5,6 +5,42 @@
 
 const MAX_LEN = { name: 100, email: 254, discord: 64, experience: 40, why: 1500 };
 
+// ---------------------------------------------------------------------------
+// In-memory IP rate limiter — 3 submissions per IP per 10-minute window.
+// The Map persists across warm serverless invocations within the same instance.
+// ---------------------------------------------------------------------------
+const RATE_LIMIT_MAX = 3;
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+
+/** @type {Map<string, number[]>} ip → sorted array of submission timestamps */
+const ipTimestamps = new Map();
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  const windowStart = now - RATE_LIMIT_WINDOW_MS;
+
+  // Purge entries whose entire timestamp list has expired to prevent unbounded growth.
+  for (const [key, timestamps] of ipTimestamps) {
+    const fresh = timestamps.filter((t) => t > windowStart);
+    if (fresh.length === 0) {
+      ipTimestamps.delete(key);
+    } else {
+      ipTimestamps.set(key, fresh);
+    }
+  }
+
+  const timestamps = ipTimestamps.get(ip) || [];
+  const recent = timestamps.filter((t) => t > windowStart);
+
+  if (recent.length >= RATE_LIMIT_MAX) {
+    return true;
+  }
+
+  recent.push(now);
+  ipTimestamps.set(ip, recent);
+  return false;
+}
+
 function clean(value, max) {
   if (typeof value !== 'string') return '';
   return value.trim().slice(0, max);
@@ -92,6 +128,15 @@ export default async function handler(req, res) {
   }
   if (!body || typeof body !== 'object') {
     return res.status(400).json({ ok: false, error: 'invalid_body' });
+  }
+
+  // Rate limit: fail fast before any further processing or email calls.
+  const ip =
+    (req.headers['x-forwarded-for'] || '').split(',')[0].trim() ||
+    req.socket?.remoteAddress ||
+    'unknown';
+  if (isRateLimited(ip)) {
+    return res.status(429).json({ ok: false, error: 'rate_limited' });
   }
 
   // Honeypot: bots fill every field, humans never see or fill this one.
