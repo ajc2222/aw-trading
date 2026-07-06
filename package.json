@@ -1,0 +1,7 @@
+{
+  "name": "aw-trading",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  }
+}
