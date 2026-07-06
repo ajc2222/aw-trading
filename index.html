@@ -734,11 +734,17 @@ function initScrollTrack(track, direction){
 }
 
 const certTrack = document.getElementById('certTrack');
-initScrollTrack(certTrack, 1);
 if(certTrack){
+  const certImgs = [...certTrack.querySelectorAll('img')];
+  const whenLoaded = img => img.complete ? Promise.resolve() : new Promise(res=>{
+    img.addEventListener('load', res, {once:true});
+    img.addEventListener('error', res, {once:true});
+  });
+  Promise.all(certImgs.map(whenLoaded)).then(()=> initScrollTrack(certTrack, 1));
+
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');
-  certTrack.querySelectorAll('img').forEach(img=>{
+  certImgs.forEach(img=>{
     img.addEventListener('click', ()=>{
       lightboxImg.src = img.src;
       lightbox.classList.add('active');
