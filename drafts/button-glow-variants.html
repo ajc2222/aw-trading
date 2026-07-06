@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTA Button Glow — Variants</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070709;
+  --white:#F5F6F8;
+  --muted:#9298A6;
+  --blue:#2E6BFF;
+  --blue-glow:rgba(46,107,255,.5);
+  --mono:'IBM Plex Mono',monospace;
+  --disp:'Archivo',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--white);font-family:var(--disp);padding:60px 24px 120px;-webkit-font-smoothing:antialiased}
+h1{font-size:1.6rem;margin-bottom:8px;text-align:center}
+.sub{color:var(--muted);text-align:center;margin-bottom:56px;font-size:.95rem}
+.grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:44px}
+.card{background:#0c0c10;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:40px 24px;display:flex;flex-direction:column;align-items:center;gap:22px}
+.label{font-family:var(--mono);font-size:.72rem;letter-spacing:.05em;color:var(--muted);text-transform:uppercase;text-align:center}
+.label b{color:var(--white);display:block;font-family:var(--disp);font-size:1rem;letter-spacing:0;text-transform:none;margin-bottom:4px}
+
+.btn{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:.95rem;padding:15px 28px;border-radius:99px;cursor:pointer;border:none;background:linear-gradient(180deg,#FFFFFF,#DCE2F0);color:#0A0A0B;font-family:var(--disp);position:relative}
+.arrow{display:inline-block}
+
+/* 1 — static ambient glow */
+.v1{box-shadow:0 0 0 1px rgba(255,255,255,.7) inset,0 0 40px 6px var(--blue-glow)}
+
+/* 2 — breathing pulse glow */
+.v2{box-shadow:0 0 0 1px rgba(255,255,255,.7) inset,0 0 30px 4px var(--blue-glow);animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{
+  0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.7) inset,0 0 22px 2px var(--blue-glow)}
+  50%{box-shadow:0 0 0 1px rgba(255,255,255,.7) inset,0 0 46px 10px var(--blue-glow)}
+}
+
+/* 3 — thin bright traveling border (masked conic ring) */
+.ring{position:relative;border-radius:99px;display:inline-flex;isolation:isolate}
+.ring::before{content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;background:conic-gradient(from 0deg,transparent 0%,transparent 55%,var(--blue) 75%,#eaf1ff 88%,var(--blue) 100%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin 2.6s linear infinite}
+.ring::after{content:"";position:absolute;inset:-10px;border-radius:inherit;background:conic-gradient(from 0deg,transparent 0%,transparent 55%,var(--blue-glow) 75%,var(--blue) 88%,var(--blue-glow) 100%);filter:blur(14px);animation:spin 2.6s linear infinite;z-index:-1}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* 4 — full bright rotating halo ring (very visible) */
+.ring2{position:relative;border-radius:99px;display:inline-flex;isolation:isolate}
+.ring2::before{content:"";position:absolute;inset:-3px;border-radius:inherit;padding:3px;background:conic-gradient(from 0deg,var(--blue),#eaf1ff,var(--blue),#0a1d4d,var(--blue));animation:spin 3s linear infinite;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.ring2::after{content:"";position:absolute;inset:-14px;border-radius:inherit;background:conic-gradient(from 0deg,var(--blue-glow),transparent 40%,var(--blue-glow) 60%,transparent);filter:blur(18px);animation:spin 3s linear infinite;z-index:-1}
+
+/* 5 — shimmer sweep across surface */
+.v5{overflow:hidden}
+.v5::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,transparent 30%,rgba(46,107,255,.55) 48%,#eaf1ff 52%,rgba(46,107,255,.55) 56%,transparent 70%);background-size:220% 100%;animation:sweep 2.8s ease-in-out infinite}
+@keyframes sweep{0%{background-position:130% 0}100%{background-position:-30% 0}}
+
+/* 6 — outer neon rim, static shape, pulsing brightness (like reference screenshot) */
+.rim-wrap{position:relative;border-radius:99px;display:inline-flex}
+.rim-wrap::before{content:"";position:absolute;inset:-3px;border-radius:inherit;border:2px solid var(--blue);animation:rim-pulse 2.2s ease-in-out infinite;pointer-events:none}
+@keyframes rim-pulse{
+  0%,100%{box-shadow:0 0 8px 1px var(--blue-glow);opacity:.6}
+  50%{box-shadow:0 0 28px 6px var(--blue-glow);opacity:1}
+}
+
+/* 7 — bright dot orbiting the border (small, distinct bead) */
+.orbit-wrap{position:relative;border-radius:99px;display:inline-flex}
+.orbit-dot{position:absolute;inset:0;border-radius:inherit;pointer-events:none;animation:spin 2.2s linear infinite}
+.orbit-dot::before{content:"";position:absolute;top:50%;left:0;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#eaf1ff;box-shadow:0 0 6px 2px #fff,0 0 18px 6px var(--blue),0 0 32px 10px var(--blue-glow)}
+
+/* 8 — double counter-rotating arcs */
+.dual-wrap{position:relative;border-radius:99px;display:inline-flex;isolation:isolate}
+.dual-wrap::before,.dual-wrap::after{content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.dual-wrap::before{background:conic-gradient(from 0deg,transparent 0%,transparent 85%,var(--blue) 93%,#eaf1ff 96%,var(--blue) 99%,transparent 100%);animation:spin 2.4s linear infinite}
+.dual-wrap::after{background:conic-gradient(from 180deg,transparent 0%,transparent 85%,var(--blue) 93%,#eaf1ff 96%,var(--blue) 99%,transparent 100%);animation:spin-rev 2.4s linear infinite}
+@keyframes spin-rev{to{transform:rotate(-360deg)}}
+</style>
+</head>
+<body>
+  <h1>CTA Glow / Border Animation Variants</h1>
+  <p class="sub">Same button, 8 treatments — tell me the number(s) you want and I'll wire it into the site.</p>
+  <div class="grid">
+
+    <div class="card">
+      <div class="label"><b>1 — Static Glow</b>No animation, constant blue bloom behind the button.</div>
+      <a class="btn v1">Start Trading Right <span class="arrow">→</span></a>
+    </div>
+
+    <div class="card">
+      <div class="label"><b>2 — Breathing Pulse</b>Glow softly expands and contracts on a loop.</div>
+      <a class="btn v2">Start Trading Right <span class="arrow">→</span></a>
+    </div>
+
+    <div class="card">
+      <div class="label"><b>3 — Traveling Border Arc</b>A bright segment of light continuously circles the rim, with a soft trailing halo.</div>
+      <div class="ring"><a class="btn">Start Trading Right <span class="arrow">→</span></a></div>
+    </div>
+
+    <div class="card">
+      <div class="label"><b>4 — Full Rotating Halo</b>The entire border is a spinning blue gradient ring, plus a wide ambient blur behind it.</div>
+      <div class="ring2"><a class="btn">Start Trading Right <span class="arrow">→</span></a></div>
+    </div>
+
+    <div class="card">
+      <div class="label"><b>5 — Shimmer Sweep</b>A diagonal streak of light sweeps across the button's face on a loop.</div>
+      <a class="btn v5">Start Trading Right <span class="arrow">→</span></a>
+    </div>
+
+    <div class="card">
+      <div class="label"><b>6 — Neon Rim Pulse</b>Static outline that brightens/dims like a neon sign — no motion, just intensity.</div>
+      <div class="rim-wrap"><a class="btn">Start Trading Right <span class="arrow">→</span></a></div>
+    </div>
+
+    <div class="card">
+      <div class="label"><b>7 — Orbiting Bead</b>A single bright dot of light literally travels around the border, like a satellite.</div>
+      <div class="orbit-wrap"><a class="btn">Start Trading Right <span class="arrow">→</span><div class="orbit-dot"></div></a></div>
+    </div>
+
+    <div class="card">
+      <div class="label"><b>8 — Dual Counter-Spin</b>Two bright arcs rotate in opposite directions for a busier, more energetic look.</div>
+      <div class="dual-wrap"><a class="btn">Start Trading Right <span class="arrow">→</span></a></div>
+    </div>
+
+  </div>
+</body>
+</html>

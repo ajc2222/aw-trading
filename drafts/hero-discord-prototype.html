@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hero + Discord Widget — Realistic Prototype</title>
+<style>
+:root{
+  --page-bg:#070709;
+  --white:#F5F6F8;
+  --muted:#9298A6;
+  --line:rgba(255,255,255,.12);
+  --blue:#2E6BFF;
+  --blue-glow:rgba(46,107,255,.4);
+
+  /* Discord palette */
+  --d-rail:#1e1f22;
+  --d-rail-icon:#313338;
+  --d-sidebar:#2b2d31;
+  --d-sidebar-hover:#35373c;
+  --d-sidebar-active:#3f4248;
+  --d-header-line:#1f2023;
+  --d-text:#f2f3f5;
+  --d-muted:#96989d;
+  --d-muted-2:#80838a;
+  --d-badge:#f23f42;
+  --d-online:#23a55a;
+  --d-canvas:#313338;
+  --disp:'Segoe UI',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--page-bg);color:var(--white);font-family:'Archivo',var(--disp);-webkit-font-smoothing:antialiased;padding:60px 24px 120px}
+.wrap{max-width:1180px;margin:0 auto}
+.proto-tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:36px;opacity:.7}
+
+/* ---------- HERO HEADER, horizontal ---------- */
+.hero-head{text-align:center;max-width:720px;margin:0 auto 48px}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--white);font-weight:600;display:inline-flex;align-items:center;gap:10px;opacity:.9;margin-bottom:18px}
+.eyebrow::before,.eyebrow::after{content:"";width:26px;height:2px;background:var(--blue);box-shadow:0 0 12px var(--blue-glow)}
+h1.welcome-line{font-family:'Archivo',sans-serif;font-size:clamp(2.2rem,5vw,3.4rem);letter-spacing:-.02em;font-weight:800;margin-bottom:16px}
+h1.welcome-line em{font-style:normal;color:var(--blue);text-shadow:0 0 30px var(--blue-glow)}
+.hero-head p{font-family:'Archivo',sans-serif;color:var(--muted);font-size:1.02rem;line-height:1.6}
+
+/* ---------- WIDE CENTERED DISCORD WIDGET (realistic Discord chrome) ---------- */
+.discord-shell{max-width:1080px;margin:0 auto;border-radius:16px;overflow:hidden;box-shadow:0 30px 80px -30px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.06);display:grid;grid-template-columns:72px 240px 1fr;height:600px}
+@media(max-width:820px){.discord-shell{grid-template-columns:60px 1fr;height:520px}.d-channels{display:none}}
+
+/* server rail */
+.d-rail{background:var(--d-rail);display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 0}
+.d-rail-icon{width:48px;height:48px;border-radius:16px;background:linear-gradient(180deg,var(--blue),#1c47b3);color:#fff;display:grid;place-items:center;font-weight:800;font-size:.78rem;letter-spacing:.02em;transition:border-radius .15s;cursor:pointer}
+.d-rail-icon.active,.d-rail-icon:hover{border-radius:14px}
+.d-rail-pill{width:8px;height:22px;border-radius:0 4px 4px 0;background:#fff;position:absolute;margin-left:-40px;margin-top:13px}
+.d-rail-sep{width:32px;height:2px;background:#35373c;border-radius:2px;margin:2px 0}
+.d-rail-circ{width:48px;height:48px;border-radius:50%;background:var(--d-rail-icon);color:var(--d-online);display:grid;place-items:center;font-size:1.2rem;font-weight:300;cursor:pointer;transition:border-radius .15s,background .15s}
+.d-rail-circ:hover{border-radius:16px;background:var(--d-online);color:#fff}
+
+/* channel sidebar */
+.d-channels-col{background:var(--d-sidebar);display:flex;flex-direction:column}
+.d-server-head{padding:0 16px;height:48px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--d-header-line);box-shadow:0 1px 0 rgba(0,0,0,.15);cursor:pointer;flex:none}
+.d-server-head b{font-size:.95rem;color:var(--d-text)}
+.d-server-head .chev{color:var(--d-muted);font-size:.7rem}
+.d-channels{flex:1;overflow-y:auto;padding:12px 8px}
+.d-cat{display:flex;align-items:center;gap:4px;padding:14px 8px 4px;font-family:var(--mono);font-size:.68rem;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--d-muted);cursor:pointer;user-select:none}
+.d-cat .chev{font-size:.6rem;transition:transform .15s}
+.d-chan{display:flex;align-items:center;gap:7px;padding:6px 8px;margin:1px 0;border-radius:4px;color:var(--d-muted-2);font-size:.9rem;cursor:pointer;transition:background .1s,color .1s}
+.d-chan .icon{font-size:.85rem;width:18px;text-align:center;flex:none}
+.d-chan .name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.d-chan .badge{background:var(--d-badge);color:#fff;font-size:.68rem;font-weight:700;border-radius:8px;padding:1px 6px;flex:none}
+.d-chan:hover{background:var(--d-sidebar-hover);color:var(--d-text)}
+.d-chan.active{background:var(--d-sidebar-active);color:#fff}
+
+.d-user-bar{flex:none;height:52px;background:#232428;display:flex;align-items:center;gap:8px;padding:0 8px}
+.d-user-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(180deg,var(--blue),#1c47b3);display:grid;place-items:center;font-size:.7rem;font-weight:700;position:relative;flex:none}
+.d-user-av::after{content:"";position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;background:var(--d-online);border:2.5px solid #232428}
+.d-user-meta{line-height:1.2;overflow:hidden}
+.d-user-meta b{display:block;font-size:.82rem;color:var(--d-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.d-user-meta span{font-size:.72rem;color:var(--d-muted)}
+.d-user-icons{margin-left:auto;display:flex;gap:4px;color:var(--d-muted);flex:none}
+.d-user-icons span{width:26px;height:26px;display:grid;place-items:center;border-radius:6px;font-size:.85rem}
+.d-user-icons span:hover{background:var(--d-sidebar-hover);color:var(--d-text)}
+
+/* the "everything else" screenshot panel — topbar + chat + member list baked into one image */
+.d-screenshot{background:var(--d-canvas);position:relative;overflow:hidden}
+.d-screenshot img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+.d-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--d-muted);text-align:center;padding:30px}
+.d-placeholder b{color:var(--d-text);font-size:1rem;font-family:'Archivo',sans-serif}
+.d-placeholder span{font-family:var(--mono);font-size:.74rem}
+
+.note{max-width:1080px;margin:28px auto 0;font-family:var(--mono);font-size:.78rem;color:var(--muted);line-height:1.7;border-top:1px solid var(--line);padding-top:20px}
+.note b{color:var(--white)}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="proto-tag">Prototype — layout only, not wired into the live site</div>
+
+    <div class="hero-head">
+      <div class="eyebrow">Real Discord · Real Traders</div>
+      <h1 class="welcome-line">Welcome to <em>AW Trading</em></h1>
+      <p>AW Trading teaches one repeatable system — risk-first execution, session-based setups, and the psychology to hold the line when everyone else folds.</p>
+    </div>
+
+    <div class="discord-shell">
+      <div class="d-rail">
+        <div class="d-rail-icon active">AW</div>
+        <div class="d-rail-sep"></div>
+        <div class="d-rail-circ">+</div>
+        <div class="d-rail-circ">🧭</div>
+      </div>
+
+      <div class="d-channels-col">
+        <div class="d-server-head"><b>AW Trading</b><span class="chev">▾</span></div>
+        <div class="d-channels" id="dChannels"></div>
+        <div class="d-user-bar">
+          <div class="d-user-av">AW</div>
+          <div class="d-user-meta"><b>you</b><span>Online</span></div>
+          <div class="d-user-icons"><span>🎙</span><span>🎧</span><span>⚙</span></div>
+        </div>
+      </div>
+
+      <div class="d-screenshot" id="dScreenshot"></div>
+    </div>
+
+    <div class="note">
+      <b>How this works:</b> only the left rail + channel list is real HTML — clickable, same categories as the live site. Everything to the right of it (top bar, messages, member list, all of it) is a single screenshot image that swaps per channel.
+      Take a full screenshot of the real Discord window with the sidebar cropped out, save it at the path shown in the placeholder (e.g. <b>assets/proofs/discord/certificates-payouts.png</b>), then set that channel's <b>img</b> value in the <b>DATA</b> array below — no other code changes needed.
+    </div>
+  </div>
+
+<script>
+// Set `img` once you have a full-window Discord screenshot (sidebar cropped off) for that channel.
+// `badge` is an optional unread-count number shown on the channel row, purely cosmetic.
+const DATA = [
+  { cat:"AW", channels:[
+    { id:"announcements", icon:"📢", img:"" },
+    { id:"certificates-payouts", icon:"🏆", img:"", badge:2 },
+    { id:"profits", icon:"💰", img:"", badge:5 },
+    { id:"testimonials", icon:"💬", img:"" }
+  ]},
+  { cat:"WILL'S LAB", channels:[
+    { id:"pre-market", icon:"🌅", img:"" },
+    { id:"intraday-calls", icon:"📞", img:"" },
+    { id:"executions", icon:"✅", img:"" }
+  ]},
+  { cat:"AJ'S LAB", channels:[
+    { id:"pre-market-aj", label:"pre-market", icon:"🌅", img:"" },
+    { id:"intraday-calls-aj", label:"intraday-calls", icon:"📞", img:"" },
+    { id:"executions-aj", label:"executions", icon:"✅", img:"" }
+  ]}
+];
+
+const dChannels = document.getElementById('dChannels');
+const dScreenshot = document.getElementById('dScreenshot');
+
+function findChannel(id){
+  for(const cat of DATA){ const f = cat.channels.find(c=>c.id===id); if(f) return f; }
+  return null;
+}
+
+function renderChannels(){
+  dChannels.innerHTML = '';
+  DATA.forEach(cat=>{
+    const head = document.createElement('div');
+    head.className = 'd-cat';
+    head.innerHTML = `<span class="chev">▾</span> ${cat.cat}`;
+    dChannels.appendChild(head);
+    cat.channels.forEach(ch=>{
+      const el = document.createElement('div');
+      el.className = 'd-chan' + (ch.id === 'certificates-payouts' ? ' active' : '');
+      el.dataset.id = ch.id;
+      el.innerHTML = `<span class="icon">${ch.icon}</span><span class="name">${ch.label || ch.id}</span>${ch.badge ? `<span class="badge">${ch.badge}</span>` : ''}`;
+      el.addEventListener('click', ()=> selectChannel(ch.id));
+      dChannels.appendChild(el);
+    });
+  });
+}
+
+function selectChannel(id){
+  const ch = findChannel(id);
+  if(!ch) return;
+  document.querySelectorAll('.d-chan').forEach(el=>{
+    const isActive = el.dataset.id === id;
+    el.classList.toggle('active', isActive);
+    if(isActive) el.querySelector('.badge')?.remove();
+  });
+  if(ch.img){
+    dScreenshot.innerHTML = `<img src="${ch.img}" alt="${ch.label || ch.id} screenshot">`;
+  } else {
+    dScreenshot.innerHTML = `<div class="d-placeholder">
+      <b>No screenshot yet for #${ch.label || ch.id}</b>
+      <span>assets/proofs/discord/${ch.id}.png</span>
+    </div>`;
+  }
+}
+
+renderChannels();
+selectChannel('certificates-payouts');
+</script>
+</body>
+</html>

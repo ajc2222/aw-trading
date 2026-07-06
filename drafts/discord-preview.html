@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AW Trading — Discord Preview</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070709;
+  --panel:#0c0c10;
+  --panel-2:#111116;
+  --white:#F5F6F8;
+  --muted:#9298A6;
+  --dim:#6A6F7C;
+  --line:rgba(255,255,255,.10);
+  --line-strong:rgba(255,255,255,.22);
+  --blue:#2E6BFF;
+  --blue-glow:rgba(46,107,255,.4);
+  --mono:'IBM Plex Mono',monospace;
+  --disp:'Archivo',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--disp);background:var(--bg);color:var(--white);-webkit-font-smoothing:antialiased;height:100vh;overflow:hidden}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+::selection{background:var(--white);color:#0A0A0B}
+::-webkit-scrollbar{width:9px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:99px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ---- top funnel bar ---- */
+.funnel{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px 18px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border-bottom:1px solid var(--line);font-size:.82rem}
+.funnel .dot{width:7px;height:7px;border-radius:50%;background:var(--blue);box-shadow:0 0 12px var(--blue-glow);animation:blink 1.6s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.funnel p{color:var(--muted)}
+.funnel b{color:var(--white)}
+.join-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(180deg,#FFFFFF,#DCE2F0);color:#0A0A0B;font-weight:700;font-size:.8rem;padding:8px 16px;border-radius:99px;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 10px 26px -10px var(--blue-glow);transition:transform .18s,box-shadow .18s}
+.join-btn:hover{transform:translateY(-1px);box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 14px 32px -8px var(--blue-glow)}
+
+/* ---- app shell ---- */
+.app{display:grid;grid-template-columns:72px 240px 1fr 220px;height:calc(100vh - 45px)}
+@media(max-width:980px){.app{grid-template-columns:64px 220px 1fr}.members{display:none}}
+@media(max-width:700px){.app{grid-template-columns:56px 1fr}.channels{display:none}}
+
+/* server rail */
+.rail{background:#050506;display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:12px;border-right:1px solid var(--line)}
+.rail-icon{width:46px;height:46px;border-radius:16px;background:linear-gradient(180deg,#FFFFFF,#DCE2F0);color:#0A0A0B;display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:.8rem;box-shadow:0 0 0 2px rgba(255,255,255,.06);position:relative;cursor:pointer;transition:border-radius .2s}
+.rail-icon.active{border-radius:14px;box-shadow:0 0 0 2px var(--blue),0 0 20px var(--blue-glow)}
+.rail-icon.active::before{content:"";position:absolute;left:-14px;top:50%;transform:translateY(-50%);width:4px;height:26px;border-radius:0 4px 4px 0;background:var(--white)}
+.rail-sep{width:28px;height:2px;background:var(--line);border-radius:2px}
+.rail-add{width:46px;height:46px;border-radius:50%;border:1px dashed var(--line-strong);color:var(--muted);display:grid;place-items:center;font-size:1.3rem;cursor:pointer;transition:border-radius .2s,color .2s,border-color .2s}
+.rail-add:hover{border-radius:16px;color:var(--white);border-color:var(--blue);border-style:solid}
+
+/* channel sidebar */
+.channels{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden}
+.server-head{padding:16px 16px;font-weight:800;font-size:.98rem;border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(255,255,255,.03);display:flex;align-items:center;justify-content:space-between}
+.server-head span{font-family:var(--mono);font-size:.62rem;color:var(--muted);border:1px solid var(--line);padding:3px 8px;border-radius:99px}
+.cat-list{flex:1;overflow-y:auto;padding:12px 8px}
+.cat{margin-bottom:6px}
+.cat-head{display:flex;align-items:center;gap:6px;padding:8px 8px 4px;font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--dim);cursor:pointer;user-select:none}
+.cat-head .chev{transition:transform .2s;font-size:.6rem}
+.cat.collapsed .cat-head .chev{transform:rotate(-90deg)}
+.cat.collapsed .chan-list{display:none}
+.chan{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;color:var(--muted);font-size:.88rem;cursor:pointer;transition:background .15s,color .15s;position:relative}
+.chan:hover{background:rgba(255,255,255,.04);color:var(--white)}
+.chan.active{background:rgba(255,255,255,.07);color:var(--white);box-shadow:inset 2px 0 0 var(--blue)}
+.chan .hash{opacity:.6;font-weight:600}
+.chan .lock{margin-left:auto;opacity:.5;font-size:.75rem}
+.chan .unread{margin-left:auto;width:7px;height:7px;border-radius:50%;background:var(--blue);box-shadow:0 0 8px var(--blue-glow)}
+
+.member-mini{padding:12px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.member-mini .av{width:32px;height:32px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line);display:grid;place-items:center;font-size:.7rem;font-weight:700}
+.member-mini .who{font-size:.8rem;font-weight:700}
+.member-mini .status{font-size:.68rem;color:var(--muted)}
+
+/* chat pane */
+.chat{display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
+.chat-head{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(255,255,255,.03)}
+.chat-head .hash{font-size:1.2rem;color:var(--dim);font-weight:700}
+.chat-head h2{font-size:1rem;font-weight:800}
+.chat-head .topic{color:var(--muted);font-size:.82rem;padding-left:12px;border-left:1px solid var(--line);margin-left:2px}
+.chat-body{flex:1;overflow-y:auto;padding:20px}
+.msg{display:flex;gap:14px;padding:10px 6px;border-radius:10px;transition:background .15s}
+.msg:hover{background:rgba(255,255,255,.02)}
+.msg .av{flex:none;width:38px;height:38px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line);display:grid;place-items:center;font-size:.72rem;font-weight:700;color:var(--white)}
+.msg .body{min-width:0}
+.msg .line1{display:flex;align-items:baseline;gap:8px;margin-bottom:3px;flex-wrap:wrap}
+.msg .name{font-weight:700;font-size:.9rem}
+.msg .name.mentor{color:var(--white)}
+.msg .badge{font-family:var(--mono);font-size:.58rem;letter-spacing:.06em;background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--muted);padding:2px 6px;border-radius:99px}
+.msg .badge.mentor-badge{background:var(--blue);color:#fff;border-color:transparent;box-shadow:0 0 10px var(--blue-glow)}
+.msg .time{font-size:.7rem;color:var(--dim)}
+.msg .text{font-size:.9rem;color:#D6D9E0;line-height:1.5}
+.msg .attach{margin-top:8px;display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:var(--panel);border:1px solid var(--line);font-size:.82rem;box-shadow:0 8px 22px -14px var(--blue-glow)}
+.msg .attach b{color:var(--white)}
+.pinned{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.7rem;color:var(--muted);padding:8px 20px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02)}
+.pinned b{color:var(--white)}
+
+.composer{padding:14px 20px 18px}
+.composer-in{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 16px;color:var(--dim);font-size:.88rem}
+.composer-in .plus{width:22px;height:22px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;flex:none}
+
+/* members */
+.members{background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;padding:16px 14px}
+.members h4{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--dim);margin:14px 0 8px}
+.members h4:first-child{margin-top:0}
+.member{display:flex;align-items:center;gap:10px;padding:6px 4px;border-radius:8px;cursor:default}
+.member:hover{background:rgba(255,255,255,.04)}
+.member .av{position:relative;width:30px;height:30px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line);display:grid;place-items:center;font-size:.64rem;font-weight:700}
+.member .av .dot{position:absolute;bottom:-1px;right:-1px;width:9px;height:9px;border-radius:50%;background:var(--blue);border:2px solid var(--panel);box-shadow:0 0 6px var(--blue-glow)}
+.member .name{font-size:.84rem;color:#D6D9E0}
+.member .name.role{color:var(--white);font-weight:700}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+
+<div class="funnel">
+  <span class="dot"></span>
+  <p><b>AW Trading</b> is live in Discord — click around, then join for free.</p>
+  <a href="#" class="join-btn">Join Free Discord
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369A19.8 19.8 0 0 0 15.99 3c-.211.375-.457.879-.626 1.278a18.3 18.3 0 0 0-5.487 0A12.7 12.7 0 0 0 9.25 3a19.7 19.7 0 0 0-4.327 1.37C1.87 8.6 1.13 12.72 1.5 16.78a19.9 19.9 0 0 0 5.993 3.03c.483-.66.913-1.36 1.284-2.1a12.8 12.8 0 0 1-2.023-.98c.17-.124.336-.253.497-.386 3.9 1.8 8.13 1.8 11.99 0 .163.133.328.262.497.386-.642.383-1.323.71-2.027.982.372.74.8 1.44 1.284 2.098a19.86 19.86 0 0 0 6.002-3.03c.428-4.71-.734-8.8-3.68-12.41ZM8.68 14.4c-1.18 0-2.14-1.086-2.14-2.42 0-1.335.94-2.42 2.14-2.42 1.21 0 2.16 1.095 2.14 2.42 0 1.334-.93 2.42-2.14 2.42Zm6.64 0c-1.18 0-2.14-1.086-2.14-2.42 0-1.335.95-2.42 2.14-2.42 1.21 0 2.16 1.095 2.14 2.42 0 1.334-.92 2.42-2.14 2.42Z"/></svg>
+  </a>
+</div>
+
+<div class="app">
+  <div class="rail">
+    <div class="rail-icon active">AW</div>
+    <div class="rail-sep"></div>
+    <div class="rail-add">+</div>
+  </div>
+
+  <div class="channels">
+    <div class="server-head">AW Trading <span>6,600+</span></div>
+    <div class="cat-list" id="catList"></div>
+    <div class="member-mini">
+      <div class="av">YOU</div>
+      <div><div class="who">Guest Preview</div><div class="status">Browsing as visitor</div></div>
+    </div>
+  </div>
+
+  <div class="chat">
+    <div class="chat-head">
+      <span class="hash">#</span>
+      <h2 id="chanName">start-here</h2>
+      <span class="topic" id="chanTopic"></span>
+    </div>
+    <div id="pinned" class="pinned" style="display:none">📌 <b>Pinned</b> <span id="pinnedText"></span></div>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="composer">
+      <div class="composer-in"><span class="plus">+</span> Join the Discord to send a message in this channel</div>
+    </div>
+  </div>
+
+  <div class="members">
+    <h4>OWNER — 1</h4>
+    <div class="member"><div class="av">AW<span class="dot"></span></div><div class="name role">AW</div></div>
+    <h4>MENTOR — 2</h4>
+    <div class="member"><div class="av">JD<span class="dot"></span></div><div class="name">JayDee</div></div>
+    <div class="member"><div class="av">RC<span class="dot"></span></div><div class="name">RiskCoach</div></div>
+    <h4>STUDENT — 412 online</h4>
+    <div class="member"><div class="av">TM<span class="dot"></span></div><div class="name">Timmy_FX</div></div>
+    <div class="member"><div class="av">KL<span class="dot"></span></div><div class="name">Kinsley</div></div>
+    <div class="member"><div class="av">JS<span class="dot"></span></div><div class="name">Josephh</div></div>
+    <div class="member"><div class="av">RT<span class="dot"></span></div><div class="name">Roasti</div></div>
+    <div class="member"><div class="av">MV<span class="dot"></span></div><div class="name">Marv_Trades</div></div>
+  </div>
+</div>
+
+<script>
+const DATA = [
+  { cat:"IMPORTANT", channels:[
+    { id:"start-here", topic:"Read this first.", pinned:"New members — start here before posting anywhere else.", messages:[
+      { who:"AW", role:"mentor", time:"9:00 AM", text:"Welcome to AW Trading 👋 Drop by #introductions, read #rules, and check #prop-firm-deals for active discount codes." },
+      { who:"AW", role:"mentor", time:"9:01 AM", text:"Live sessions run 5× a week — schedule is pinned in #announcements. See you at the open." }
+    ]},
+    { id:"rules", topic:"Read before you post.", messages:[
+      { who:"AW", role:"mentor", time:"Mar 2", text:"1. No signals, no unsolicited DMs. 2. Be respectful — we review losses in public, not egos. 3. Keep #general-chat on-topic." }
+    ]},
+    { id:"announcements", topic:"Official updates & live session schedule.", messages:[
+      { who:"AW", role:"mentor", time:"Yesterday", text:"Reminder: London session live-trade starts in 20 minutes. Pull up your charts." },
+      { who:"AW", role:"mentor", time:"Today at 8:40 AM", text:"New partner discount added in #prop-firm-deals — 20% off evaluations this week only." }
+    ]}
+  ]},
+  { cat:"COMMUNITY", channels:[
+    { id:"general-chat", topic:"Chat about anything market related.", messages:[
+      { who:"Timmy_FX", time:"11:02 AM", text:"anyone else watching NQ chop around the open today lol" },
+      { who:"Kinsley", time:"11:03 AM", text:"yeah sitting on hands until the range breaks, not forcing it" },
+      { who:"Marv_Trades", time:"11:05 AM", text:"discipline > dopamine. patience pays 🙌" }
+    ]},
+    { id:"trade-ideas", topic:"Share setups. Journal-style, not signals.", messages:[
+      { who:"RiskCoach", role:"mentor", time:"10:14 AM", text:"Session-based liquidity sweep forming on gold — watching for the reclaim before considering size." },
+      { who:"Josephh", time:"10:20 AM", text:"same read here, waiting for confirmation on the 5m" }
+    ]},
+    { id:"introductions", topic:"New here? Say hi.", messages:[
+      { who:"Roasti", time:"Mon", text:"New here — coming from 2 blown accounts, ready to actually learn risk this time." },
+      { who:"AW", role:"mentor", time:"Mon", text:"Welcome — you're in the right place. Start with the Foundations curriculum, then hit live sessions." }
+    ]}
+  ]},
+  { cat:"PROP FIRMS", channels:[
+    { id:"prop-firm-deals", topic:"Exclusive discount codes for vetted firms.", messages:[
+      { who:"AW", role:"mentor", time:"Today at 8:41 AM", text:"Code AWTRADING = 15% off [Partner Firm 01] evaluations — our top pick for index futures traders." },
+      { who:"AW", role:"mentor", time:"Today at 8:42 AM", text:"Code AW10 = 10% off [Partner Firm 02], AW20 = 20% off [Partner Firm 03]. Full breakdown pinned." }
+    ]},
+    { id:"payout-proof", topic:"Post your payout certificates here.", messages:[
+      { who:"Kinsley", time:"Tue", text:"first payout ever 🥹", attach:"PAYOUT CERTIFICATE — $1,073" },
+      { who:"Josephh", time:"Wed", text:"second one this month, system is finally clicking", attach:"PAYOUT CERTIFICATE — $8,000" }
+    ]}
+  ]},
+  { cat:"GIVEAWAYS", channels:[
+    { id:"giveaways", topic:"Weekly funded account giveaway — entries via prop firm codes.", messages:[
+      { who:"AW", role:"mentor", time:"Mon", text:"🎁 This week's giveaway: 1x funded account voucher. Every purchase through a partner code this week = 1 entry." }
+    ]},
+    { id:"winners", topic:"Past giveaway winners announced here.", messages:[
+      { who:"AW", role:"mentor", time:"Last week", text:"🏆 Winner of last week's giveaway: Roasti! Funded account voucher sent — go get it." }
+    ]}
+  ]},
+  { cat:"MENTORSHIP", locked:true, channels:[
+    { id:"live-trading-coach", topic:"Live trading sessions, 5× weekly. Members only.", locked:true, messages:[
+      { who:"AW", role:"mentor", time:"—", text:"This channel is reserved for Live Trader & Inner Circle members. Join free first, then upgrade any time." }
+    ]}
+  ]}
+];
+
+const catList = document.getElementById('catList');
+const chatBody = document.getElementById('chatBody');
+const chanName = document.getElementById('chanName');
+const chanTopic = document.getElementById('chanTopic');
+const pinnedEl = document.getElementById('pinned');
+const pinnedText = document.getElementById('pinnedText');
+
+function initials(name){ return name.replace(/[^A-Za-z0-9 ]/g,'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+
+function renderChannels(){
+  catList.innerHTML = '';
+  DATA.forEach(cat=>{
+    const catEl = document.createElement('div');
+    catEl.className = 'cat';
+    catEl.innerHTML = `<div class="cat-head"><span class="chev">▾</span>${cat.cat}${cat.locked ? ' 🔒' : ''}</div><div class="chan-list"></div>`;
+    catEl.querySelector('.cat-head').addEventListener('click', ()=> catEl.classList.toggle('collapsed'));
+    const list = catEl.querySelector('.chan-list');
+    cat.channels.forEach(ch=>{
+      const chEl = document.createElement('div');
+      chEl.className = 'chan' + (ch.id === 'start-here' ? ' active' : '');
+      chEl.dataset.id = ch.id;
+      chEl.innerHTML = `<span class="hash">#</span> ${ch.id}${ch.locked ? '<span class="lock">🔒</span>' : ''}`;
+      chEl.addEventListener('click', ()=> selectChannel(ch.id));
+      list.appendChild(chEl);
+    });
+    catList.appendChild(catEl);
+  });
+}
+
+function findChannel(id){
+  for(const cat of DATA){ const f = cat.channels.find(c=>c.id===id); if(f) return f; }
+  return null;
+}
+
+function selectChannel(id){
+  const ch = findChannel(id);
+  if(!ch) return;
+  document.querySelectorAll('.chan').forEach(el=> el.classList.toggle('active', el.dataset.id === id));
+  chanName.textContent = ch.id;
+  chanTopic.textContent = ch.topic;
+  if(ch.pinned){ pinnedEl.style.display='flex'; pinnedText.textContent = ch.pinned; }
+  else { pinnedEl.style.display='none'; }
+
+  chatBody.innerHTML = '';
+  ch.messages.forEach(m=>{
+    const row = document.createElement('div');
+    row.className = 'msg';
+    row.innerHTML = `
+      <div class="av">${initials(m.who)}</div>
+      <div class="body">
+        <div class="line1">
+          <span class="name ${m.role==='mentor'?'mentor':''}">${m.who}</span>
+          ${m.role==='mentor' ? '<span class="badge mentor-badge">MENTOR</span>' : ''}
+          <span class="time">${m.time}</span>
+        </div>
+        <div class="text">${m.text}</div>
+        ${m.attach ? `<div class="attach">🧾 <b>${m.attach}</b></div>` : ''}
+      </div>`;
+    chatBody.appendChild(row);
+  });
+}
+
+renderChannels();
+selectChannel('start-here');
+</script>
+</body>
+</html>

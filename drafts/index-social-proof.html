@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AW Trading — Social Proof Prototype</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070709;
+  --white:#F5F6F8;
+  --muted:#9298A6;
+  --line:rgba(255,255,255,.12);
+  --line-strong:rgba(255,255,255,.26);
+  --white-glow:rgba(255,255,255,.10);
+  --white-glow-hard:rgba(255,255,255,.18);
+  --blue:#2E6BFF;
+  --blue-glow:rgba(46,107,255,.4);
+  --glass-hi:rgba(255,255,255,.09);
+  --glass-lo:rgba(255,255,255,.035);
+  --mono:'IBM Plex Mono',monospace;
+  --disp:'Archivo',sans-serif;
+  --max:1080px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--disp);background:var(--bg);color:var(--white);line-height:1.55;font-size:16px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--white);color:#0A0A0B}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--white);font-weight:600;display:inline-flex;align-items:center;gap:10px;opacity:.9}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--white)}
+h1,h2,h3{font-family:var(--disp);letter-spacing:-.02em}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
+
+/* liquid layer */
+.liquid{position:fixed;inset:0;z-index:0;pointer-events:none;filter:blur(80px) saturate(1.1);opacity:.38}
+.blob{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(46,107,255,.5),rgba(46,107,255,.04) 70%);mix-blend-mode:screen;will-change:transform}
+.b1{width:55vmax;height:55vmax;top:-24vmax;left:-18vmax;animation:drift1 28s ease-in-out infinite alternate}
+.b2{width:44vmax;height:44vmax;top:34%;right:-20vmax;animation:drift2 34s ease-in-out infinite alternate}
+.b3{width:38vmax;height:38vmax;bottom:-16vmax;left:22%;animation:drift3 24s ease-in-out infinite alternate;opacity:.7}
+@keyframes drift1{from{transform:translate(0,0) scale(1)}to{transform:translate(10vmax,8vmax) scale(1.1)}}
+@keyframes drift2{from{transform:translate(0,0) scale(1.05)}to{transform:translate(-9vmax,-7vmax) scale(.9)}}
+@keyframes drift3{from{transform:translate(0,0)}to{transform:translate(9vmax,-6vmax)}}
+.grain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.28;background-image:radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px);background-size:3px 3px}
+nav,main,footer{position:relative;z-index:2}
+
+.glass{
+  background:linear-gradient(160deg,var(--glass-hi),var(--glass-lo) 50%);
+  backdrop-filter:blur(18px) saturate(1.3);
+  -webkit-backdrop-filter:blur(18px) saturate(1.3);
+  border:1px solid var(--line);
+  box-shadow:0 1px 0 rgba(255,255,255,.15) inset,0 -1px 0 rgba(255,255,255,.03) inset,0 16px 44px -26px rgba(0,0,0,.9);
+}
+
+.btn{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:.95rem;padding:14px 26px;border-radius:99px;cursor:pointer;border:none;transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .3s,border-color .3s;font-family:var(--disp)}
+.btn-white{background:linear-gradient(180deg,#FFFFFF,#DCE2F0);color:#0A0A0B;border:1px solid rgba(255,255,255,.7);box-shadow:0 1px 0 rgba(255,255,255,.95) inset,0 -8px 16px -10px rgba(0,0,0,.22) inset,0 12px 34px -12px var(--white-glow-hard)}
+.btn-white:hover{transform:translateY(-2px);box-shadow:0 1px 0 rgba(255,255,255,.95) inset,0 -8px 16px -10px rgba(0,0,0,.22) inset,0 18px 44px -10px var(--blue-glow)}
+.btn-ghost{background:linear-gradient(160deg,var(--glass-hi),var(--glass-lo));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:var(--white);border:1px solid var(--line-strong);box-shadow:0 1px 0 rgba(255,255,255,.14) inset;font-size:.82rem;padding:9px 18px}
+.btn-ghost:hover{transform:translateY(-2px);border-color:var(--blue);box-shadow:0 1px 0 rgba(255,255,255,.14) inset,0 12px 34px -12px var(--blue-glow)}
+.arrow{display:inline-block;transition:transform .2s}
+.btn:hover .arrow{transform:translateX(4px)}
+
+/* nav */
+nav{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(255,255,255,.08) inset}
+.nav-in{display:flex;align-items:center;justify-content:center;gap:14px;height:64px}
+.live-pill{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:8px 14px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);box-shadow:0 0 12px var(--blue-glow);animation:blink 1.6s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+@media(max-width:560px){.live-pill span.lbl{display:none}}
+
+/* hero */
+.hero{position:relative;padding:70px 0 60px;text-align:center;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(700px 460px at 50% 10%,#000 15%,transparent 75%);opacity:.26;pointer-events:none}
+h1.brand{position:relative;z-index:1;font-size:clamp(2.6rem,9vw,5.6rem);font-weight:900;line-height:1;letter-spacing:-.03em;margin:0 0 40px;text-shadow:0 0 40px var(--white-glow)}
+h1.brand em{font-style:normal;position:relative;white-space:nowrap}
+h1.brand em::after{content:"";position:absolute;left:0;right:0;bottom:.06em;height:.09em;background:var(--blue);border-radius:2px;z-index:-1;transform:scaleX(0);transform-origin:left;animation:underline .9s .4s cubic-bezier(.2,.8,.2,1) forwards;box-shadow:0 0 24px var(--blue-glow)}
+@keyframes underline{to{transform:scaleX(1)}}
+
+.proof-rows{position:relative;z-index:1;max-width:460px;margin:0 auto 36px;display:flex;flex-direction:column;gap:10px}
+.proof-row{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:16px;transition:transform .25s,box-shadow .3s,border-color .3s}
+.proof-row:hover{transform:translateY(-3px);border-color:var(--line-strong);box-shadow:0 1px 0 rgba(255,255,255,.15) inset,0 20px 46px -22px var(--blue-glow)}
+.proof-ic{flex:none;width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid var(--line);box-shadow:0 1px 0 rgba(255,255,255,.12) inset;display:grid;place-items:center;color:var(--white)}
+.proof-txt{text-align:left}
+.proof-txt h3{font-size:.92rem;font-weight:800;letter-spacing:.01em}
+.proof-txt p{font-size:.78rem;color:var(--muted);font-weight:600}
+
+.cta-wrap{position:relative;z-index:1;display:flex;justify-content:center;margin-bottom:16px}
+.cta{position:relative;overflow:hidden;font-size:1rem;padding:16px 30px}
+.cta::after{content:"";position:absolute;top:0;left:-70%;width:55%;height:100%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.35) 45%,transparent 60%);transform:skewX(-18deg);animation:ctasheen 5s ease-in-out infinite}
+@keyframes ctasheen{0%,80%,100%{left:-70%}90%{left:120%}}
+.hero-note{position:relative;z-index:1;font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+
+/* trust ticker */
+.ticker{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.025),transparent);overflow:hidden;padding:12px 0}
+.ticker-track{display:inline-flex;gap:44px;animation:tick 26s linear infinite;white-space:nowrap;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.ticker-track b{color:var(--white)}
+@keyframes tick{to{transform:translateX(-50%)}}
+
+/* giveaway banner */
+.giveaway{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px 0}
+.giveaway-in{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;text-align:center}
+.giveaway-in p{font-size:.88rem;color:var(--muted)}
+.giveaway-in b{color:var(--white)}
+
+/* deals */
+section{padding:88px 0}
+.sec-head{max-width:620px;margin:0 auto 48px;text-align:center}
+.sec-head h2{font-size:clamp(2rem,5vw,3.1rem);font-weight:900;line-height:1.05;margin:14px 0 12px}
+.sec-head h2 em{font-style:normal;position:relative;white-space:nowrap}
+.sec-head h2 em::after{content:"";position:absolute;left:0;right:0;bottom:.08em;height:.08em;background:var(--blue);border-radius:2px;z-index:-1;box-shadow:0 0 20px var(--blue-glow)}
+.sec-head p{color:var(--muted);font-size:1rem}
+
+.deals{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:860px){.deals{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.deals{grid-template-columns:1fr}}
+.deal{border-radius:20px;padding:26px 22px;position:relative;overflow:hidden;transition:transform .25s,box-shadow .3s,border-color .3s}
+.deal:hover{transform:translateY(-5px);border-color:var(--line-strong);box-shadow:0 1px 0 rgba(255,255,255,.15) inset,0 26px 60px -22px var(--blue-glow)}
+.deal.top{border-color:var(--line-strong);box-shadow:0 1px 0 rgba(255,255,255,.15) inset,0 20px 50px -22px var(--blue-glow)}
+.deal-flag{position:absolute;top:16px;right:16px;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;background:linear-gradient(180deg,#FFFFFF,#DCE2F0);color:#0A0A0B;padding:4px 10px;border-radius:99px;box-shadow:0 6px 18px -8px var(--white-glow-hard)}
+.off{font-size:2.1rem;font-weight:900;letter-spacing:-.02em;margin-bottom:4px}
+.deal h3{font-size:1rem;font-weight:800;margin-bottom:8px}
+.deal p.desc{color:var(--muted);font-size:.84rem;margin-bottom:14px}
+.deal ul{list-style:none;margin-bottom:18px}
+.deal li{font-size:.82rem;color:#C7CAD3;padding:5px 0;display:flex;gap:8px}
+.deal li::before{content:"✓";color:var(--white)}
+.code-row{display:flex;align-items:center;gap:8px}
+.code{font-family:var(--mono);font-size:.78rem;border:1px solid var(--line);border-radius:8px;padding:8px 12px;letter-spacing:.05em}
+.copy{font-family:var(--mono);font-size:.72rem;border:1px solid var(--line-strong);border-radius:8px;padding:8px 12px;background:rgba(255,255,255,.05);cursor:pointer;color:var(--white);transition:border-color .2s,box-shadow .2s}
+.copy:hover{border-color:var(--line-strong);box-shadow:0 8px 22px -12px var(--blue-glow)}
+
+/* payouts / testimonial wall */
+.panel{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.wall{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:860px){.wall{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.wall{grid-template-columns:1fr}}
+.win{border-radius:16px;padding:20px;transition:transform .25s,box-shadow .3s}
+.win:hover{transform:translateY(-4px);box-shadow:0 1px 0 rgba(255,255,255,.15) inset,0 16px 40px -22px var(--blue-glow)}
+.win .amt{font-size:1.4rem;font-weight:900;color:var(--white)}
+.win .who{font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:6px}
+.win .tag{display:inline-block;margin-top:10px;font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;color:var(--muted);border:1px solid var(--line-strong);border-radius:99px;padding:4px 10px}
+.fine{font-family:var(--mono);font-size:.7rem;line-height:1.7;color:#6A6F7C;text-align:center;max-width:640px;margin:36px auto 0}
+
+/* final cta */
+.final{text-align:center;padding:100px 0}
+.final h2{font-size:clamp(2rem,4.6vw,3.2rem);font-weight:900;line-height:1.05;letter-spacing:-.03em;margin:16px auto 18px;max-width:680px;text-shadow:0 0 40px var(--white-glow)}
+.final p{color:var(--muted);max-width:480px;margin:0 auto 30px}
+
+footer{color:var(--muted);border-top:1px solid var(--line);padding:40px 0;font-size:.85rem;text-align:center}
+footer .logo{display:inline-flex;align-items:center;gap:9px;color:var(--white);font-weight:900;margin-bottom:14px}
+.logo-mark{width:26px;height:26px;background:linear-gradient(180deg,#FFFFFF,#DCE2F0);color:#0A0A0B;border-radius:8px;display:grid;place-items:center;font-family:var(--mono);font-size:.62rem;font-weight:600}
+.disclaimer{font-size:.7rem;line-height:1.7;color:#6A6F7C;max-width:700px;margin:0 auto;font-family:var(--mono)}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .liquid{opacity:.22}
+}
+</style>
+</head>
+<body>
+
+<div class="liquid" aria-hidden="true">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+</div>
+<div class="grain" aria-hidden="true"></div>
+
+<nav>
+  <div class="wrap nav-in">
+    <a href="#deals" class="btn-ghost btn">Enter Giveaway</a>
+    <div class="live-pill"><span class="live-dot"></span><span class="lbl">LIVE IN DISCORD</span></div>
+    <a href="#" class="btn btn-white" style="padding:9px 18px;font-size:.82rem">Join Discord</a>
+  </div>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="wrap">
+    <h1 class="brand">AW <em>TRADING</em></h1>
+
+    <div class="proof-rows">
+      <div class="proof-row glass">
+        <div class="proof-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></div>
+        <div class="proof-txt"><h3>AW SYSTEM</h3><p>ICT &middot; Session-Based Playbook</p></div>
+      </div>
+      <div class="proof-row glass">
+        <div class="proof-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 1 7 7c0 3-2 5-3 7l-1 4h-6l-1-4c-1-2-3-4-3-7a7 7 0 0 1 7-7z"/><path d="M9 22h6"/></svg></div>
+        <div class="proof-txt"><h3>LIVE TRADING COACH</h3><p>5&times; Mentored Sessions Weekly</p></div>
+      </div>
+      <div class="proof-row glass">
+        <div class="proof-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <div class="proof-txt"><h3>STUDENT PAYOUTS</h3><p>Verified Live in Discord</p></div>
+      </div>
+      <div class="proof-row glass">
+        <div class="proof-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="proof-txt"><h3>FREE COMMUNITY</h3><p>6,600+ Members</p></div>
+      </div>
+    </div>
+
+    <div class="cta-wrap">
+      <a href="#" class="btn btn-white cta">Join Free Discord
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369A19.8 19.8 0 0 0 15.99 3c-.211.375-.457.879-.626 1.278a18.3 18.3 0 0 0-5.487 0A12.7 12.7 0 0 0 9.25 3a19.7 19.7 0 0 0-4.327 1.37C1.87 8.6 1.13 12.72 1.5 16.78a19.9 19.9 0 0 0 5.993 3.03c.483-.66.913-1.36 1.284-2.1a12.8 12.8 0 0 1-2.023-.98c.17-.124.336-.253.497-.386 3.9 1.8 8.13 1.8 11.99 0 .163.133.328.262.497.386-.642.383-1.323.71-2.027.982.372.74.8 1.44 1.284 2.098a19.86 19.86 0 0 0 6.002-3.03c.428-4.71-.734-8.8-3.68-12.41ZM8.68 14.4c-1.18 0-2.14-1.086-2.14-2.42 0-1.335.94-2.42 2.14-2.42 1.21 0 2.16 1.095 2.14 2.42 0 1.334-.93 2.42-2.14 2.42Zm6.64 0c-1.18 0-2.14-1.086-2.14-2.42 0-1.335.95-2.42 2.14-2.42 1.21 0 2.16 1.095 2.14 2.42 0 1.334-.92 2.42-2.14 2.42Z"/></svg>
+      </a>
+    </div>
+    <div class="hero-note">// Free to join. No card required.</div>
+  </div>
+</header>
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span><b>500+</b> Traders Mentored</span>
+    <span><b>5&times;</b> Weekly Live Sessions</span>
+    <span><b>6,600+</b> Free Community</span>
+    <span>Risk-First System</span>
+    <span>ICT &amp; Session-Based Playbook</span>
+    <span><b>500+</b> Traders Mentored</span>
+    <span><b>5&times;</b> Weekly Live Sessions</span>
+    <span><b>6,600+</b> Free Community</span>
+    <span>Risk-First System</span>
+    <span>ICT &amp; Session-Based Playbook</span>
+  </div>
+</div>
+
+<div class="giveaway">
+  <div class="wrap giveaway-in">
+    <span class="live-dot" aria-hidden="true"></span>
+    <p><b>Weekly Funded Account Giveaway</b> — buy through any partner firm below with code <b>AWTRADING</b>, every purchase is an entry.</p>
+    <a href="#deals" class="btn btn-ghost">Enter Now <span class="arrow">→</span></a>
+  </div>
+</div>
+
+<section id="deals">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow" style="justify-content:center;display:flex">Partner Discounts</div>
+      <h2>Best Prop Firm <em>Deals</em></h2>
+      <p>Use the code at checkout for the best available discount. Every purchase also enters you into the weekly giveaway.</p>
+    </div>
+    <div class="deals">
+      <div class="deal glass top">
+        <div class="deal-flag">TOP PICK</div>
+        <div class="off">15% OFF</div>
+        <h3>[Partner Firm 01]</h3>
+        <p class="desc">Best for index futures traders running the AW session playbook.</p>
+        <ul>
+          <li>Beginner friendly</li>
+          <li>Fast payout cycle</li>
+          <li>Straightforward rules</li>
+        </ul>
+        <div class="code-row"><div class="code glass">AWTRADING</div><button class="copy">Copy</button></div>
+      </div>
+      <div class="deal glass">
+        <div class="off">10% OFF</div>
+        <h3>[Partner Firm 02]</h3>
+        <p class="desc">Solid pick for FX and gold — two-phase, no time limit.</p>
+        <ul>
+          <li>Majors &amp; gold</li>
+          <li>No time limit</li>
+          <li>Up to $200K</li>
+        </ul>
+        <div class="code-row"><div class="code glass">AW10</div><button class="copy">Copy</button></div>
+      </div>
+      <div class="deal glass">
+        <div class="off">20% OFF</div>
+        <h3>[Partner Firm 03]</h3>
+        <p class="desc">For traders who've proven consistency and want size fast.</p>
+        <ul>
+          <li>Instant funding tier</li>
+          <li>Futures &amp; FX</li>
+          <li>Fast scaling</li>
+        </ul>
+        <div class="code-row"><div class="code glass">AW20</div><button class="copy">Copy</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow" style="justify-content:center;display:flex">In The Community</div>
+      <h2>Student <em>Payouts</em></h2>
+      <p>A few of the wins members have shared inside the AW Discord.</p>
+    </div>
+    <div class="wall">
+      <div class="win glass"><div class="amt">$1,006</div><div class="who">— Member, Live Trader</div><span class="tag">PAYOUT</span></div>
+      <div class="win glass"><div class="amt">$617</div><div class="who">— Member, Foundations</div><span class="tag">PAYOUT</span></div>
+      <div class="win glass"><div class="amt">$3,727</div><div class="who">— Member, Inner Circle</div><span class="tag">PAYOUT</span></div>
+      <div class="win glass"><div class="amt">$1,073</div><div class="who">— Member, Live Trader</div><span class="tag">PAYOUT</span></div>
+      <div class="win glass"><div class="amt">$8,000</div><div class="who">— Member, Inner Circle</div><span class="tag">PAYOUT</span></div>
+      <div class="win glass"><div class="amt">$1,418</div><div class="who">— Member, Foundations</div><span class="tag">PAYOUT</span></div>
+      <div class="win glass"><div class="amt">Passed Eval</div><div class="who">— Member, Live Trader</div><span class="tag">MILESTONE</span></div>
+      <div class="win glass"><div class="amt">Funded Day 1</div><div class="who">— Member, Live Trader</div><span class="tag">MILESTONE</span></div>
+    </div>
+    <p class="fine">ILLUSTRATIVE MOCKUP: figures above are placeholder examples for this prototype layout, not verified results. The live site would pull real, member-consented screenshots from the #testimonials channel.</p>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <div class="eyebrow reveal" style="justify-content:center;display:flex">Your move</div>
+    <h2>6,600+ traders already skipped the noise.</h2>
+    <p>Join the free community, grab a vetted prop firm discount, and get in the room where funded accounts get shared every week.</p>
+    <a href="#" class="btn btn-white cta">Join Free Discord <span class="arrow">→</span></a>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="#" class="logo"><span class="logo-mark">AW</span>AW&nbsp;Trading</a>
+    <div class="disclaimer">
+      RISK DISCLOSURE: Trading futures, foreign exchange, and other leveraged products involves substantial risk of loss and is not suitable for all investors. AW Trading provides education and mentorship only and does not provide personalized financial advice. AW Trading may receive compensation for prop firm partner links. © 2026 AW Trading.
+    </div>
+  </div>
+</footer>
+
+<script>
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+  const blobs=document.querySelectorAll('.blob');
+  addEventListener('pointermove',e=>{
+    const x=(e.clientX/innerWidth-.5),y=(e.clientY/innerHeight-.5);
+    blobs.forEach((b,i)=>{const f=(i+1)*7;b.style.translate=`${x*f}px ${y*f}px`});
+  },{passive:true});
+}
+document.querySelectorAll('.copy').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const code=btn.previousElementSibling.textContent;
+    navigator.clipboard?.writeText(code).catch(()=>{});
+    const orig=btn.textContent;btn.textContent='Copied';
+    setTimeout(()=>btn.textContent=orig,1500);
+  });
+});
+</script>
+</body>
+</html>
