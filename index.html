@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AW Trading — Trade With Discipline</title>
+<title>AW Trading</title>
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -307,7 +307,7 @@ footer{border-top:1px solid var(--line);padding:44px 0}
       <div class="hero-note">// No signals to blindly copy. A skill you keep forever.</div>
 
       <div class="mini-tabs">
-        <div class="mini-tab glass"><b>6,600+</b><span>Members in Discord</span></div>
+        <div class="mini-tab glass"><b>80+</b><span>Members in Discord</span></div>
         <div class="mini-tab glass"><b>5×</b><span>Live sessions weekly</span></div>
         <div class="mini-tab glass"><b>Free</b><span>To join, always</span></div>
       </div>
@@ -317,7 +317,7 @@ footer{border-top:1px solid var(--line);padding:44px 0}
       <div class="discord-topbar">
         <span class="dot-live"></span>
         <p><b>AW Trading</b> is live in Discord</p>
-        <span class="members-count">6,600+</span>
+        <span class="members-count">80+</span>
       </div>
       <div class="discord-app">
         <div class="d-rail">
@@ -500,8 +500,13 @@ footer{border-top:1px solid var(--line);padding:44px 0}
           <label for="fWhy">Why do you want to join Inner Circle?</label>
           <textarea id="fWhy" name="why" rows="3" placeholder="Tell us where you're at and what you're working toward"></textarea>
         </div>
+        <div class="field" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+          <label for="fCompany">Company</label>
+          <input id="fCompany" name="company" type="text" tabindex="-1" autocomplete="off">
+        </div>
         <button type="submit" class="btn btn-white">Submit Application <span class="arrow">→</span></button>
         <p id="applyThanks" class="apply-thanks" hidden>Application received — AW reviews these personally. You'll hear back within a few days.</p>
+        <p id="applyError" class="apply-thanks" hidden>Something went wrong sending your application. Please try again or reach out on Discord.</p>
       </form>
       <div class="apply-lock" id="applyLock">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
@@ -768,12 +773,28 @@ applyBtn.addEventListener('click', ()=>{
   applyForm.scrollIntoView({behavior:'smooth', block:'center'});
   document.getElementById('fName').focus();
 });
-applyForm.addEventListener('submit', e=>{
+const applyErrorEl = document.getElementById('applyError');
+applyForm.addEventListener('submit', async e=>{
   e.preventDefault();
-  [...applyForm.elements].forEach(el=>{ if(el.tagName !== 'BUTTON') el.hidden = true; });
-  document.querySelectorAll('#applyForm label').forEach(el=> el.hidden = true);
-  applyForm.querySelector('button[type="submit"]').hidden = true;
-  applyThanks.hidden = false;
+  const submitBtn = applyForm.querySelector('button[type="submit"]');
+  const data = Object.fromEntries(new FormData(applyForm).entries());
+  submitBtn.disabled = true;
+  applyErrorEl.hidden = true;
+  try {
+    const res = await fetch('/api/mentorship-apply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error('request_failed');
+    [...applyForm.elements].forEach(el=>{ if(el.tagName !== 'BUTTON') el.hidden = true; });
+    document.querySelectorAll('#applyForm label').forEach(el=> el.hidden = true);
+    submitBtn.hidden = true;
+    applyThanks.hidden = false;
+  } catch (err) {
+    submitBtn.disabled = false;
+    applyErrorEl.hidden = false;
+  }
 });
 
 if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
