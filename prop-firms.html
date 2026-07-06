@@ -126,10 +126,10 @@ section{padding:100px 0;position:relative;z-index:1}
 .f-ic{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid var(--line);display:grid;place-items:center;color:var(--blue);margin-bottom:16px}
 .firm h3{font-size:1rem;font-weight:800;margin-bottom:14px}
 .off-big{font-size:1.7rem;font-weight:900;letter-spacing:-.02em;color:var(--blue);text-shadow:0 0 24px var(--blue-glow);margin-bottom:20px}
-.code-pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.7rem;letter-spacing:.03em;background:rgba(255,255,255,.04);border:1px dashed var(--line-strong);border-radius:99px;padding:7px 14px;margin-bottom:16px;cursor:pointer;transition:border-color .2s}
-.code-pill:hover{border-color:var(--blue)}
-.code-pill b{font-weight:800;color:var(--white)}
-.code-pill.copied{border-color:var(--blue);color:var(--blue)}
+.code-line{font-size:.82rem;color:var(--muted);margin-bottom:16px}
+.code-badge{display:inline-flex;align-items:center;font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.05em;background:rgba(255,255,255,.06);border:1px dashed var(--line-strong);border-radius:6px;padding:3px 9px;margin-left:4px;cursor:pointer;color:var(--white);transition:border-color .2s,color .2s;vertical-align:middle;line-height:1.4}
+.code-badge:hover{border-color:var(--blue);color:var(--blue)}
+.code-badge.copied{border-color:var(--blue);color:var(--blue)}
 .buy{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:12px;background:linear-gradient(180deg,#FFFFFF,#DCE2F0);color:#0A0A0B;border:1px solid rgba(255,255,255,.7);font-weight:800;font-size:.9rem;cursor:pointer;transition:transform .2s,box-shadow .3s}
 .buy:hover{transform:translateY(-2px);box-shadow:0 12px 30px -12px var(--blue-glow)}
 @keyframes t-sweep{0%{background-position:130% 0}100%{background-position:-30% 0}}
@@ -195,7 +195,7 @@ footer{border-top:1px solid var(--line);padding:44px 0}
         <div class="f-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M4 21V9l8-6 8 6v12M9 21v-6h6v6"/></svg></div>
         <h3>Lucid Trading</h3>
         <div class="off-big">15% OFF</div>
-        <div class="code-pill" data-code="AWTRADING">USE CODE <b>AWTRADING</b></div>
+        <div class="code-line">Use code <button class="code-badge" data-code="AWTRADING" aria-label="Copy code AWTRADING">AWTRADING</button></div>
         <button class="buy">Buy Now <span class="arrow">→</span></button>
       </div>
       <div class="firm glass">
@@ -203,7 +203,7 @@ footer{border-top:1px solid var(--line);padding:44px 0}
         <div class="f-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 3-4 4 4 4M4 7h16M16 21l4-4-4-4M20 17H4"/></svg></div>
         <h3>Tradeify</h3>
         <div class="off-big">10% OFF</div>
-        <div class="code-pill" data-code="AW10">USE CODE <b>AW10</b></div>
+        <div class="code-line">Use code <button class="code-badge" data-code="AW10" aria-label="Copy code AW10">AW10</button></div>
         <button class="buy">Buy Now <span class="arrow">→</span></button>
       </div>
       <div class="firm glass">
@@ -211,7 +211,7 @@ footer{border-top:1px solid var(--line);padding:44px 0}
         <div class="f-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 2 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 17l9 5 9-5"/></svg></div>
         <h3>Topstep</h3>
         <div class="off-big">20% OFF</div>
-        <div class="code-pill" data-code="AW20">USE CODE <b>AW20</b></div>
+        <div class="code-line">Use code <button class="code-badge" data-code="AW20" aria-label="Copy code AW20">AW20</button></div>
         <button class="buy">Buy Now <span class="arrow">→</span></button>
       </div>
     </div>
@@ -237,14 +237,14 @@ footer{border-top:1px solid var(--line);padding:44px 0}
 </footer>
 
 <script>
-document.querySelectorAll('.code-pill').forEach(pill=>{
-  pill.addEventListener('click', async ()=>{
-    const code = pill.dataset.code;
+document.querySelectorAll('.code-badge').forEach(badge=>{
+  badge.addEventListener('click', async ()=>{
+    const code = badge.dataset.code;
     try{ await navigator.clipboard.writeText(code); }catch(e){}
-    const original = pill.innerHTML;
-    pill.innerHTML = '✓ Copied!';
-    pill.classList.add('copied');
-    setTimeout(()=>{ pill.innerHTML = original; pill.classList.remove('copied'); }, 1800);
+    const original = badge.textContent;
+    badge.textContent = '✓ Copied!';
+    badge.classList.add('copied');
+    setTimeout(()=>{ badge.textContent = original; badge.classList.remove('copied'); }, 1800);
   });
 });
 </script>
