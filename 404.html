@@ -7,9 +7,54 @@
 <meta name="description" content="This page doesn't exist. Head back to AW Trading.">
 <meta name="robots" content="noindex">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<link rel="preload" href="/assets/fonts/archivo-variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/assets/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/css/styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070709;--panel:#0c0c10;--panel-2:#111116;--white:#F5F6F8;--muted:#A8ADB8;--dim:#6A6F7C;--line:rgba(255,255,255,.12);--line-strong:rgba(255,255,255,.26);--white-glow:rgba(255,255,255,.10);--white-glow-hard:rgba(255,255,255,.18);--blue:#2E6BFF;--blue-glow:rgba(46,107,255,.4);--glass-hi:rgba(255,255,255,.09);--glass-lo:rgba(255,255,255,.035);--mono:'IBM Plex Mono',monospace;--disp:'Archivo',sans-serif;--max:1180px}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--disp);background:var(--bg);color:var(--white);line-height:1.55;font-size:16px;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);font-weight:600;display:inline-flex;align-items:center;gap:10px;opacity:.9;margin-bottom:12px}
+h1,h2,h3{font-family:var(--disp);letter-spacing:-.02em}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
+.skip-link{position:absolute;top:-100%;left:1rem;background:#2E6BFF;color:#fff;padding:.5rem 1rem;z-index:9999;border-radius:0 0 4px 4px;font-family:var(--mono);font-size:.875rem}
+.skip-link:focus{top:0}
+nav{position:sticky;top:0;left:0;right:0;z-index:100;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(255,255,255,.08) inset}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:68px}
+.logo{font-weight:900;font-size:1.15rem;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
+.logo-mark{width:26px;height:26px;background:linear-gradient(180deg,#FFFFFF,#DCE2F0);color:#0A0A0B;border-radius:8px;display:grid;place-items:center;font-family:var(--mono);font-size:.62rem;font-weight:600;position:relative;overflow:hidden;box-shadow:0 0 18px var(--white-glow),0 1px 0 rgba(255,255,255,.9) inset}
+.nav-links{display:flex;gap:30px;font-size:.9rem;font-weight:500;color:var(--muted)}
+.nav-links a{transition:color .2s;color:var(--muted)}
+.nav-links a:hover{color:var(--white)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:.95rem;padding:15px 28px;border-radius:99px;cursor:pointer;border:none;transition:transform .2s,box-shadow .3s;font-family:var(--disp)}
+.btn-white{background:linear-gradient(180deg,#FFFFFF,#DCE2F0);color:#0A0A0B;border:1px solid rgba(255,255,255,.7);box-shadow:0 1px 0 rgba(255,255,255,.95) inset,0 12px 34px -12px var(--white-glow-hard)}
+.btn-white:hover{transform:translateY(-2px);box-shadow:0 1px 0 rgba(255,255,255,.95) inset,0 18px 44px -10px var(--blue-glow)}
+.nav-cta{padding:10px 20px;font-size:.85rem}
+.arrow{display:inline-block;transition:transform .2s}
+.btn:hover .arrow{transform:translateX(4px)}
+@media(max-width:900px){.nav-links{display:none}}
+.nav-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px}
+.nav-burger span{display:block;width:22px;height:2px;background:var(--white);border-radius:2px}
+@media(max-width:900px){.nav-burger{display:flex}}
+.mobile-nav{position:fixed;inset:0;z-index:200;background:rgba(7,7,9,.97);backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;padding:40px}
+.mobile-nav[hidden]{display:none}
+.mobile-nav-close{position:absolute;top:20px;right:20px;background:none;border:none;color:var(--white);font-size:1.8rem;cursor:pointer;line-height:1;padding:8px}
+.mobile-nav-links{display:flex;flex-direction:column;align-items:center;gap:28px}
+.mobile-nav-links a{font-size:1.4rem;font-weight:700;color:var(--white)}
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:80px 24px}
+.err-page{text-align:center;max-width:520px}
+.err-code{font-family:var(--mono);font-size:.8rem;color:var(--muted);margin-bottom:20px;letter-spacing:.1em}
+.err-page h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;margin-bottom:16px;letter-spacing:-.03em}
+.err-page p{color:var(--muted);font-size:1rem;margin-bottom:32px;line-height:1.6}
+footer{border-top:1px solid var(--line);padding:30px 0}
+.foot-grid{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
+.foot-links{display:flex;gap:24px;flex-wrap:wrap;font-size:.86rem;color:var(--muted)}
+.foot-links a:hover{color:var(--white)}
+</style>
 </head>
 <body>
 <a href="#main-content" class="skip-link">Skip to content</a>
@@ -71,6 +116,15 @@
   </div>
 </footer>
 
-<script src="/js/main.js"></script>
+<script>
+const burger=document.getElementById('navBurger');
+const mobileNav=document.getElementById('mobile-nav');
+const navClose=document.getElementById('navClose');
+if(burger&&mobileNav){
+  burger.addEventListener('click',()=>{mobileNav.hidden=false;burger.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';});
+  navClose.addEventListener('click',()=>{mobileNav.hidden=true;burger.setAttribute('aria-expanded','false');document.body.style.overflow='';});
+  mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mobileNav.hidden=true;burger.setAttribute('aria-expanded','false');document.body.style.overflow='';}));
+}
+</script>
 </body>
 </html>

@@ -95,6 +95,15 @@ nav{position:sticky;top:0;left:0;right:0;z-index:100;background:linear-gradient(
 .nav-links a:hover,.nav-links a.on{color:var(--white)}
 .nav-cta{padding:10px 20px;font-size:.85rem}
 @media(max-width:900px){.nav-links{display:none}}
+.nav-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;margin-left:8px}
+.nav-burger span{display:block;width:22px;height:2px;background:var(--white);border-radius:2px;transition:transform .2s,opacity .2s}
+@media(max-width:900px){.nav-burger{display:flex}}
+.mobile-nav{position:fixed;inset:0;z-index:200;background:rgba(7,7,9,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;padding:40px}
+.mobile-nav[hidden]{display:none}
+.mobile-nav-close{position:absolute;top:20px;right:20px;background:none;border:none;color:var(--white);font-size:1.8rem;cursor:pointer;line-height:1;padding:8px}
+.mobile-nav-links{display:flex;flex-direction:column;align-items:center;gap:28px}
+.mobile-nav-links a{font-size:1.4rem;font-weight:700;color:var(--white)}
+.mobile-nav-cta{margin-top:8px}
 
 /* ---------- PAGE HERO ---------- */
 .page-hero{position:relative;padding:76px 0 60px;overflow:hidden;text-align:center}
@@ -198,9 +207,24 @@ footer{border-top:1px solid var(--line);padding:44px 0}
       <a href="/prop-firms">Prop Firms</a>
     </div>
     <a href="#enter" class="btn btn-white nav-cta">Enter Now</a>
+    <button class="nav-burger" id="navBurger" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-nav">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 </header>
+
+<div id="mobile-nav" class="mobile-nav" role="dialog" aria-modal="true" aria-label="Navigation" hidden>
+  <button class="mobile-nav-close" id="navClose" aria-label="Close menu">&times;</button>
+  <nav class="mobile-nav-links">
+    <a href="/">Home</a>
+    <a href="/indicator">Indicator</a>
+    <a href="/#mentorship">Mentorship</a>
+    <a href="/prop-firms">Prop Firms</a>
+    <a href="/giveaways" aria-current="page">Giveaways</a>
+  </nav>
+  <a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="btn btn-white mobile-nav-cta">Join AW Trading</a>
+</div>
 
 <main id="main-content">
 <header class="page-hero">
@@ -259,7 +283,7 @@ footer{border-top:1px solid var(--line);padding:44px 0}
       <div>
         <div class="k">STEP 03</div>
         <h3>Submit your entry</h3>
-        <p>Fill out the entry form above so we can verify and contact you. That's it. No purchase. Ever.</p>
+        <p>Join the Discord and post in <strong>#giveaway-entries</strong> to lock in your spot. We verify all entries — no purchase required. Ever.</p>
       </div>
     </div>
   </div>
@@ -325,6 +349,14 @@ enterBtn.addEventListener('click', ()=>{
   enterBtn.hidden = true;
   entryForm.scrollIntoView({behavior:'smooth', block:'center'});
 });
+const burger=document.getElementById('navBurger');
+const mobileNav=document.getElementById('mobile-nav');
+const navClose=document.getElementById('navClose');
+if(burger&&mobileNav){
+  burger.addEventListener('click',()=>{mobileNav.hidden=false;burger.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';});
+  navClose.addEventListener('click',()=>{mobileNav.hidden=true;burger.setAttribute('aria-expanded','false');document.body.style.overflow='';});
+  mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mobileNav.hidden=true;burger.setAttribute('aria-expanded','false');document.body.style.overflow='';}));
+}
 </script>
 </body>
 </html>

@@ -3,7 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AW Trading</title>
+<title>AW Trading — ICT Trading Community & Indicator</title>
+<meta name="description" content="Join 80+ traders learning ICT methodology live. Access the AW+ Indicator, mentorship, and a community that shows you real price action — free to join.">
+<link rel="canonical" href="https://awtrading.com/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AW Trading — ICT Trading Community & Indicator">
+<meta property="og:description" content="Join 80+ traders learning ICT methodology live. Access the AW+ Indicator, mentorship, and a community that shows you real price action — free to join.">
+<meta property="og:image" content="https://awtrading.com/assets/og-image.png">
+<meta property="og:url" content="https://awtrading.com/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AW Trading — ICT Trading Community & Indicator">
+<meta name="twitter:description" content="Join 80+ traders learning ICT methodology live. Access the AW+ Indicator, mentorship, and a community that shows you real price action — free to join.">
+<meta name="twitter:image" content="https://awtrading.com/assets/og-image.png">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -109,6 +120,15 @@ nav{position:sticky;top:0;left:0;right:0;z-index:100;background:linear-gradient(
 .nav-links a:hover{color:var(--white)}
 .nav-cta{padding:10px 20px;font-size:.85rem}
 @media(max-width:900px){.nav-links{display:none}}
+.nav-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;margin-left:8px}
+.nav-burger span{display:block;width:22px;height:2px;background:var(--white);border-radius:2px;transition:transform .2s,opacity .2s}
+@media(max-width:900px){.nav-burger{display:flex}}
+.mobile-nav{position:fixed;inset:0;z-index:200;background:rgba(7,7,9,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;padding:40px}
+.mobile-nav[hidden]{display:none}
+.mobile-nav-close{position:absolute;top:20px;right:20px;background:none;border:none;color:var(--white);font-size:1.8rem;cursor:pointer;line-height:1;padding:8px}
+.mobile-nav-links{display:flex;flex-direction:column;align-items:center;gap:28px}
+.mobile-nav-links a{font-size:1.4rem;font-weight:700;color:var(--white)}
+.mobile-nav-cta{margin-top:8px}
 
 /* ---------- HERO ---------- */
 .hero{position:relative;padding:80px 0 100px;overflow:hidden}
@@ -273,6 +293,9 @@ footer{border-top:1px solid var(--line);padding:44px 0}
   .liquid{opacity:.2}
 }
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"AW Trading","url":"https://awtrading.com","description":"ICT trading community offering live sessions, mentorship, and the AW+ Indicator for TradingView.","sameAs":["https://discord.gg/fn2qjH7MW4"]}
+</script>
 </head>
 <body>
 <a href="#main-content" class="skip-link">Skip to content</a>
@@ -294,9 +317,24 @@ footer{border-top:1px solid var(--line);padding:44px 0}
       <a href="#prop-firms">Prop Firms</a>
     </div>
     <div class="glow-ring"><a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="btn btn-white nav-cta">Join AW Trading</a></div>
+    <button class="nav-burger" id="navBurger" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-nav">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 </header>
+
+<div id="mobile-nav" class="mobile-nav" role="dialog" aria-modal="true" aria-label="Navigation" hidden>
+  <button class="mobile-nav-close" id="navClose" aria-label="Close menu">&times;</button>
+  <nav class="mobile-nav-links">
+    <a href="/">Home</a>
+    <a href="/indicator">Indicator</a>
+    <a href="/#mentorship">Mentorship</a>
+    <a href="/prop-firms">Prop Firms</a>
+    <a href="/giveaways">Giveaways</a>
+  </nav>
+  <a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="btn btn-white mobile-nav-cta">Join AW Trading</a>
+</div>
 
 <main id="main-content">
 <header class="hero">
@@ -304,7 +342,7 @@ footer{border-top:1px solid var(--line);padding:44px 0}
     <div class="hero-copy">
       <div class="welcome">Welcome to</div>
       <h1 class="brand">AW <em>Trading</em></h1>
-      <p class="lead"></p>
+      <p class="lead">Learn ICT methodology live with experienced mentors. Access the AW+ Indicator, join weekly sessions, and trade alongside a community that actually shows you how.</p>
       <div class="hero-ctas">
         <div class="glow-ring"><a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="btn btn-white">Start Trading Right <span class="arrow">→</span></a></div>
         <a href="#indicator" class="btn btn-ghost">See the Indicator</a>
@@ -413,18 +451,18 @@ footer{border-top:1px solid var(--line);padding:44px 0}
 
     <div class="cert-strip">
       <div class="cert-track" id="certTrack">
-        <img src="assets/proofs/aw%20cert.jpg" alt="Certificate">
-        <img src="assets/proofs/aj%20cert.png" alt="Certificate">
-        <img src="assets/proofs/brydon%20cert.png" alt="Certificate">
-        <img src="assets/proofs/zack%20cert.jpg" alt="Certificate">
-        <img src="assets/proofs/simo%20cert.jpg" alt="Certificate">
-        <img src="assets/proofs/kashimo%20cert.png" alt="Certificate">
-        <img src="assets/proofs/aw%20cert.jpg" alt="Certificate">
-        <img src="assets/proofs/aj%20cert.png" alt="Certificate">
-        <img src="assets/proofs/brydon%20cert.png" alt="Certificate">
-        <img src="assets/proofs/zack%20cert.jpg" alt="Certificate">
-        <img src="assets/proofs/simo%20cert.jpg" alt="Certificate">
-        <img src="assets/proofs/kashimo%20cert.png" alt="Certificate">
+        <img src="assets/proofs/aw%20cert.jpg" alt="AW Trading funded account certificate">
+        <img src="assets/proofs/aj%20cert.png" alt="AJ funded account certificate">
+        <img src="assets/proofs/brydon%20cert.png" alt="Brydon funded account certificate">
+        <img src="assets/proofs/zack%20cert.jpg" alt="Zack funded account certificate">
+        <img src="assets/proofs/simo%20cert.jpg" alt="Simo funded account certificate">
+        <img src="assets/proofs/kashimo%20cert.png" alt="Kashimo funded account certificate">
+        <img src="assets/proofs/aw%20cert.jpg" alt="AW Trading funded account certificate">
+        <img src="assets/proofs/aj%20cert.png" alt="AJ funded account certificate">
+        <img src="assets/proofs/brydon%20cert.png" alt="Brydon funded account certificate">
+        <img src="assets/proofs/zack%20cert.jpg" alt="Zack funded account certificate">
+        <img src="assets/proofs/simo%20cert.jpg" alt="Simo funded account certificate">
+        <img src="assets/proofs/kashimo%20cert.png" alt="Kashimo funded account certificate">
       </div>
     </div>
   </div>
@@ -808,6 +846,15 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
     const x=(e.clientX/innerWidth-.5),y=(e.clientY/innerHeight-.5);
     blobs.forEach((b,i)=>{const f=(i+1)*7;b.style.translate=`${x*f}px ${y*f}px`});
   },{passive:true});
+}
+
+const burger=document.getElementById('navBurger');
+const mobileNav=document.getElementById('mobile-nav');
+const navClose=document.getElementById('navClose');
+if(burger&&mobileNav){
+  burger.addEventListener('click',()=>{mobileNav.hidden=false;burger.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';});
+  navClose.addEventListener('click',()=>{mobileNav.hidden=true;burger.setAttribute('aria-expanded','false');document.body.style.overflow='';});
+  mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mobileNav.hidden=true;burger.setAttribute('aria-expanded','false');document.body.style.overflow='';}));
 }
 </script>
 </body>

@@ -107,6 +107,15 @@ nav{position:sticky;top:0;left:0;right:0;z-index:100;background:linear-gradient(
 .nav-links a:hover,.nav-links a.on{color:var(--white)}
 .nav-cta{padding:10px 20px;font-size:.85rem}
 @media(max-width:900px){.nav-links{display:none}}
+.nav-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;margin-left:8px}
+.nav-burger span{display:block;width:22px;height:2px;background:var(--white);border-radius:2px;transition:transform .2s,opacity .2s}
+@media(max-width:900px){.nav-burger{display:flex}}
+.mobile-nav{position:fixed;inset:0;z-index:200;background:rgba(7,7,9,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;padding:40px}
+.mobile-nav[hidden]{display:none}
+.mobile-nav-close{position:absolute;top:20px;right:20px;background:none;border:none;color:var(--white);font-size:1.8rem;cursor:pointer;line-height:1;padding:8px}
+.mobile-nav-links{display:flex;flex-direction:column;align-items:center;gap:28px}
+.mobile-nav-links a{font-size:1.4rem;font-weight:700;color:var(--white)}
+.mobile-nav-cta{margin-top:8px}
 
 /* ---------- PAGE HERO ---------- */
 .page-hero{position:relative;padding:76px 0 60px;overflow:hidden}
@@ -208,9 +217,24 @@ footer{border-top:1px solid var(--line);padding:44px 0}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369A19.8 19.8 0 0 0 15.99 3c-.211.375-.457.879-.626 1.278a18.3 18.3 0 0 0-5.487 0A12.7 12.7 0 0 0 9.25 3a19.7 19.7 0 0 0-4.327 1.37C1.87 8.6 1.13 12.72 1.5 16.78a19.9 19.9 0 0 0 5.993 3.03c.483-.66.913-1.36 1.284-2.1a12.8 12.8 0 0 1-2.023-.98c.17-.124.336-.253.497-.386 3.9 1.8 8.13 1.8 11.99 0 .163.133.328.262.497.386-.642.383-1.323.71-2.027.982.372.74.8 1.44 1.284 2.098a19.86 19.86 0 0 0 6.002-3.03c.428-4.71-.734-8.8-3.68-12.41ZM8.68 14.4c-1.18 0-2.14-1.086-2.14-2.42 0-1.335.94-2.42 2.14-2.42 1.21 0 2.16 1.095 2.14 2.42 0 1.334-.93 2.42-2.14 2.42Zm6.64 0c-1.18 0-2.14-1.086-2.14-2.42 0-1.335.95-2.42 2.14-2.42 1.21 0 2.16 1.095 2.14 2.42 0 1.334-.92 2.42-2.14 2.42Z"/></svg>
       Discord
     </a>
+    <button class="nav-burger" id="navBurger" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-nav">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 </header>
+
+<div id="mobile-nav" class="mobile-nav" role="dialog" aria-modal="true" aria-label="Navigation" hidden>
+  <button class="mobile-nav-close" id="navClose" aria-label="Close menu">&times;</button>
+  <nav class="mobile-nav-links">
+    <a href="/">Home</a>
+    <a href="/indicator" aria-current="page">Indicator</a>
+    <a href="/#mentorship">Mentorship</a>
+    <a href="/prop-firms">Prop Firms</a>
+    <a href="/giveaways">Giveaways</a>
+  </nav>
+  <a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="btn btn-white mobile-nav-cta">Join AW Trading</a>
+</div>
 
 <main id="main-content">
 <header class="hero">
@@ -339,6 +363,14 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
     const x=(e.clientX/innerWidth-.5),y=(e.clientY/innerHeight-.5);
     blobs.forEach((b,i)=>{const f=(i+1)*7;b.style.translate=`${x*f}px ${y*f}px`});
   },{passive:true});
+}
+const burger=document.getElementById('navBurger');
+const mobileNav=document.getElementById('mobile-nav');
+const navClose=document.getElementById('navClose');
+if(burger&&mobileNav){
+  burger.addEventListener('click',()=>{mobileNav.hidden=false;burger.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';});
+  navClose.addEventListener('click',()=>{mobileNav.hidden=true;burger.setAttribute('aria-expanded','false');document.body.style.overflow='';});
+  mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mobileNav.hidden=true;burger.setAttribute('aria-expanded','false');document.body.style.overflow='';}));
 }
 </script>
 </body>
