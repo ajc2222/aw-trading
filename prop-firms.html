@@ -132,6 +132,7 @@ section{padding:100px 0;position:relative;z-index:1}
 .code-badge.copied{border-color:var(--blue);color:var(--blue)}
 .buy{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:12px;background:linear-gradient(180deg,#FFFFFF,#DCE2F0);color:#0A0A0B;border:1px solid rgba(255,255,255,.7);font-weight:800;font-size:.9rem;cursor:pointer;transition:transform .2s,box-shadow .3s}
 .buy:hover{transform:translateY(-2px);box-shadow:0 12px 30px -12px var(--blue-glow)}
+.buy.copied{background:linear-gradient(180deg,#1a3a99,#0f2266);color:#a9c2ff;box-shadow:0 0 18px var(--blue-glow)}
 @keyframes t-sweep{0%{background-position:130% 0}100%{background-position:-30% 0}}
 
 /* ---------- HOW IT WORKS ---------- */
@@ -195,24 +196,21 @@ footer{border-top:1px solid var(--line);padding:44px 0}
         <div class="f-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M4 21V9l8-6 8 6v12M9 21v-6h6v6"/></svg></div>
         <h3>Lucid Trading</h3>
         <div class="off-big">15% OFF</div>
-        <div class="code-line">Use code <button class="code-badge" data-code="AWTRADING" aria-label="Copy code AWTRADING">AWTRADING</button></div>
-        <button class="buy">Buy Now <span class="arrow">→</span></button>
+        <button class="buy" data-code="AWTRADING" aria-label="Copy code AWTRADING">Use Code AWTRADING <svg class="copy-ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
       </div>
       <div class="firm glass">
         <div class="rank-badge">2</div>
         <div class="f-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 3-4 4 4 4M4 7h16M16 21l4-4-4-4M20 17H4"/></svg></div>
         <h3>Tradeify</h3>
         <div class="off-big">10% OFF</div>
-        <div class="code-line">Use code <button class="code-badge" data-code="AW10" aria-label="Copy code AW10">AW10</button></div>
-        <button class="buy">Buy Now <span class="arrow">→</span></button>
+        <button class="buy" data-code="AW10" aria-label="Copy code AW10">Use Code AW10 <svg class="copy-ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
       </div>
       <div class="firm glass">
         <div class="rank-badge">3</div>
         <div class="f-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 2 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 17l9 5 9-5"/></svg></div>
         <h3>Topstep</h3>
         <div class="off-big">20% OFF</div>
-        <div class="code-line">Use code <button class="code-badge" data-code="AW20" aria-label="Copy code AW20">AW20</button></div>
-        <button class="buy">Buy Now <span class="arrow">→</span></button>
+        <button class="buy" data-code="AW20" aria-label="Copy code AW20">Use Code AW20 <svg class="copy-ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
       </div>
     </div>
   </div>
@@ -237,14 +235,17 @@ footer{border-top:1px solid var(--line);padding:44px 0}
 </footer>
 
 <script>
-document.querySelectorAll('.code-badge').forEach(badge=>{
-  badge.addEventListener('click', async ()=>{
-    const code = badge.dataset.code;
+document.querySelectorAll('.buy[data-code]').forEach(btn=>{
+  const icon = btn.querySelector('.copy-ic');
+  btn.addEventListener('click', async ()=>{
+    const code = btn.dataset.code;
     try{ await navigator.clipboard.writeText(code); }catch(e){}
-    const original = badge.textContent;
-    badge.textContent = '✓ Copied!';
-    badge.classList.add('copied');
-    setTimeout(()=>{ badge.textContent = original; badge.classList.remove('copied'); }, 1800);
+    btn.classList.add('copied');
+    if(icon) icon.style.display='none';
+    const label = btn.childNodes[0];
+    const orig = label.textContent;
+    label.textContent = '✓ Copied! ';
+    setTimeout(()=>{ label.textContent = orig; if(icon) icon.style.display=''; btn.classList.remove('copied'); }, 1800);
   });
 });
 </script>
