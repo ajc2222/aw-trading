@@ -12,11 +12,11 @@
 // Any button whose href still starts with "#stripe-todo" gets a
 // data-todo="stripe" flag and a console.warn in dev so it can't ship silently.
 const STRIPE_LINKS = {
-  foundations: '#stripe-todo-foundations',   // index: $49/mo Foundations
-  liveTrader: '#stripe-todo-live-trader',    // index: $129/mo Live Trader
-  innerCircle: '#stripe-todo-inner-circle',  // index: $499/mo Inner Circle (Apply)
-  indicatorOnly: '#stripe-todo-indicator',   // indicator: $39/mo Indicator Only
-  indicatorBundle: '#stripe-todo-live-trader' // indicator: bundled Live Trader CTA
+  foundations: 'https://whop.com/aw-trading-discord',   // index: $49/mo Foundations
+  liveTrader: 'https://whop.com/aw-trading-discord',    // index: $129/mo Live Trader
+  innerCircle: 'https://whop.com/aw-trading-discord',   // index: $499/mo Inner Circle (Apply)
+  indicatorOnly: 'https://whop.com/aw-trading-discord', // indicator: $39/mo Indicator Only
+  indicatorBundle: 'https://whop.com/aw-trading-discord' // indicator: bundled Live Trader CTA
 };
 
 // --- Giveaway countdown ---------------------------------------------------

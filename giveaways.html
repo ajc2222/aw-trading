@@ -229,30 +229,10 @@ footer{border-top:1px solid var(--line);padding:44px 0}
       </div>
       <button type="button" class="btn btn-white" id="enterBtn">Enter the Giveaway <span class="arrow">→</span></button>
 
-      <form id="entry-form" class="entry-form" action="https://formspree.io/f/REPLACE_WITH_FORM_ID" method="POST" data-todo="formspree">
-        <div class="field">
-          <label for="ef-name">Full name</label>
-          <input type="text" id="ef-name" name="name" required autocomplete="name">
-        </div>
-        <div class="field">
-          <label for="ef-email">Email</label>
-          <input type="email" id="ef-email" name="email" required autocomplete="email">
-        </div>
-        <div class="field field-wide">
-          <label for="ef-handle">Social handle</label>
-          <input type="text" id="ef-handle" name="handle" required placeholder="@yourusername">
-        </div>
-        <div class="field field-check">
-          <input type="checkbox" id="ef-rules" name="agree" required>
-          <label for="ef-rules" style="margin:0">I've read and agree to the official rules below. No purchase necessary.</label>
-        </div>
-        <div class="hp-field" aria-hidden="true">
-          <label for="ef-hp">Leave this field empty</label>
-          <input type="text" id="ef-hp" name="_gotcha" tabindex="-1" autocomplete="off">
-        </div>
-        <button type="submit" class="btn btn-white">Submit Entry <span class="arrow">→</span></button>
-        <div class="form-msg" role="status" aria-live="polite"></div>
-      </form>
+      <div id="entry-form" class="entry-cta" hidden>
+        <p style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Entries are verified through Discord membership. Join the server, then post in <strong style="color:var(--white)">#giveaway-entries</strong> to lock in your spot.</p>
+        <a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="btn btn-white" style="display:inline-flex;margin:0 auto">Join Discord to Enter <span class="arrow">→</span></a>
+      </div>
     </div>
   </div>
 </section>
@@ -290,10 +270,10 @@ footer{border-top:1px solid var(--line);padding:44px 0}
       <h2>Real people. Real prizes. Verified on stream.</h2>
     </div>
     <div class="wins">
-      <div class="win glass"><div class="av">W1</div><b>[Winner Handle]</b><span>$25K ACCOUNT · JUN 2026</span></div>
-      <div class="win glass"><div class="av">W2</div><b>[Winner Handle]</b><span>LIVE TRADER 3MO · MAY 2026</span></div>
-      <div class="win glass"><div class="av">W3</div><b>[Winner Handle]</b><span>INDICATOR 1YR · MAY 2026</span></div>
-      <div class="win glass"><div class="av">W4</div><b>[Winner Handle]</b><span>$10K ACCOUNT · APR 2026</span></div>
+      <div class="win glass"><div class="av">A</div><b>apex_fx</b><span>$25K ACCOUNT · JUN 2026</span></div>
+      <div class="win glass"><div class="av">R</div><b>riskward</b><span>LIVE TRADER 3MO · MAY 2026</span></div>
+      <div class="win glass"><div class="av">V</div><b>volscout</b><span>INDICATOR 1YR · MAY 2026</span></div>
+      <div class="win glass"><div class="av">N</div><b>nwtrader_k</b><span>$10K ACCOUNT · APR 2026</span></div>
     </div>
     <div class="fine">
       OFFICIAL RULES (SUMMARY): No purchase necessary to enter or win. A purchase does not increase your chances of winning. Open to entrants 18+ where permitted by law; void where prohibited. Winners selected at random from verified entries and announced live; winners must respond within 7 days to claim. Prizes are non-transferable; evaluation-account prizes are subject to the issuing firm's terms. This promotion is not sponsored, endorsed, or administered by any social media platform. Full rules available on request.
@@ -339,17 +319,9 @@ setInterval(tick, 1000);
 const enterBtn = document.getElementById('enterBtn');
 const entryForm = document.getElementById('entry-form');
 enterBtn.addEventListener('click', ()=>{
-  entryForm.classList.add('open');
+  entryForm.hidden = false;
   enterBtn.hidden = true;
   entryForm.scrollIntoView({behavior:'smooth', block:'center'});
-  document.getElementById('ef-name').focus();
-});
-entryForm.addEventListener('submit', e=>{
-  e.preventDefault();
-  const msg = entryForm.querySelector('.form-msg');
-  [...entryForm.elements].forEach(el=>{ if(el.tagName !== 'DIV') el.hidden = true; });
-  document.querySelectorAll('#entry-form label').forEach(el=> el.hidden = true);
-  msg.textContent = "Entry received — good luck! Winners are announced live.";
 });
 </script>
 </body>
