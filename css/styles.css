@@ -295,6 +295,23 @@ details p{padding:0 24px 20px;color:var(--muted);font-size:.92rem}
 .page-hero h1 em::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.12em;background:var(--blue);border-radius:2px;z-index:-1;transform:scaleX(0);transform-origin:left;animation:underline .9s .4s cubic-bezier(.2,.8,.2,1) forwards;box-shadow:0 0 20px var(--blue-glow)}
 .page-hero p{color:var(--muted);font-size:1.1rem;max-width:560px}
 .page-hero.center{text-align:center}
+/* social links */
+.nav-social{display:flex;align-items:center;gap:8px;margin-right:4px}
+.nav-social a{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);transition:color .2s,border-color .2s;background:rgba(255,255,255,.03)}
+.nav-social a:hover{color:var(--white);border-color:var(--line-strong)}
+@media(max-width:900px){.nav-social{display:none}}
+.foot-social{display:flex;gap:10px;align-items:center}
+.foot-social a{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.03);display:grid;place-items:center;color:var(--muted);transition:color .2s,border-color .2s}
+.foot-social a:hover{color:var(--white);border-color:var(--line-strong)}
+/* countdown bar */
+.launch-bar{background:linear-gradient(90deg,rgba(46,107,255,.15),rgba(46,107,255,.08));border-bottom:1px solid rgba(46,107,255,.3);padding:9px 0;position:relative;z-index:200}
+.launch-bar-in{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;font-size:.78rem}
+.launch-bar-text{font-weight:600;color:var(--white)}
+.launch-bar-text a{color:#99bbff;text-decoration:underline;text-decoration-color:rgba(153,187,255,.4);text-underline-offset:2px}
+.launch-cd{display:flex;gap:6px;align-items:center}
+.launch-cd-cell{background:rgba(0,0,0,.35);border:1px solid rgba(46,107,255,.3);border-radius:6px;padding:2px 8px;text-align:center;min-width:36px}
+.launch-cd-cell b{display:block;font-family:var(--mono);font-size:.8rem;font-weight:700;color:#fff;line-height:1.4}
+.launch-cd-cell small{display:block;font-size:.5rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 .page-hero.center .eyebrow{justify-content:center}
 .page-hero.center h1{margin-left:auto;margin-right:auto}
 .page-hero.center p{margin:0 auto}

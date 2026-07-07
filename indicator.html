@@ -192,6 +192,23 @@ footer{border-top:1px solid var(--line);padding:44px 0}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   .liquid{opacity:.2}
 }
+/* social links */
+.nav-social{display:flex;align-items:center;gap:8px;margin-right:4px}
+.nav-social a{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);transition:color .2s,border-color .2s;background:rgba(255,255,255,.03)}
+.nav-social a:hover{color:var(--white);border-color:var(--line-strong)}
+@media(max-width:900px){.nav-social{display:none}}
+.foot-social{display:flex;gap:10px;align-items:center}
+.foot-social a{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.03);display:grid;place-items:center;color:var(--muted);transition:color .2s,border-color .2s}
+.foot-social a:hover{color:var(--white);border-color:var(--line-strong)}
+/* countdown bar */
+.launch-bar{background:linear-gradient(90deg,rgba(46,107,255,.15),rgba(46,107,255,.08));border-bottom:1px solid rgba(46,107,255,.3);padding:9px 0;position:relative;z-index:200}
+.launch-bar-in{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;font-size:.78rem}
+.launch-bar-text{font-weight:600;color:var(--white)}
+.launch-bar-text a{color:#99bbff;text-decoration:underline;text-decoration-color:rgba(153,187,255,.4);text-underline-offset:2px}
+.launch-cd{display:flex;gap:6px;align-items:center}
+.launch-cd-cell{background:rgba(0,0,0,.35);border:1px solid rgba(46,107,255,.3);border-radius:6px;padding:2px 8px;text-align:center;min-width:36px}
+.launch-cd-cell b{display:block;font-family:var(--mono);font-size:.8rem;font-weight:700;color:#fff;line-height:1.4}
+.launch-cd-cell small{display:block;font-size:.5rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 </style>
 </head>
 <body>
@@ -212,6 +229,10 @@ footer{border-top:1px solid var(--line);padding:44px 0}
       <a href="/indicator" class="on" aria-current="page">Indicator</a>
       <a href="/#mentorship">Mentorship</a>
       <a href="/prop-firms">Prop Firms</a>
+    </div>
+    <div class="nav-social">
+      <a href="https://www.youtube.com/@AWTradingYT" target="_blank" rel="noopener" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+      <a href="https://www.instagram.com/_awtrading/" target="_blank" rel="noopener" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg></a>
     </div>
     <a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="btn btn-white nav-cta">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369A19.8 19.8 0 0 0 15.99 3c-.211.375-.457.879-.626 1.278a18.3 18.3 0 0 0-5.487 0A12.7 12.7 0 0 0 9.25 3a19.7 19.7 0 0 0-4.327 1.37C1.87 8.6 1.13 12.72 1.5 16.78a19.9 19.9 0 0 0 5.993 3.03c.483-.66.913-1.36 1.284-2.1a12.8 12.8 0 0 1-2.023-.98c.17-.124.336-.253.497-.386 3.9 1.8 8.13 1.8 11.99 0 .163.133.328.262.497.386-.642.383-1.323.71-2.027.982.372.74.8 1.44 1.284 2.098a19.86 19.86 0 0 0 6.002-3.03c.428-4.71-.734-8.8-3.68-12.41ZM8.68 14.4c-1.18 0-2.14-1.086-2.14-2.42 0-1.335.94-2.42 2.14-2.42 1.21 0 2.16 1.095 2.14 2.42 0 1.334-.93 2.42-2.14 2.42Zm6.64 0c-1.18 0-2.14-1.086-2.14-2.42 0-1.335.95-2.42 2.14-2.42 1.21 0 2.16 1.095 2.14 2.42 0 1.334-.92 2.42-2.14 2.42Z"/></svg>
@@ -235,6 +256,19 @@ footer{border-top:1px solid var(--line);padding:44px 0}
   </nav>
   <a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="btn btn-white mobile-nav-cta">Join AW Trading</a>
 </div>
+
+<div class="launch-bar" role="banner" aria-label="Launch announcement">
+  <div class="wrap launch-bar-in">
+    <span class="launch-bar-text">🚀 AW Indicator + Live Trader launch <a href="/indicator">Sept 1</a> — join the community free now</span>
+    <div class="launch-cd" aria-live="polite" aria-label="Countdown to launch">
+      <div class="launch-cd-cell"><b id="lbD">--</b><small>Days</small></div>
+      <div class="launch-cd-cell"><b id="lbH">--</b><small>Hrs</small></div>
+      <div class="launch-cd-cell"><b id="lbM">--</b><small>Min</small></div>
+      <div class="launch-cd-cell"><b id="lbS">--</b><small>Sec</small></div>
+    </div>
+  </div>
+</div>
+<script>(function(){var t=new Date('2026-09-01T00:00:00Z');function u(){var n=t-Date.now();if(n<=0){document.querySelector('.launch-bar').textContent='🚀 AW Indicator + Live Trader — now live!';return;}var d=Math.floor(n/864e5),h=Math.floor(n%864e5/36e5),m=Math.floor(n%36e5/6e4),s=Math.floor(n%6e4/1e3);document.getElementById('lbD').textContent=String(d).padStart(2,'0');document.getElementById('lbH').textContent=String(h).padStart(2,'0');document.getElementById('lbM').textContent=String(m).padStart(2,'0');document.getElementById('lbS').textContent=String(s).padStart(2,'0');}u();setInterval(u,1000);})();</script>
 
 <main id="main-content">
 <header class="hero">
@@ -349,6 +383,10 @@ footer{border-top:1px solid var(--line);padding:44px 0}
       <a href="/prop-firms">Prop Firms</a>
       <a href="/terms">Terms</a>
       <a href="/privacy">Privacy</a>
+    </div>
+    <div class="foot-social">
+      <a href="https://www.youtube.com/@AWTradingYT" target="_blank" rel="noopener" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+      <a href="https://www.instagram.com/_awtrading/" target="_blank" rel="noopener" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg></a>
     </div>
   </div>
   <div class="wrap">

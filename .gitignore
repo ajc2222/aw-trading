@@ -3,3 +3,4 @@ server.log
 .claude-flow/
 
 .vercel
+.env*
