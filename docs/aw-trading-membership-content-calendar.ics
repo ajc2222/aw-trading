@@ -1,0 +1,81 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//AW Trading//Membership Content Calendar//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:AW Trading — Private Membership Content
+X-WR-CALDESC:Thursday filming sessions for Live Trader membership curriculum
+
+BEGIN:VEVENT
+UID:aw-priv-m1@awtrading
+DTSTART:20260710T100000
+DTEND:20260710T110000
+SUMMARY:🎬 PRIVATE — Module 1: Why Price Does What It Does
+DESCRIPTION:Film Module 1 for the Live Trader membership (1 hr).\n\nTopics to cover (2–3 videos):\n• Institutional order flow as the actual driver of price\n• Why retail setups fail — what's really happening\n• How to read a move: delivery\, expansion\, retracement\n• Reacting vs. anticipating price\n• Why context (what came before) matters more than the pattern\n\nSave to: AW Trading Content/Raw Footage/Private/M1-why-price/\n\nNote: identify one concept from this module you can tease in public content this week.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-priv-m2@awtrading
+DTSTART:20260717T100000
+DTEND:20260717T110000
+SUMMARY:🎬 PRIVATE — Module 2: Data Collection System + Trade Log PDF
+DESCRIPTION:Film Module 2 + write the trade log template PDF (1 hr).\n\nFilm topics (2 videos):\n• What data actually matters vs. noise\n• How to log a trade: entry/exit + the read\, context\, emotional state\n• Tracking by session\, instrument\, time of day\n• Weekly review ritual — what patterns to look for\n• Turning a losing trade into useful information\n\nThen write the trade log template PDF:\nDate / Instrument / Session\nPre-trade read | Entry reason | Result | Deviation | Lesson\n\nSave to: AW Trading Content/Assets/Playbooks/trade-log-template.pdf
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-priv-m3@awtrading
+DTSTART:20260724T100000
+DTEND:20260724T110000
+SUMMARY:🎬 PRIVATE — Module 3: Finding Your Edge + Monthly Review PDF
+DESCRIPTION:Film Module 3 + write the monthly review framework PDF (1 hr).\n\nFilm topics (2 videos):\n• How to review a month of trades and find real patterns\n• Identifying your highest-probability conditions\n• Personal edge vs. market edge\n• When to stop trading a setup your data says isn't working\n• How to narrow your playbook based on what your data shows\n\nThen write the monthly review framework PDF:\n6 key questions to ask when reviewing a month of trades.\n\nSave to: AW Trading Content/Assets/Playbooks/monthly-review-framework.pdf
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-priv-m4@awtrading
+DTSTART:20260731T100000
+DTEND:20260731T110000
+SUMMARY:🎬 PRIVATE — Module 4: Psychology + Self-Audit PDF
+DESCRIPTION:Film Module 4 + write the psychology self-audit PDF (1 hr).\n\nFilm topics (2 videos):\n• Why you deviate from your plan and what that reveals\n• Recognizing your personal tilt triggers\n• Pre-trade mental checklist — awareness\, not rules\n• Processing a losing streak without destroying your edge\n• The self-honesty gap: what you think you do vs. what you actually do\n\nThen write the psychology self-audit PDF:\nMonthly self-assessment: tilt triggers\, deviation patterns\, emotional responses.\n\nSave to: AW Trading Content/Assets/Playbooks/psychology-self-audit.pdf
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-priv-m5@awtrading
+DTSTART:20260807T100000
+DTEND:20260807T110000
+SUMMARY:🎬 PRIVATE — Module 5: Building Discretion + Risk/Sizing PDF
+DESCRIPTION:Film Module 5 + write the risk and sizing guide PDF (1 hr).\n\nFilm topics (2 videos — use chart walkthroughs\, not definitions):\n• What discretion actually means (informed judgment\, not guessing)\n• Reading confluence without a checklist\n• When the setup is valid but the read says no\n• Building conviction — knowing when you actually have edge\n• The role of patience: not every session needs a trade\n\nThen write the risk and sizing guide:\nSize by conviction level (full / 75% / 50% / skip).\nWhen to scale up or down based on your recent data.\n\nSave to: AW Trading Content/Assets/Playbooks/risk-sizing-guide.pdf
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-priv-m6-prep@awtrading
+DTSTART:20260813T190000
+DTEND:20260813T200000
+SUMMARY:📝 PRIVATE — Plan Module 6 advanced concepts (write first\, film tomorrow)
+DESCRIPTION:Before filming Module 6\, write out your advanced concepts tonight.\n\nWrite down 4–6 observations you've made beyond standard ICT:\n• Things you figured out through your own trading\, not from someone else\n• Specific enough to be actionable\n• Things that would surprise even an experienced ICT trader\n\nThis is the most valuable content in the curriculum. Don't skip this step.\nFilm tomorrow (Thu Aug 14).
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-priv-m6@awtrading
+DTSTART:20260814T100000
+DTEND:20260814T110000
+SUMMARY:🎬 PRIVATE — Module 6: Advanced Concepts + Pre-Session Framework PDF
+DESCRIPTION:Film Module 6 + write the pre-session framework PDF (1 hr).\n\nFilm structure (3–4 videos):\n• Video 1: Your advanced observations (2–3 concepts from last night's prep)\n• Video 2: What you've learned specifically from your losing trades\n• Video 3: How you read sessions differently now vs. when you started\n• Video 4: How to keep evolving after the mentorship\n\nThen write the pre-session framework:\nA 6-question thinking process before the open — not a checklist.\n\nSave to: AW Trading Content/Assets/Playbooks/pre-session-framework.pdf
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-priv-edit@awtrading
+DTSTART:20260822T100000
+DTEND:20260822T120000
+SUMMARY:✂️ PRIVATE — Edit all 6 modules + upload to Whop + Discord setup
+DESCRIPTION:Big Saturday session — get everything ready for Sept 1 (2 hrs).\n\nChecklist:\n⬜ Edit all 6 modules (trim dead air\, add chapter title overlays\, export 1080p)\n⬜ Upload to Whop — create Live Trader course section\, set $129/mo access\n⬜ Upload all 5 PDFs to Whop resources section\n⬜ Create members-only Discord channels:\n   #live-trader-lounge ($129 only)\n   #trade-alerts ($129 only)\n   #trade-journal ($129 only)\n   #resources ($129 only) — pin all 5 PDFs immediately\n   #weekly-live ($129 only)\n   #indicator-users ($39+)
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-priv-qa@awtrading
+DTSTART:20260824T100000
+DTEND:20260824T110000
+SUMMARY:✅ PRIVATE — QA: watch all modules + test Whop access
+DESCRIPTION:Final QA before launch (1 hr).\n\n⬜ Watch every module from start to finish as a student would\n⬜ Note anything confusing or missing — fix before Sept 1\n⬜ Test $39 tier access (incognito): indicator + #indicator-users\n⬜ Test $129 tier access (incognito): all modules + channels + PDFs\n⬜ Write welcome message for new $129 members:\n\n"Welcome to Live Trader.\n1. Introduce yourself in #live-trader-lounge\n2. Download resources in #resources — start with the trade log template\n3. Begin Module 1 in the course section\n4. First live session: [date] at [time]\n\nThis curriculum assumes you know the basics. If starting from zero\, the $39 tier + free Discord is the right place to begin."\n\n⬜ Schedule first live session (first week of September) and post date in #weekly-live on Sept 1
+END:VEVENT
+
+END:VCALENDAR
