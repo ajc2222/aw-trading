@@ -1,0 +1,497 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//AW Trading//Launch Calendar 2026//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:AW Trading — Sept 1 Launch
+X-WR-CALDESC:8-week content calendar for the AW Indicator + Live Trader launch
+
+BEGIN:VEVENT
+UID:aw-w1-batch@awtrading
+DTSTART:20260707T100000
+DTEND:20260707T120000
+SUMMARY:🎬 BATCH FILM — Week 1 content
+DESCRIPTION:Film everything for Week 1 in one session:\n\n✅ YouTube video: "What is ICT and why does it actually work?" (aim for 12–15 min)\n✅ Extra clips: 2 short chart annotations for Instagram Reels\n✅ Record one 60-sec "ICT terms" explainer for Reel #1\n\nTip: Film the YouTube long-form first while energy is high\, then do the short Reels at the end.\nPost the YouTube video Wednesday morning.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w1-ig1@awtrading
+DTSTART:20260707T090000
+DTEND:20260707T093000
+SUMMARY:📱 IG Reel — "3 ICT terms every trader needs to know"
+DESCRIPTION:Post Reel #1 for Week 1.\n\nCaption template:\nICT simplified 👇\n\n[term 1] — [one line explanation]\n[term 2] — [one line explanation]\n[term 3] — [one line explanation]\n\nSave this for later. Join the free community → link in bio\n\n#ICT #futurestrading #daytrading #priceaction #AWTrading
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w1-yt@awtrading
+DTSTART:20260708T090000
+DTEND:20260708T100000
+SUMMARY:🎥 YouTube Upload — "What is ICT and why does it actually work?"
+DESCRIPTION:Upload and publish Week 1 YouTube video.\n\nDescription template:\n---\nIn this video I break down exactly what ICT trading is and why the concepts actually work in the live market.\n\n📌 Join the free AW Trading community: discord.gg/fn2qjH7MW4\n🔔 Subscribe for weekly breakdowns\n\nTimestamps:\n0:00 Intro\n...\n---\n\nEnd screen CTA: Discord link. Add to "Free Education" playlist.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w1-story@awtrading
+DTSTART:20260708T190000
+DTEND:20260708T191500
+SUMMARY:📱 IG Story — Audience poll
+DESCRIPTION:Post an Instagram Story with a poll:\n\n"Do you trade sessions or all day?"\n🕘 Session trader | ⏰ All day\n\nThis gives you audience data and keeps engagement up mid-week.\nCheck results Friday and use them in future content.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w1-ig2@awtrading
+DTSTART:20260710T090000
+DTEND:20260710T093000
+SUMMARY:📱 IG Reel — P&L screenshot + chart annotation
+DESCRIPTION:Post Reel #2 for Week 1.\n\nShow a recent win: P&L screenshot + the annotated chart entry.\n\nCaption template:\n[Date] trade. Here's what I saw before entry 👇\n\n[1-2 sentence explanation of the setup]\n\nFull breakdown → free Discord in bio\n\n#priceaction #futurestrading #ICT #tradingresults
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w1-discord@awtrading
+DTSTART:20260710T200000
+DTEND:20260710T210000
+SUMMARY:💬 Discord — Post in #free-education
+DESCRIPTION:Post this week's education drop in #free-education.\n\nIdeas:\n• Concept of the week summary (from the YouTube video)\n• Annotated chart from a trade this week\n• Session recap with key levels\n\nCross-post the YouTube link here too so Discord members see it.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w1-review@awtrading
+DTSTART:20260712T190000
+DTEND:20260712T200000
+SUMMARY:📋 Week 1 Review
+DESCRIPTION:Weekly review checklist:\n\n✅ YouTube video uploaded?\n✅ 2 Instagram Reels posted?\n✅ 1+ Instagram Story posted?\n✅ Discord #free-education post done?\n✅ Any comments/DMs to reply to?\n\nMetrics to log:\n• YouTube views + subscriber delta\n• Instagram Reel reach (check both)\n• Discord member count\n\nNext week theme: "Teach a system" — prep the NY open trade breakdown video.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w2-batch@awtrading
+DTSTART:20260714T100000
+DTEND:20260714T120000
+SUMMARY:🎬 BATCH FILM — Week 2 content
+DESCRIPTION:Film everything for Week 2:\n\n✅ YouTube: Full NY open trade breakdown (entry to exit\, real trade)\n✅ YouTube Short: clip "Why most traders enter too early" from the long video\n✅ Instagram Reel: chart annotation of an A+ ICT setup\n✅ Instagram Reel: cert or prop firm pass screen recording\n\nBatch tip: Edit the YouTube first\, then pull the Short and Reel clips from the same session footage.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w2-ig1@awtrading
+DTSTART:20260713T090000
+DTEND:20260713T093000
+SUMMARY:📱 IG Reel — A+ ICT setup annotation
+DESCRIPTION:Post Reel #1 for Week 2.\n\nCaption template:\nThis is what an A+ entry looks like 📊\n\n[Quick description of setup: session\, level\, confirmation]\n\nI post setups like this in the free community daily → link in bio\n\n#ICTtrading #futurestrading #priceaction #daytrader
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w2-yt@awtrading
+DTSTART:20260715T090000
+DTEND:20260715T100000
+SUMMARY:🎥 YouTube Upload — "Full NY open trade breakdown — entry to exit"
+DESCRIPTION:Upload and publish Week 2 YouTube video.\n\nThis is a session recap: show one real trade from the NY open with full thought process.\nEnd with Discord CTA. Also upload the Short at the same time.\n\nDescription template:\n---\nFull NY open trade walkthrough — I show every step from session prep to exit.\n\n📌 Free community: discord.gg/fn2qjH7MW4\n🔔 Subscribe for weekly breakdowns\n---
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w2-ig2@awtrading
+DTSTART:20260717T090000
+DTEND:20260717T093000
+SUMMARY:📱 IG Reel — Prop firm pass / certification
+DESCRIPTION:Post Reel #2 for Week 2.\n\nShow the cert or prop firm pass. Brief context on how you got there.\n\nCaption template:\nPassed another one 💰\n\n[Firm name + account size]\n\nIf you want to learn the exact setups I use → free community in bio\n\n#propfirm #fundedtrader #futurestrading #tradingresults
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w2-story@awtrading
+DTSTART:20260715T190000
+DTEND:20260715T191500
+SUMMARY:📱 IG Story → Drive to YouTube
+DESCRIPTION:Post an Instagram Story driving followers to the YouTube video.\n\nUse a clip from the video as a Story preview\, text overlay:\n"Full breakdown posted → link in bio"\n\nOr use the poll results from last week's story as a conversation hook.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w2-discord@awtrading
+DTSTART:20260717T200000
+DTEND:20260717T210000
+SUMMARY:💬 Discord — Post in #free-education
+DESCRIPTION:Post this week's education drop.\n\nIdeas:\n• Pull the key concept from the YouTube video\n• Post a chart from the trade you broke down\n• Write 3-4 sentences summarizing the setup criteria\n\nCross-post YouTube link.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w2-review@awtrading
+DTSTART:20260719T190000
+DTEND:20260719T200000
+SUMMARY:📋 Week 2 Review
+DESCRIPTION:Weekly review checklist:\n\n✅ YouTube + Short uploaded?\n✅ 2 Instagram Reels posted?\n✅ Story posted + driving to YouTube?\n✅ Discord #free-education post done?\n✅ Comments and DMs replied to?\n\nMetrics to log:\n• YouTube views + subscriber delta\n• Reel reach week-over-week\n• Discord member count\n\nNext week theme: "Social proof + education" — prep liquidity grabs video.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w3-batch@awtrading
+DTSTART:20260721T100000
+DTEND:20260721T120000
+SUMMARY:🎬 BATCH FILM — Week 3 content
+DESCRIPTION:Film everything for Week 3:\n\n✅ YouTube: "How I find liquidity grabs before they happen" (10–18 min\, educational)\n✅ Reel: "I passed a $50K prop eval using this one concept" (use existing cert)\n✅ Reel: clip the YouTube hook for a 30-sec teaser\n✅ Story: Q&A sticker — "Drop your biggest trading struggle" (IMPORTANT: collect these responses for Week 6 objection content)
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w3-ig1@awtrading
+DTSTART:20260720T090000
+DTEND:20260720T093000
+SUMMARY:📱 IG Reel — "I passed a $50K prop eval using this one concept"
+DESCRIPTION:Post Reel #1 for Week 3.\n\nCaption template:\nPassed a $50K eval using this 👇\n\n[Concept name + 1–2 sentence description]\n\nFree education in the community → link in bio\n\n#propfirm #ICT #fundedtrader #futurestrading
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w3-yt@awtrading
+DTSTART:20260722T090000
+DTEND:20260722T100000
+SUMMARY:🎥 YouTube Upload — "How I find liquidity grabs before they happen"
+DESCRIPTION:Upload and publish Week 3 YouTube video.\n\nFocus: teach the framework without giving away the tool. This is the "edge without the product" content.\nEnd with Discord CTA.\n\nDescription template:\n---\nI break down exactly how I identify liquidity grabs before price sweeps through — step by step.\n\n📌 Free community: discord.gg/fn2qjH7MW4\n---
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w3-ig2@awtrading
+DTSTART:20260724T090000
+DTEND:20260724T093000
+SUMMARY:📱 IG Reel — YouTube hook teaser
+DESCRIPTION:Post Reel #2 for Week 3 — 30-sec clip from the YouTube video.\n\nCaption:\n"Full breakdown on YouTube → link in bio"\n\nThis drives YouTube traffic and gives you an easy second post this week.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w3-story@awtrading
+DTSTART:20260722T190000
+DTEND:20260722T191500
+SUMMARY:📱 IG Story — Q&A sticker (save responses!)
+DESCRIPTION:⚠️ IMPORTANT — save these responses. You'll use them in Week 6.\n\nPost Story with Q&A sticker:\n"Drop your biggest trading struggle 👇"\n\nScreenshot every response. These become the Week 6 objection-flip content:\n"You said you struggle with X — here's how the indicator fixes it."
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w3-discord@awtrading
+DTSTART:20260724T200000
+DTEND:20260724T210000
+SUMMARY:💬 Discord — Post in #free-education
+DESCRIPTION:Post this week's education drop.\n\nSuggested: summarize the liquidity grab framework in 3-4 bullet points.\nCross-post the YouTube link.\n\nAlso engage with any members who've been active — reply to posts in #trade-breakdowns.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w3-review@awtrading
+DTSTART:20260726T190000
+DTEND:20260726T200000
+SUMMARY:📋 Week 3 Review
+DESCRIPTION:Weekly review checklist:\n\n✅ YouTube uploaded?\n✅ 2 Instagram Reels posted?\n✅ Story with Q&A sticker done? (Screenshotted responses?)\n✅ Discord #free-education post done?\n\nMetrics:\n• YouTube views + subscribers\n• Reel reach\n• Discord member count\n• Number of Q&A story responses (log this number)\n\nNext week: "Community + live value" — vlog style\, soft tease in Stories starts.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w4-batch@awtrading
+DTSTART:20260728T100000
+DTEND:20260728T120000
+SUMMARY:🎬 BATCH FILM — Week 4 content
+DESCRIPTION:Film everything for Week 4:\n\n✅ YouTube: Weekly market recap vlog (lower production\, high authenticity)\n✅ YouTube Short: "2 seconds before a liquidity grab" — clip from live trade footage\n✅ Reel: Discord server screen recording tour (30 sec\, join CTA)\n✅ Reel: "I used to do this and it killed my edge" — relatable mistake content
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w4-ig1@awtrading
+DTSTART:20260727T090000
+DTEND:20260727T093000
+SUMMARY:📱 IG Reel — Inside the free Discord server
+DESCRIPTION:Post Reel #1 for Week 4.\n\nScreen record a 30-sec tour of the Discord: channels visible\, activity\, the value.\n\nCaption:\nFree community for serious traders 👇\n\nEducation\, trade setups\, live breakdowns — all free.\n\nLink in bio to join\n\n#trading #discordserver #futurestrading #ICTtrading
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w4-yt@awtrading
+DTSTART:20260729T090000
+DTEND:20260729T100000
+SUMMARY:🎥 YouTube Upload — "Week in the market — what I saw\, what I traded"
+DESCRIPTION:Upload Week 4 video + Short.\n\nThis is a vlog-style recap: less editing\, more authenticity. Show your real process.\nEnd with Discord CTA.\n\nThe Short ("2 seconds before a liquidity grab") should go live the same day.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w4-ig2@awtrading
+DTSTART:20260731T090000
+DTEND:20260731T093000
+SUMMARY:📱 IG Reel — "I used to do this and it killed my edge"
+DESCRIPTION:Post Reel #2 for Week 4.\n\nRelatable mistake content. Pick a common mistake you made early on.\n\nCaption:\n"Stop doing this if you want consistent results 🚫"\n\n[Explain the mistake in 2 sentences]\n\nWhat fixed it for me → link in bio\n\n#tradingtips #futurestrading #ICT #priceaction
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w4-story@awtrading
+DTSTART:20260729T190000
+DTEND:20260729T191500
+SUMMARY:📱 IG Story — Soft tease "something big in 4 weeks"
+DESCRIPTION:First soft seed of the upcoming launch.\n\nCaption idea:\n"We're about 4 weeks from something I've been working on for a while 👀"\n\nNo details. No price. Just curiosity.\nThis plants the seed before the Week 5 tease.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w4-discord@awtrading
+DTSTART:20260731T200000
+DTEND:20260731T210000
+SUMMARY:💬 Discord — Post in #free-education
+DESCRIPTION:Post this week's education drop.\n\nSuggested: market structure recap from this week's sessions.\nCross-post YouTube vlog link.\n\nEngage in #trade-breakdowns if members are posting setups.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w4-review@awtrading
+DTSTART:20260802T190000
+DTEND:20260802T200000
+SUMMARY:📋 Week 4 Review + Pre-tease checklist
+DESCRIPTION:Weekly review checklist:\n\n✅ YouTube + Short uploaded?\n✅ 2 Instagram Reels posted?\n✅ Soft tease Story posted?\n✅ Discord post done?\n\nPre-Week-5 checklist:\n⬜ #indicator-preview Discord channel — CREATE THIS TOMORROW (Mon Aug 3)\n⬜ 3 indicator clip screenshots/recordings ready for Week 5 posts\n⬜ Indicator working on chart and ready to record\n\nMetrics:\n• YouTube views + subscribers\n• Reel reach\n• Discord member count
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w5-channel@awtrading
+DTSTART:20260803T080000
+DTEND:20260803T083000
+SUMMARY:⚠️ CREATE Discord #indicator-preview channel
+DESCRIPTION:Create the #indicator-preview channel in Discord today.\n\nFirst post in the channel:\n"Something I've been building is almost ready. This channel is where you'll see it first. 👀"\n\nDo NOT post price or date yet. Just open the channel and tease.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w5-batch@awtrading
+DTSTART:20260804T100000
+DTEND:20260804T120000
+SUMMARY:🎬 BATCH FILM — Week 5 tease content
+DESCRIPTION:Film everything for Week 5 — the curiosity play:\n\n✅ YouTube: "I've been building something for the past few months…" — show 10–15 sec of indicator on chart\, no name\, no price. Film as a reaction/reveal video.\n✅ IG Reel #1: screen record of indicator auto-drawing levels\, 20 sec\, zero explanation\n✅ IG Reel #2: indicator signal firing + result (P&L)\n\nKey rule this week: NO price\, NO name\, NO launch date yet. Pure curiosity.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w5-ig1@awtrading
+DTSTART:20260803T090000
+DTEND:20260803T093000
+SUMMARY:📱 IG Reel — "What is this thing auto-drawing my levels?"
+DESCRIPTION:Post Reel #1 for Week 5.\n\n20-sec screen recording of indicator plotting levels on a live chart. No voiceover\, no explanation.\n\nCaption:\n"what is this 👀"\n\nThat's it. Let comments do the work.\n\nPin the best comment if someone guesses right.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w5-yt@awtrading
+DTSTART:20260805T090000
+DTEND:20260805T100000
+SUMMARY:🎥 YouTube Upload — "I've been building something…" tease
+DESCRIPTION:Upload Week 5 tease video.\n\nShow a brief clip of the indicator in action\, then pivot to your trading content. Don't make it all about the tease — let it be a natural reveal within a normal video.\n\nEnd with: "If you want to be the first to see this\, Discord link is below."\n\nAlso post the best 10-sec clip to #indicator-preview in Discord.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w5-ig2@awtrading
+DTSTART:20260807T090000
+DTEND:20260807T093000
+SUMMARY:📱 IG Reel — Indicator signal + result
+DESCRIPTION:Post Reel #2 for Week 5.\n\nSignal fires\, show the result. 20–30 sec.\n\nCaption:\n"Signal fired at [time]. Here's what happened 📈"\n\n[2-sentence outcome]\n\nWant to see the full tool? Discord in bio — Discord members find out first.\n\n#trading #futurestrading #ICT
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w5-story@awtrading
+DTSTART:20260805T190000
+DTEND:20260805T191500
+SUMMARY:📱 IG Story — "Discord members find out first"
+DESCRIPTION:Story driving urgency to Discord:\n\n"The tool I've been working on — Discord members get first access. Join free → link in bio 👇"\n\nUse a screenshot of #indicator-preview channel as background.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w5-discord@awtrading
+DTSTART:20260807T090000
+DTEND:20260807T093000
+SUMMARY:💬 Discord — 3rd tease clip in #indicator-preview
+DESCRIPTION:Post the 3rd teaser clip this week in #indicator-preview.\n\nCaption idea:\n"One more before the full reveal… almost ready. The announcement is coming next week."\n\nAlso post normal education content in #free-education.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w5-review@awtrading
+DTSTART:20260809T190000
+DTEND:20260809T200000
+SUMMARY:📋 Week 5 Review + Pre-announce checklist
+DESCRIPTION:Weekly review checklist:\n\n✅ YouTube tease video uploaded?\n✅ 2+ Instagram Reels posted?\n✅ Story done?\n✅ 3 clips posted in #indicator-preview?\n\nPre-Week-6 checklist:\n⬜ Create #sept-1-launch Discord channel (Mon Aug 10)\n⬜ Create #testimonials Discord channel (Mon Aug 10)\n⬜ Confirm Whop product page is ready to link\n⬜ Indicator reveal video filmed and edited\n⬜ Review Week 3 Q&A Story responses — build the objection-flip Reel\n\nMetrics:\n• YouTube views (tease video — watch closely\, high signal)\n• Reel reach + comments on mystery Reel\n• Discord member count spike this week
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w6-channels@awtrading
+DTSTART:20260810T080000
+DTEND:20260810T090000
+SUMMARY:⚠️ CREATE Discord #sept-1-launch + #testimonials channels
+DESCRIPTION:Create both channels today:\n\n#sept-1-launch — Pin the announcement post immediately after creating:\n"🚀 AW Indicator is launching September 1\, 2026.\n$39/mo — full indicator access\n$129/mo — indicator + Live Trader mentorship\n\nWhop link: [your Whop URL]\n\nDiscord members get access the moment it goes live."\n\n#testimonials — Pin your best P&L screenshots\, certifications\, and prop firm passes here today. Set the tone.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w6-batch@awtrading
+DTSTART:20260811T100000
+DTEND:20260811T120000
+SUMMARY:🎬 BATCH FILM — Week 6 reveal content
+DESCRIPTION:Film the most important content of the 8 weeks:\n\n✅ YouTube REVEAL (15–20 min): Show all indicator features live\, reveal Sept 1 date\, reveal $39/$129 pricing\, link to /indicator page\n✅ IG Reel #1: 30-sec announcement Reel ("AW Indicator — Sept 1. $39/mo. Link in bio.")\n✅ IG Reel #2: objection-flip using Week 3 Q&A responses\n✅ Story series: 3-part feature walkthrough → "Sept 1\, join Discord for early access"
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w6-ig1@awtrading
+DTSTART:20260810T090000
+DTEND:20260810T093000
+SUMMARY:📱 IG Reel — AW Indicator announcement
+DESCRIPTION:Post Reel #1 for Week 6 — first hard CTA.\n\nCaption:\nAW Indicator drops September 1 🚀\n\n$39/mo — indicator access\n$129/mo — indicator + Live Trader mentorship\n\nDetails → link in bio (awtrading.com/indicator)\n\n#indicator #futurestrading #ICT #daytrading
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w6-yt@awtrading
+DTSTART:20260812T090000
+DTEND:20260812T100000
+SUMMARY:🎥 YouTube Upload — "The AW Indicator — full reveal"
+DESCRIPTION:Upload the most important video of the 8 weeks.\n\nCover:\n• What the indicator does (show every feature live)\n• Why I built it\n• Sept 1 launch date\n• $39/mo and $129/mo pricing\n• Where to get it: awtrading.com/indicator\n\nPin a comment with the Whop link. End screen links to /indicator page.\nAlso post the reveal in #sept-1-launch Discord channel.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w6-ig2@awtrading
+DTSTART:20260814T090000
+DTEND:20260814T093000
+SUMMARY:📱 IG Reel — Objection flip (use Week 3 Q&A responses)
+DESCRIPTION:Post Reel #2 for Week 6.\n\nUse the Q&A sticker responses from Week 3 Story.\n\nCaption:\n"You told me your biggest struggle was [X] 👇\n\nHere's how the AW Indicator fixes exactly that."\n\n[Show the relevant feature live]\n\nSept 1 → awtrading.com/indicator
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w6-story@awtrading
+DTSTART:20260812T190000
+DTEND:20260812T191500
+SUMMARY:📱 IG Story series — 3-part feature reveal
+DESCRIPTION:Post 3 sequential Stories:\n\nStory 1: Feature highlight #1 + "Here's what it does"\nStory 2: Feature highlight #2 + live signal example\nStory 3: "Sept 1 — join Discord now to get access the moment it's live → link in bio"
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w6-discord@awtrading
+DTSTART:20260814T090000
+DTEND:20260814T093000
+SUMMARY:💬 Discord — Engagement post in #sept-1-launch
+DESCRIPTION:Post in #sept-1-launch:\n\n"Who's planning to grab the indicator on Sept 1? Drop a 🔥 if you're in."\n\nThis creates social proof — new members see others are excited.\nScreenshot the replies and use them in Week 7 content.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w6-review@awtrading
+DTSTART:20260816T190000
+DTEND:20260816T200000
+SUMMARY:📋 Week 6 Review + Heat-build prep
+DESCRIPTION:Weekly review checklist:\n\n✅ YouTube reveal video uploaded?\n✅ 2+ Reels posted (announcement + objection flip)?\n✅ 3-part Story series done?\n✅ #sept-1-launch + #testimonials channels created and populated?\n✅ Engagement post in #sept-1-launch done?\n\nWeek 7 prep:\n⬜ Film live trading session with indicator for raw footage video\n⬜ Film "Why I built this" 60-sec Short\n⬜ Prepare daily indicator clips (aim for 5–7 short clips)\n\nMetrics:\n• YouTube reveal video views (this is your highest-intent audience)\n• Reel reach on announcement post\n• Discord member count\n• Whop page visits (check Whop analytics if available)
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w7-batch@awtrading
+DTSTART:20260818T100000
+DTEND:20260818T120000
+SUMMARY:🎬 BATCH FILM — Week 7 heat content
+DESCRIPTION:Film everything for Week 7 — volume week:\n\n✅ YouTube: Raw live trade session using the indicator (uncut\, 30–45 min)\n✅ YouTube Short: "Why I built this indicator" (60 sec\, personal story)\n✅ 5–7 short indicator clips for daily Instagram Reels\n✅ One objection Reel: "Is $39/mo worth it? Here's what it does in one session"\n\nBatch all Reel clips in one sitting. You'll post one per day this week.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w7-ig-mon@awtrading
+DTSTART:20260817T090000
+DTEND:20260817T093000
+SUMMARY:📱 IG Reel — Daily clip #1
+DESCRIPTION:Day 1 of daily indicator clips.\n\nShow the indicator flagging a signal and the outcome. 15–30 sec.\n\nCaption:\n"Day 1 of posting this daily until launch 🔥\n\n[Brief description of what happened]\n\nSept 1 → link in bio"
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w7-ig-tue@awtrading
+DTSTART:20260818T090000
+DTEND:20260818T093000
+SUMMARY:📱 IG Reel — Daily clip #2
+DESCRIPTION:Day 2 — another indicator signal clip. 15–30 sec.\n\nCaption:\n"Day 2 📈 [brief description]\n\n4 more days until you can get this → Sept 1 → link in bio"
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w7-yt@awtrading
+DTSTART:20260819T090000
+DTEND:20260819T100000
+SUMMARY:🎥 YouTube Upload — Live trade session with indicator (+ Short)
+DESCRIPTION:Upload Week 7 YouTube — raw and uncut live session.\n\nThis is the hardest-hitting proof content. No heavy editing needed.\nUpload the Short at the same time ("Why I built this indicator").\n\nDescription:\n---\nRaw live trading session using the AW Indicator — no cuts\, no edits.\n\n📌 It launches September 1: awtrading.com/indicator\n📌 Free community: discord.gg/fn2qjH7MW4\n---
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w7-ig-wed@awtrading
+DTSTART:20260819T090000
+DTEND:20260819T093000
+SUMMARY:📱 IG Reel — Daily clip #3
+DESCRIPTION:Day 3 — indicator clip.\n\nCaption:\n"Day 3 🎯 [brief description]\n\nLaunches Sept 1 — awtrading.com/indicator"
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w7-ig-objection@awtrading
+DTSTART:20260820T090000
+DTEND:20260820T093000
+SUMMARY:📱 IG Reel — "Is $39/mo worth it?"
+DESCRIPTION:Post the objection-flip Reel.\n\nCaption:\n"Is $39/mo worth it? 👇\n\nHere's what it does in a single session:\n[Outcome from today or this week's clip]\n\nYou decide. Sept 1 → link in bio.\n\n#trading #indicator #futurestrading"
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w7-ig-thu@awtrading
+DTSTART:20260820T090000
+DTEND:20260820T093000
+SUMMARY:📱 IG Story — Instagram countdown sticker
+DESCRIPTION:Add an Instagram countdown sticker to a Story — set it to Sept 1\, 2026.\n\nCaption: "Launching in…"\n\nFollowers can subscribe to the countdown and get notified when it hits zero. This is a free push notification on launch day.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w7-ig-fri@awtrading
+DTSTART:20260821T090000
+DTEND:20260821T093000
+SUMMARY:📱 IG Reel — Daily clip #5
+DESCRIPTION:Day 5 — final indicator clip of the week.\n\nCaption:\n"11 days until launch 🚀\n\n[Brief result/description]\n\nSept 1 → awtrading.com/indicator"
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w7-discord@awtrading
+DTSTART:20260821T200000
+DTEND:20260821T210000
+SUMMARY:💬 Discord — Reminder post + Whop link
+DESCRIPTION:Post in #sept-1-launch:\n\n"11 days. The indicator goes live Sept 1.\n\nGrab it here on launch day: [Whop link]\n\n$39/mo — indicator\n$129/mo — indicator + Live Trader\n\nDiscord members get access the moment it goes live."\n\nAlso populate #testimonials if you haven't already — P&L screenshots\, certs\, prop passes.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-w7-review@awtrading
+DTSTART:20260823T190000
+DTEND:20260823T200000
+SUMMARY:📋 Week 7 Review + Launch prep
+DESCRIPTION:Weekly review checklist:\n\n✅ YouTube live session + Short uploaded?\n✅ Daily Reels posted (5+)?\n✅ Objection Reel posted?\n✅ Countdown sticker Story done?\n✅ Discord reminder + Whop link posted?\n✅ #testimonials populated?\n\nLaunch week prep:\n⬜ Whop product pages ready to go live Sept 1\n⬜ YouTube live stream scheduled for Sept 1 morning\n⬜ Draft all launch day posts (IG Reel\, Stories\, Discord announcements) — write them now\, post Sept 1\n⬜ Test Whop purchase flow from a fresh device\n\nMetrics:\n• YouTube reach\n• Reel reach (daily clips should be your highest reach week)\n• Discord member count\n• Countdown sticker subscribers
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-final-posts@awtrading
+DTSTART:20260824T090000
+DTEND:20260824T100000
+SUMMARY:📱 Final week — keep momentum
+DESCRIPTION:Aug 24–31: keep daily or every-other-day posts going.\n\nContent ideas:\n• Countdown clips ("X days until launch")\n• More indicator signal clips\n• Discord member reactions / hype screenshots\n• "If you're on the fence\, here's who this is for" post\n\nDon't go dark. Maintain the momentum from Week 7.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-sept1-prep@awtrading
+DTSTART:20260831T200000
+DTEND:20260831T220000
+SUMMARY:📋 Launch day prep — night before
+DESCRIPTION:Night before launch checklist:\n\n⬜ Publish Whop products (set live for Sept 1 or publish tonight)\n⬜ Queue IG morning Reel (8:30am) — "It's live. Link in bio."\n⬜ Write Discord announcements for #general\, #sept-1-launch\, #start-here (copy/paste ready)\n⬜ Schedule YouTube live stream for 9:30am\n⬜ Confirm website countdown will auto-update to "now live!" text\n⬜ Get a good night's sleep.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-launch-ig@awtrading
+DTSTART:20260901T083000
+DTEND:20260901T090000
+SUMMARY:📱 LAUNCH — IG Reel + Story (8:30am)
+DESCRIPTION:Post the launch Reel first.\n\nCaption:\n"It's live. 🚀\n\nAW Indicator — awtrading.com/indicator\n$39/mo indicator\n$129/mo indicator + Live Trader\n\nLink in bio."\n\nThen post a Story immediately after: "It's live — link in bio 👆"
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-launch-discord@awtrading
+DTSTART:20260901T090000
+DTEND:20260901T091500
+SUMMARY:💬 LAUNCH — Discord announcement (all channels)
+DESCRIPTION:Post in ALL THREE channels simultaneously:\n\n#general:\n"🚀 It's live. AW Indicator + Live Trader are now available.\nGrab it: [Whop link]"\n\n#sept-1-launch:\n"IT'S LIVE. [Whop link] — go get it 🔥"\n\n#start-here:\nUpdate the pinned message to include the Whop link.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-launch-live@awtrading
+DTSTART:20260901T093000
+DTEND:20260901T110000
+SUMMARY:🎥 LAUNCH — YouTube Live Stream
+DESCRIPTION:Go live on YouTube — trade the market open with the indicator.\n\nTitle: "AW Indicator is LIVE — trading the open right now 🚀"\n\nDrop the Whop link in chat every 10 minutes.\nAim for 30–60 minutes.\n\nImmediately after going offline:\n• Clip the best 2-min segment as a YouTube Short\n• Post the clip to Instagram Stories\n• Update Discord with "stream replay is up"
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-launch-day@awtrading
+DTSTART:20260901
+DTEND:20260902
+SUMMARY:🚀 LAUNCH DAY — AW Indicator + Live Trader
+DESCRIPTION:Launch day for AW Indicator ($39/mo) and Live Trader ($129/mo) on Whop.\n\nAll-day checklist:\n✅ 8:30am — IG Reel + Story\n✅ 9:00am — Discord announcements (3 channels)\n✅ 9:30am — YouTube Live\n✅ Midday — clip from live stream to IG\n✅ Stories every 2 hours all day\n✅ Reply to every comment and DM today\n✅ Screenshot first purchases — post to Stories
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-launch-review@awtrading
+DTSTART:20260902T190000
+DTEND:20260902T200000
+SUMMARY:📋 Post-launch review
+DESCRIPTION:Day-after review:\n\n• How many Whop sign-ups in 24 hours?\n• Which post drove the most traffic?\n• Any questions/objections from DMs to address?\n• Post a "thank you" Story to buyers\n• Keep posting — the launch window is 7 days\, not 1 day
+END:VEVENT
+
+END:VCALENDAR
