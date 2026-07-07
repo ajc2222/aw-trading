@@ -114,7 +114,53 @@ If bandwidth is tight, the floor is: **1 YouTube video + 2 Instagram Reels per w
 
 ---
 
-## 5. Success Metrics
+## 5. Membership Content Plan (Live Trader — $129/mo)
+
+### Prerequisite framing
+This curriculum is for traders who already understand market structure, FVGs, BOS, and basic ICT concepts. It does not teach basics. The positioning is: develop judgment, build a personal edge, understand why the market does what it does — not follow a checklist.
+
+### Tier breakdown
+
+| Tier | Price | What they get |
+|---|---|---|
+| AW Indicator | $39/mo | Indicator access, #indicator-users Discord channel, indicator setup PDF, updates |
+| Live Trader | $129/mo | Everything in $39 + 6-module curriculum, weekly live sessions, written playbooks, live trade alerts, #trade-journal feedback channel |
+
+### 6-module curriculum (film one per week, Thursdays)
+
+| Module | Title | Film date | Topics |
+|---|---|---|---|
+| 1 | Why Price Does What It Does | Thu Jul 10 | Institutional order flow, delivery vs. retracement, reading context not patterns, anticipating vs. reacting |
+| 2 | Building Your Data Collection System | Thu Jul 17 | What data matters, how to log a trade (not just entry/exit but the read), weekly review ritual, turning losses into information |
+| 3 | Finding Your Edge in the Data | Thu Jul 24 | Reviewing a month of trades, identifying highest-probability conditions, personal edge vs. market edge, narrowing your playbook |
+| 4 | Psychology — Understanding Yourself as the Variable | Thu Jul 31 | Why you deviate from your plan, personal tilt triggers, pre-trade awareness, processing a losing streak, self-honesty gap |
+| 5 | Building Discretion | Thu Aug 7 | What discretion actually means, reading confluence without a checklist, when setup is valid but the read says no, building conviction |
+| 6 | Advanced Concepts — What I've Actually Picked Up | Thu Aug 14 | Your own observations beyond standard ICT, what you've learned from losses, how you read sessions differently now, how to keep evolving |
+
+### Written playbooks (produce during runway)
+
+| Playbook | Write date | Purpose |
+|---|---|---|
+| Trade log template | Week 2 | Logs the read, context, emotion, deviation — not just P&L |
+| Monthly data review framework | Week 3 | Questions to ask when reviewing a month of trades |
+| Psychology self-audit | Week 4 | Structured self-assessment: tilt triggers, deviation patterns |
+| Risk and sizing guide | Week 5 | Size by conviction level, when to scale up/down based on data |
+| Pre-session framework | Week 6 | A thinking process before the open — reading not reacting |
+
+### Members-only Discord channels (create Sept 1)
+- `#live-trader-lounge` — members-only general chat
+- `#trade-alerts` — real-time setups and live breakdowns
+- `#trade-journal` — members post trades, weekly feedback from you
+- `#resources` — all PDFs and curriculum links pinned here
+- `#weekly-live` — link to each week's live session replay
+- `#indicator-users` — $39 tier channel for indicator Q&A
+
+### Private filming schedule
+Each Thursday (1 hour) during the 8-week runway. Week 7 Saturday (2 hours) for editing and Whop upload. Week 8 for QA and final prep.
+
+---
+
+## 6. Success Metrics
 
 | Metric | Target by Sept 1 |
 |---|---|

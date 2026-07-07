@@ -4,7 +4,13 @@
 
 **Goal:** Execute the 8-week content and community nurture system to convert free Discord members into paying AW Indicator and Live Trader subscribers by September 1, 2026.
 
-**Architecture:** Solo creator workflow — batch film on Tuesdays, upload/post Wednesday–Friday, Discord education drops Friday, Sunday review. Weeks 1–4 are pure value. Weeks 5–7 shift to tease → announce → heat. Sept 1 is an all-platform simultaneous launch.
+**Architecture:** Solo creator workflow — batch film public content Tuesdays, upload/post Wednesday–Friday, Discord education drops Friday, Sunday review. Thursday (1 hr) is private membership content filming. Weeks 1–4 are pure value. Weeks 5–7 shift to tease → announce → heat. Sept 1 is an all-platform simultaneous launch.
+
+**Weekly rhythm:**
+- Tuesday (2hr): batch film all public content for the week
+- Thursday (1hr): film one private membership module + write one playbook
+- Wednesday–Friday: post public content, Discord education drop
+- Sunday: metrics review + next week prep
 
 **Tech Stack:** YouTube Studio, Instagram (Reels + Stories), Discord, Whop, awtrading.com (Vercel), screen recorder (OBS or built-in), video editor (CapCut, DaVinci, or Premiere)
 
@@ -1059,3 +1065,238 @@ Copy this into a spreadsheet. Fill in each Sunday.
 | W7 Aug 17–23 | | | | | | |
 | Final Aug 24–31 | | | | | | |
 | Launch Sept 1 | | | | | | |
+
+---
+
+## Task 11: Membership Content — Private Filming (Thursdays)
+
+**Prerequisite for students:** Must already understand market structure, FVGs, BOS, basic ICT. This curriculum develops judgment and edge — not basics.
+
+### Thu Jul 10 — Module 1: Why Price Does What It Does
+
+- [ ] **Step 1: Film Module 1 (45–60 min of content, 2–3 videos)**
+
+  Topics to cover across the videos:
+  - Institutional order flow as the actual driver of price
+  - Why retail setups fail — what's really happening behind them
+  - How to read a move: delivery, expansion, retracement
+  - The difference between reacting to price and anticipating it
+  - Why context (what came before) matters more than the pattern itself
+
+  Save to `AW Trading Content/Raw Footage/Private/M1-why-price/`
+
+- [ ] **Step 2: Note one strong concept to tease publicly**
+
+  Identify one idea from Module 1 that you can reference in public content (without giving the full lesson). This creates a trail from free content → paid curriculum.
+
+### Thu Jul 17 — Module 2: Building Your Data Collection System
+
+- [ ] **Step 1: Film Module 2 (30–45 min, 2 videos)**
+
+  Topics:
+  - What data actually matters vs. what's noise
+  - How to log a trade: entry/exit/P&L + the read, context, and emotional state
+  - Tracking by session, instrument, and time of day
+  - The weekly review ritual — what patterns to look for
+  - How to extract useful information from a losing trade
+
+  Save to `AW Trading Content/Raw Footage/Private/M2-data-collection/`
+
+- [ ] **Step 2: Write trade log template (PDF)**
+
+  Fields to include:
+  ```
+  Date / Instrument / Session
+  Pre-trade read: [What did you think was happening?]
+  Entry reason: [Why here, not earlier or later?]
+  Result: [P&L + did price do what you expected?]
+  Deviation: [Did you follow your plan? If not, why?]
+  Lesson: [One sentence]
+  ```
+  Save as `AW Trading Content/Assets/Playbooks/trade-log-template.pdf`
+
+### Thu Jul 24 — Module 3: Finding Your Edge in the Data
+
+- [ ] **Step 1: Film Module 3 (30–40 min, 2 videos)**
+
+  Topics:
+  - How to review a month of trades and find real patterns
+  - Identifying your highest-probability conditions (session, setup type, time)
+  - The difference between a market edge and a personal edge
+  - When to stop trading a setup that your data says isn't working for you
+  - How to narrow your playbook based on what your own data shows
+
+  Save to `AW Trading Content/Raw Footage/Private/M3-finding-edge/`
+
+- [ ] **Step 2: Write monthly data review framework (PDF)**
+
+  Questions to include:
+  ```
+  1. Which session was most profitable? Least?
+  2. Which setup type had the highest win rate?
+  3. What time of day were your worst trades?
+  4. Where did you deviate from your plan — and what triggered it?
+  5. What is one setup to cut this month based on the data?
+  6. What is one condition to press harder based on the data?
+  ```
+  Save as `AW Trading Content/Assets/Playbooks/monthly-review-framework.pdf`
+
+### Thu Jul 31 — Module 4: Psychology — Understanding Yourself as the Variable
+
+- [ ] **Step 1: Film Module 4 (30–40 min, 2 videos)**
+
+  Topics:
+  - Why you deviate from your plan and what that reveals about you
+  - Recognizing your personal tilt triggers (loss streaks, FOMO, revenge)
+  - The pre-trade mental checklist — not rules, but self-awareness
+  - How to process a losing streak without destroying your edge
+  - The self-honesty gap: what you think you do vs. what you actually do
+
+  Save to `AW Trading Content/Raw Footage/Private/M4-psychology/`
+
+- [ ] **Step 2: Write psychology self-audit (PDF)**
+
+  Format:
+  ```
+  Run this monthly. Answer honestly.
+
+  1. What was my most common reason for deviating from my plan?
+  2. What emotional state preceded my worst trades?
+  3. Did I revenge trade? What triggered it?
+  4. Did I cut winners early? What was I afraid of?
+  5. On my best trading days, what was different about my mindset?
+  6. One thing I will do differently next month:
+  ```
+  Save as `AW Trading Content/Assets/Playbooks/psychology-self-audit.pdf`
+
+### Thu Aug 7 — Module 5: Building Discretion
+
+- [ ] **Step 1: Film Module 5 (30–40 min, 2 videos)**
+
+  Topics:
+  - What discretion actually means (it's not guessing — it's informed judgment)
+  - Reading confluence without running through a checklist
+  - When the setup is technically valid but the read says don't take it
+  - How to develop conviction — knowing when you actually have edge
+  - The role of patience: not every session needs a trade
+
+  Deliver primarily through chart walkthroughs and real examples. Minimize definitions.
+  Save to `AW Trading Content/Raw Footage/Private/M5-discretion/`
+
+- [ ] **Step 2: Write risk and sizing guide (PDF)**
+
+  ```
+  Sizing by conviction — not a fixed rule:
+
+  High conviction (A+ setup, context confirms, clean structure):
+  → Full size
+  High conviction but one condition missing:
+  → 75% size
+  Moderate conviction (setup valid, context unclear):
+  → 50% size or skip
+  Low conviction / forcing it:
+  → Do not trade
+
+  When to scale up: 3+ consecutive weeks of positive data
+  When to scale down: 2+ consecutive losing days, or any emotional deviation
+  Max daily loss: [set your own number — stop trading when hit, no exceptions]
+  ```
+  Save as `AW Trading Content/Assets/Playbooks/risk-sizing-guide.pdf`
+
+### Thu Aug 14 — Module 6: Advanced Concepts — What I've Actually Picked Up
+
+- [ ] **Step 1: Plan your advanced concepts before filming**
+
+  Write out 4–6 observations you've made beyond standard ICT. These should be:
+  - Things you figured out through your own trading, not things you learned from someone else
+  - Specific enough to be actionable, not vague principles
+  - Things that would surprise even an experienced ICT trader
+
+  These are the most valuable thing in your curriculum. Don't rush this step.
+
+- [ ] **Step 2: Film Module 6 (45–60 min, 3–4 videos)**
+
+  Structure:
+  - Video 1: Your advanced observations (2–3 concepts)
+  - Video 2: What you've learned specifically from your losing trades
+  - Video 3: How you read sessions differently now vs. when you started
+  - Video 4: How to keep evolving after the mentorship — your learning process
+
+  Save to `AW Trading Content/Raw Footage/Private/M6-advanced/`
+
+- [ ] **Step 3: Write pre-session framework (PDF)**
+
+  ```
+  Before every session — not a checklist, a thinking process:
+
+  1. What is the higher timeframe narrative? (Who has control — buyers or sellers?)
+  2. Where is the liquidity resting above and below price?
+  3. What would price need to do to confirm the narrative?
+  4. What session am I trading and what does that session typically deliver?
+  5. What is my read? (Write it down before the open.)
+  6. Am I in a state to trade today? (Check psychology self-audit triggers.)
+
+  After the session:
+  - Did price confirm your narrative?
+  - If not, where was the read wrong?
+  - Log the trade.
+  ```
+  Save as `AW Trading Content/Assets/Playbooks/pre-session-framework.pdf`
+
+### Sat Aug 22 — Edit All Modules + Upload to Whop
+
+- [ ] **Step 1: Edit all 6 modules**
+
+  Priority order: M1 → M6 (edit them in sequence).
+  Each video: trim dead air, add chapter titles as text overlays. No heavy production needed — clean audio and clear screen is enough.
+  Export all at 1080p. Save to `AW Trading Content/Edited/Private/`
+
+- [ ] **Step 2: Upload to Whop**
+
+  In Whop dashboard: create the Live Trader product course section.
+  Upload modules in order. Set access to $129/mo tier only.
+  Upload all 5 PDFs to a resources section.
+
+- [ ] **Step 3: Create members-only Discord channels**
+
+  Create all 6 channels in Discord:
+  - `#live-trader-lounge` — set role access to $129/mo members only
+  - `#trade-alerts` — same role restriction
+  - `#trade-journal` — same role restriction
+  - `#resources` — pin all 5 PDF playbooks here immediately
+  - `#weekly-live` — for session replay links post-launch
+  - `#indicator-users` — set role access to $39/mo+ members
+
+### Week 8 (Aug 24–31) — QA and Final Prep
+
+- [ ] **Step 1: Watch every module from start to finish**
+
+  Watch as a student would. Note anything confusing or missing.
+  Fix any issues before Sept 1.
+
+- [ ] **Step 2: Test Whop member access**
+
+  Create a test account or use a second device.
+  Purchase the $39 tier and verify indicator access + #indicator-users channel.
+  Purchase the $129 tier and verify curriculum access + all members channels + PDFs.
+
+- [ ] **Step 3: Write the welcome message**
+
+  Draft what $129/mo members see immediately after purchase:
+  ```
+  Welcome to Live Trader.
+
+  Here's where to start:
+  1. Introduce yourself in #live-trader-lounge
+  2. Download your resources in #resources — start with the trade log template
+  3. Begin Module 1 in the course section
+  4. Our first live session is [date] at [time]
+
+  This curriculum assumes you know the basics. If you're starting from zero,
+  the $39 indicator tier + the free Discord is the right place to begin.
+  ```
+
+- [ ] **Step 4: Schedule first post-launch live session**
+
+  Pick a date in the first week of September for the first live session.
+  Add it to Google Calendar. Post in #weekly-live on Sept 1 with the date.
