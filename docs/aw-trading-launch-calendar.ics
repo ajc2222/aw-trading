@@ -494,4 +494,68 @@ SUMMARY:📋 Post-launch review
 DESCRIPTION:Day-after review:\n\n• How many Whop sign-ups in 24 hours?\n• Which post drove the most traffic?\n• Any questions/objections from DMs to address?\n• Post a "thank you" Story to buyers\n• Keep posting — the launch window is 7 days\, not 1 day
 END:VEVENT
 
+BEGIN:VEVENT
+UID:aw-ind-session-liq@awtrading
+DTSTART:20260708T140000
+DTEND:20260708T160000
+SUMMARY:🛠️ INDICATOR — Finish Session Liquidity
+DESCRIPTION:Feature 3: Session Liquidity\n\nFinish and test this feature:\n• Asia / London / NY session highs and lows drawn as horizontal lines\n• Sweep detection: mark when price closes beyond a level\n• Toggle per session\n• Spec: src/indicator/indicator-spec.md\n• Code: src/indicator/aw-indicator.pine\n\nAgent prompt:\n"Implement Feature 3 (Session Liquidity) from the spec. Do not modify existing CISD or IFVG logic."
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-ind-htf-imbalance@awtrading
+DTSTART:20260709T190000
+DTEND:20260709T203000
+SUMMARY:🛠️ INDICATOR — HTF Imbalance Levels
+DESCRIPTION:Feature 4: HTF Imbalance\n\nFetch FVGs from a higher timeframe (default 1H) and draw them on the current chart.\nLevel only activates when price enters the zone.\nMark as mitigated when price closes past midpoint.\n• Use request.security() with lookahead_off\n• Max 5 zones displayed at once\n• Spec: src/indicator/indicator-spec.md
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-ind-psp@awtrading
+DTSTART:20260710T190000
+DTEND:20260710T203000
+SUMMARY:🛠️ INDICATOR — PSP (Precision Swing Point)
+DESCRIPTION:Feature 5: PSP\n\nOn each confirmed bar:\n• If Symbol A closes bullish AND Symbol B closes bearish → Bearish PSP\n• If Symbol A closes bearish AND Symbol B closes bullish → Bullish PSP\n• Draw a label/shape on the chart\n• Default symbols: ES1! and NQ1!\n• Spec: src/indicator/indicator-spec.md\n\nAgent prompt:\n"Implement Feature 5 (PSP) from the spec. Use request.security() for Symbol B. Only fire on barstate.isconfirmed."
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-ind-smt-core@awtrading
+DTSTART:20260713T190000
+DTEND:20260713T203000
+SUMMARY:🛠️ INDICATOR — SMT Core (single pair)
+DESCRIPTION:Feature 6: SMT — Smart Money Tool\n\nDetect swing divergence between chart symbol and one user-defined symbol:\n• Bearish SMT: chart makes higher swing high\, other makes lower swing high\n• Bullish SMT: chart makes lower swing low\, other makes higher swing low\n• Configurable swing lookback (default 5)\n• Draw label at divergence point\n• Spec: src/indicator/indicator-spec.md
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-ind-smt-multipair@awtrading
+DTSTART:20260716T190000
+DTEND:20260716T210000
+SUMMARY:🛠️ INDICATOR — Multi-Pair SMT (ES / YM / NQ) + SSMT
+DESCRIPTION:Features 7 + 8: Multi-Pair SMT and SSMT Sequential\n\nExtend SMT to all three pairs:\n• ES vs NQ (default on)\n• ES vs YM\n• NQ vs YM\n• Confluence label when 2+ pairs fire same bar\n\nThen add SSMT:\n• Track last N SMT signals\n• If 2+ consecutive signals same direction → SSMT confirmed\n• Draw SSMT marker and optional connecting line\n• Spec: src/indicator/indicator-spec.md
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-ind-qt@awtrading
+DTSTART:20260720T190000
+DTEND:20260720T210000
+SUMMARY:🛠️ INDICATOR — QT (Quarterly Theory)
+DESCRIPTION:Feature 9: Quarterly Theory overlay\n\nDivide the session into 4 equal quarters visually.\nFlag when SMT fires at or near a quarterly boundary (within N bars).\n• Off by default — user opts in\n• Draw subtle vertical lines at quarter boundaries\n• "QT SMT" label when SMT fires at boundary\n• Spec: src/indicator/indicator-spec.md\n\nNote: Coordinate with Daye's QT framework. Quarter boundaries are time-based\, not price-based.
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-ind-suggestions@awtrading
+DTSTART:20260723T190000
+DTEND:20260723T203000
+SUMMARY:🛠️ INDICATOR — Suggested Features (pick 1–2)
+DESCRIPTION:Optional Feature Session — evaluate after v1:\n\n• A: Kill Zone Shading (easiest — background color during LO/NYO/PM)\n• B: HTF Bias Label (corner label showing current bias)\n• C: EQH/EQL detection (equal highs/lows as liquidity targets)\n• D: Displacement detection\n• E: MSS + BOS detection\n\nPick the 1–2 that add the most visual value for the tease/reveal video.\nSpec: src/indicator/indicator-spec.md
+END:VEVENT
+
+BEGIN:VEVENT
+UID:aw-ind-qa@awtrading
+DTSTART:20260727T190000
+DTEND:20260727T210000
+SUMMARY:✅ INDICATOR — Full QA + Polish
+DESCRIPTION:Final QA before tease deadline (Aug 3):\n\n⬜ Test every feature on 1m ES chart\n⬜ Test every feature on 5m ES chart\n⬜ Test SMT/PSP with NQ\, YM pulled in\n⬜ Verify no repainting on any feature (check barstate.isconfirmed gates)\n⬜ Check that all settings labels are clean and professional\n⬜ Remove any debug labels or test plots\n⬜ Settings panel order: CISD → IFVG → HTF Imbalance → Session Liq → PSP → SMT → QT\n⬜ Make sure the indicator looks clean on a dark TradingView theme for screen recording
+END:VEVENT
+
 END:VCALENDAR
