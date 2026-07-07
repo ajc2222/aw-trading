@@ -1,0 +1,18 @@
+// AW Indicator — TradingView Pine Script
+// Platform: TradingView
+// Language: Pine Script v6
+//
+// Features built:
+//   - IFVG (Inverse Fair Value Gap)
+//   - CISD (Change in State of Delivery)
+//
+// Features planned:
+//   - (add here as you build)
+//
+// Paste current indicator code below this line
+// ─────────────────────────────────────────────
+
+//@version=6
+indicator("AW Indicator", overlay=true)
+
+// === PASTE YOUR CODE HERE ===
