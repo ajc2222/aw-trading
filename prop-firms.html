@@ -93,6 +93,7 @@ nav{position:sticky;top:0;left:0;right:0;z-index:100;background:linear-gradient(
 .logo-mark::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,var(--blue) 50%,transparent 70%);transform:translateX(-100%);animation:sheen 4s ease infinite;mix-blend-mode:screen}
 @keyframes sheen{0%,60%{transform:translateX(-100%)}80%,100%{transform:translateX(100%)}}
 .logo-mark span{position:relative;z-index:1}
+.logo-img{height:32px;width:auto;display:block}
 .nav-links{display:flex;gap:30px;font-size:.9rem;font-weight:500;color:var(--muted)}
 .nav-links a{transition:color .2s}
 .nav-links a:hover,.nav-links a.on{color:var(--white)}
@@ -195,7 +196,7 @@ footer{border-top:1px solid var(--line);padding:44px 0}
 <header>
 <nav>
   <div class="wrap nav-in">
-    <a href="/" class="logo"><span class="logo-mark"><span>AW</span></span>AW&nbsp;Trading</a>
+    <a href="/" class="logo"><img src="aw_logo-removebg-preview.png" alt="AW Trading" class="logo-img"></a>
     <div class="nav-links">
       <a href="/indicator">Indicator</a>
       <a href="/#mentorship">Mentorship</a>
@@ -278,7 +279,7 @@ footer{border-top:1px solid var(--line);padding:44px 0}
 
 <footer>
   <div class="wrap foot-grid">
-    <a href="/" class="logo"><span class="logo-mark"><span>AW</span></span>AW&nbsp;Trading</a>
+    <a href="/" class="logo"><img src="aw_logo-removebg-preview.png" alt="AW Trading" class="logo-img"></a>
     <div class="foot-links">
       <a href="/">Home</a>
       <a href="/indicator">Indicator</a>
