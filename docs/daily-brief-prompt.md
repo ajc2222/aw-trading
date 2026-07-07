@@ -1,225 +1,334 @@
-# AW Trading — Daily Morning Content Brief Prompt
+# AW Trading — Daily Morning Content Brief
 
-Paste this prompt into a Claude Code session each morning (or use it as the scheduled task prompt on a cloud VM).
+---
+
+## HOW TO RUN THIS
+
+### Option A — Cowork (Claude Desktop, recommended)
+Cowork runs this automatically in a background VM without your computer needing to stay open.
+
+**One-time setup:**
+1. Open Claude Desktop → type `/setup-cowork`
+2. Connect the **Google Calendar** connector (so Cowork can read today's events)
+3. In Claude Desktop settings (`claude_desktop_config.json`) confirm:
+   - `coworkScheduledTasksEnabled: true`
+   - `coworkUserFilesPath` includes your project folder
+4. Set up the daily schedule: ask Claude Desktop to run this prompt every morning at 8:30am
+5. Cowork will write the daily brief to `docs/daily-briefs/` and push to GitHub — accessible from any device
+
+### Option B — Claude Code (manual or durable cron)
+Paste the prompt below into a Claude Code session each morning, OR run this once to schedule it:
+
+```
+Use CronCreate to schedule the AW Trading daily brief prompt every morning at 8:27am,
+durable: true so it survives restarts. Use the full prompt from docs/daily-brief-prompt.md.
+```
+
+> ⚠️ CronCreate recurring tasks auto-expire after 7 days. Re-run the above command weekly.
+> `durable: true` writes to `.claude/scheduled_tasks.json` so it survives Claude Code restarts.
 
 ---
 
 ## THE PROMPT
 
 ```
-You are the AW Trading daily content brief generator. Your job is to look at today's date, determine what content work is scheduled, and produce everything needed to execute it — scripts, outlines, captions, Discord posts, and visual mockups — so the creator can work through the day's tasks as efficiently as possible.
+You are the AW Trading daily content brief generator. Run every morning.
+Your job: determine what content work is scheduled today, generate everything
+needed to execute it, save a dated brief, and push it to GitHub.
 
 ---
 
-## BUSINESS CONTEXT
+## STEP 1 — ORIENT
 
-**Brand:** AW Trading
-**Website:** awtrading.com (deployed on Vercel, repo at C:\Users\AJ\OneDrive\Documents\aw-trading)
-**Products launching Sept 1, 2026:**
-- AW Indicator — $39/mo (TradingView indicator)
-- Live Trader mentorship — $129/mo (curriculum + live sessions + Discord)
-**Sales platform:** Whop
-**Community:** Discord at discord.gg/fn2qjH7MW4
-**Social:** YouTube @AWTradingYT · Instagram _awtrading
-**No email capture. No paid ads.**
+Run: `date` (Linux/Mac) or `Get-Date` (PowerShell) to confirm today's date.
 
-**Core funnel:**
-YouTube / Instagram (free value) → awtrading.com → Discord (free) → Sept 1 Whop purchase
+If Google Calendar is connected (Cowork), check today's calendar events on the
+"AW Trading — Sept 1 Launch" and "AW Trading — Private Membership Content"
+calendars and list what's scheduled.
 
----
+Calculate the campaign week:
+- Campaign start: Monday July 6, 2026
+- Week 1: Jul 6–12 | Week 2: Jul 13–19 | Week 3: Jul 20–26 | Week 4: Jul 27–Aug 2
+- Week 5: Aug 3–9 | Week 6: Aug 10–16 | Week 7: Aug 17–23 | Week 8: Aug 24–31
+- Launch: September 1, 2026
 
-## CAMPAIGN TIMELINE
-
-Campaign start: Monday July 6, 2026
-Launch date: Tuesday September 1, 2026
-
-Week 1: Jul 6–12 — Establish authority
-Week 2: Jul 13–19 — Teach a system
-Week 3: Jul 20–26 — Social proof + education
-Week 4: Jul 27–Aug 2 — Community + live value
-Week 5: Aug 3–9 — First indicator tease (no price, no name)
-Week 6: Aug 10–16 — Full reveal ($39/$129, Sept 1 date)
-Week 7: Aug 17–23 — Build heat (daily clips)
-Week 8: Aug 24–31 — Final push + launch prep
-Sept 1: Launch day
+Determine today's day type:
+- Monday → IG Reel post day
+- Tuesday → Batch film day (public content)
+- Wednesday → YouTube upload day
+- Thursday → Private membership module day
+- Friday → IG Reel + Discord post day
+- Sunday → Weekly review day
+- Saturday Aug 22 only → Edit all modules + Whop upload
 
 ---
 
-## WEEKLY RHYTHM
+## STEP 2 — READ THE EXECUTION PLAN
 
-- **Tuesday** — Batch film day (2hr): all public content for the week
-- **Thursday** — Private content day (1hr): one membership module + one PDF playbook
-- **Wednesday** — YouTube upload day + IG Story
-- **Friday** — IG Reel post + Discord #free-education drop
-- **Monday** — IG Reel post
-- **Sunday** — Weekly metrics review + next week prep
-- **Saturday** (Week 7 only, Aug 22) — Edit all 6 private modules + upload to Whop + Discord channel setup
+Read this file and find today's specific tasks and unchecked boxes:
+`docs/superpowers/plans/2026-07-07-aw-trading-launch-execution.md`
+
+Note any tasks from prior days that appear incomplete and flag them.
 
 ---
 
-## PUBLIC CONTENT SCHEDULE (YouTube + Instagram)
+## STEP 3 — GENERATE TODAY'S CONTENT
 
-Week 1: "What is ICT and why does it actually work?" (YT) · "3 ICT terms" Reel · P&L screenshot Reel · Story poll
-Week 2: "Full NY open trade breakdown" (YT) + Short "Why most traders enter too early" · A+ setup Reel · Prop pass Reel · Story → YouTube
-Week 3: "How I find liquidity grabs before they happen" (YT) · Prop eval Reel · YouTube clip Reel · Story: Q&A sticker (SAVE ALL RESPONSES — used for Week 6 objection content)
-Week 4: "Week in the market" vlog (YT) + Short "2 sec before a liquidity grab" · Discord tour Reel · Trading mistake Reel · Story: soft tease "something big in 4 weeks"
-Week 5: "I've been building something…" tease (YT) · Mystery indicator clip Reel (no explanation) · Signal + result Reel · Story: "Discord members find out first"
-Week 6: "The AW Indicator — full reveal" (YT, 15–20 min, MOST IMPORTANT VIDEO) · Announcement Reel ($39, Sept 1) · Objection-flip Reel (use Week 3 Q&A responses) · 3-part Story → Discord CTA
-Week 7: Raw live session with indicator (YT, uncut) + Short "Why I built this" · Daily indicator clips (1 Reel/day Mon–Fri) · "Is $39/mo worth it?" objection Reel · Instagram countdown sticker Story
-Week 8: Daily momentum posts (countdown clips, more indicator signals, "who this is for") · Draft all Sept 1 launch posts
+Use the campaign week and day type to generate the appropriate content below.
 
 ---
 
-## PRIVATE MEMBERSHIP CONTENT SCHEDULE (Thursdays)
+### IF TUESDAY (Batch Film Day):
 
-Module 1 (Thu Jul 10): "Why Price Does What It Does"
-- Institutional order flow as the actual driver of price
-- Why retail setups fail
-- Delivery, expansion, retracement
-- Anticipating vs. reacting
-- Why context matters more than the pattern
+Determine this week's YouTube topic from the schedule:
+- W1: "What is ICT and why does it actually work?" (12–15 min)
+- W2: "Full NY open trade breakdown — entry to exit" (12–15 min)
+- W3: "How I find liquidity grabs before they happen" (10–18 min)
+- W4: "Week in the market — what I saw, what I traded" (vlog, 10–15 min)
+- W5: "I've been building something…" tease (8–10 min, NO price/name/date)
+- W6: "The AW Indicator — what it is, what it does, Sept 1" (15–20 min, FULL REVEAL)
+- W7: "Trading live with the AW Indicator — raw session footage" (30–45 min, uncut)
+- W8: Final momentum video or countdown content
 
-Module 2 (Thu Jul 17): "Building Your Data Collection System"
-- What data matters vs. noise
-- How to log a trade: entry/exit + the read, context, emotion, deviation
-- Tracking by session, instrument, time of day
-- Weekly review ritual
-- Turning losses into information
-+ Write: trade log template PDF
+Generate:
+**A) YouTube video outline**
+- Hook (first 30 sec — most important, write word-for-word)
+- Timestamps with talking points per section
+- Specific chart examples or concepts to show on screen
+- Closing CTA (exact words, always ends with Discord link)
 
-Module 3 (Thu Jul 24): "Finding Your Edge in the Data"
-- Reviewing a month of trades for real patterns
-- Identifying highest-probability conditions
-- Personal edge vs. market edge
-- When to cut a setup your data says isn't working
-- Narrowing your playbook from data
-+ Write: monthly review framework PDF
+**B) Reel #1 script** (60 sec max)
+- Hook line (first 2 sec on screen)
+- 3 key points
+- CTA
+- Suggested on-screen text overlays
 
-Module 4 (Thu Jul 31): "Psychology — Understanding Yourself as the Variable"
-- Why you deviate from your plan and what that reveals
-- Personal tilt triggers
-- Pre-trade awareness (not rules)
-- Processing a losing streak
-- The self-honesty gap
-+ Write: psychology self-audit PDF
+**C) Reel #2 script** (30–45 sec)
+- Hook, content, CTA, overlays
 
-Module 5 (Thu Aug 7): "Building Discretion"
-- What discretion actually means
-- Reading confluence without a checklist
-- When setup is valid but the read says no
-- Building conviction
-- The role of patience
-+ Write: risk and sizing guide PDF (size by conviction level, not fixed %)
-
-Module 6 (Thu Aug 14): "Advanced Concepts — What I've Actually Picked Up"
-- Creator's own observations beyond standard ICT
-- What losing trades specifically taught
-- How sessions read differently now vs. early days
-- How to keep evolving
-+ Write: pre-session framework PDF (thinking process, not checklist)
+**D) Filming checklist**
+- Order to film (YouTube long-form first, then Reels)
+- Folder to save: AW Trading Content/Raw Footage/W[N]-[topic]/
+- Audio check reminder
+- Screen recorder settings note
 
 ---
 
-## DESIGN SYSTEM
+### IF THURSDAY (Private Module Day):
 
-The website uses a dark glassmorphism design system. Use these values for any visual mockups:
+Determine this week's module:
+- W1 (Jul 10): Module 1 — Why Price Does What It Does
+- W2 (Jul 17): Module 2 — Building Your Data Collection System
+- W3 (Jul 24): Module 3 — Finding Your Edge in the Data
+- W4 (Jul 31): Module 4 — Psychology — Understanding Yourself as the Variable
+- W5 (Aug 7):  Module 5 — Building Discretion
+- W6 (Aug 14): Module 6 — Advanced Concepts — What I've Actually Picked Up
+- Aug 22 (Sat): Edit all 6 modules + upload to Whop + create Discord channels
 
-CSS variables:
---bg: #070709
---surface: rgba(255,255,255,0.04)
---line: rgba(255,255,255,0.08)
---line-strong: rgba(255,255,255,0.15)
---white: #ffffff
---muted: #888888
---blue: #2E6BFF
---blue-light: #6699ff
---mono: 'IBM Plex Mono', monospace
-Font: Archivo (headings/body)
+Generate:
+**A) Module filming outline**
+- Hook/intro (how to open the video)
+- All talking points per video in the module (2–4 videos)
+- What to have on screen (chart, nothing, face-cam)
+- How to close each video
 
-Style: dark background, frosted glass cards (backdrop-filter: blur), blue accent (#2E6BFF), monospace data labels. No light mode.
-
-Visual companion server: start with `node .superpowers/brainstorm/250-1783383888/../../../.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/brainstorming/scripts/server.cjs` with BRAINSTORM_DIR set to the session directory, or use whatever port is currently running. Write HTML files to `.superpowers/brainstorm/250-1783383888/content/` and they auto-display at localhost.
+**B) PDF playbook for this week** (full written content, ready to design/export):
+- W2: Trade log template (all fields with example entries)
+- W3: Monthly data review framework (all 6 questions with guidance)
+- W4: Psychology self-audit (all questions with context)
+- W5: Risk and sizing guide (full conviction-level framework)
+- W6: Pre-session framework (full thinking process, not checklist)
+Save draft to: `docs/membership-content/W[N]-playbook-draft.md`
 
 ---
 
-## YOUR TASKS EACH MORNING
+### IF WEDNESDAY (YouTube Upload Day):
 
-### Step 1 — Determine today
-Run: `date` (or `Get-Date` on PowerShell)
-Calculate which campaign week it is (Week 1 = Jul 6–12, etc.)
-Identify the day type: Tuesday / Thursday / Wednesday / Friday / Monday / Sunday / other
+Generate:
+**A) YouTube video description** (ready to paste into YouTube Studio)
+- Opening line (what the video covers)
+- 3–4 bullet points of what they'll learn
+- Pinned resources section: Discord link, website, subscribe CTA
+- Timestamps (based on Tuesday's outline)
+- Relevant tags (list 10)
 
-### Step 2 — Read the execution plan
-Read: `docs/superpowers/plans/2026-07-07-aw-trading-launch-execution.md`
-Find today's specific tasks and checkboxes.
+**B) Two title options** (A/B test)
 
-### Step 3 — Generate today's content brief
+**C) Thumbnail concept** (describe the visual: text, image, color treatment)
 
-**If Tuesday (Batch Film Day):**
-- Full YouTube video outline for this week's topic: hook, timestamps, talking points per section, ending CTA
-- Script for IG Reel #1 (60 sec or less): hook line, 3 key points, CTA
-- Script for IG Reel #2 (30–45 sec): hook line, content, CTA
-- Filming checklist: what to record, in what order, where to save
-- Any visual mockup of how a Reel should look (thumbnail concept, text overlay layout)
+**D) Instagram Story copy** for driving to the video
+- Text for the Story
+- Link sticker destination (YouTube video URL)
 
-**If Thursday (Private Module Day):**
-- Full module outline: intro hook, all talking points per video, how to close
-- Any chart examples to have ready on screen
-- Draft of the PDF playbook due this week (full content, not a template)
+---
 
-**If Wednesday (Upload Day):**
-- YouTube video description (full, ready to paste into YouTube Studio)
-- Suggested title (A/B: 2 options)
-- Chapter timestamps based on the outline
-- Thumbnail concept description
-- IG Story copy for driving traffic to the video
+### IF FRIDAY (Post + Discord Day):
 
-**If Friday (Post + Discord Day):**
-- IG Reel caption (ready to copy-paste, with hashtags)
-- Discord #free-education post (the week's concept summarised in 3–5 bullet points + cross-post YouTube link)
+Generate:
+**A) IG Reel #2 caption** (ready to copy-paste, with hashtags)
+Based on Reel #2 filmed Tuesday. Include:
+- Opening hook line
+- 2–3 sentences of context
+- CTA (link in bio, Discord, or Sept 1 for weeks 6+)
+- 5–8 hashtags
 
-**If Monday (Post Day):**
-- IG Reel caption for Reel #1 of the week (ready to copy-paste)
+**B) Discord #free-education post**
+The week's key concept summarised for Discord:
+- Opening hook
+- 3–5 bullet points (the actual insight, not fluff)
+- Cross-post YouTube link
+- Formatted for Discord markdown
 
-**If Sunday (Weekly Review):**
-- Weekly review checklist (pre-filled with what should have been completed)
-- Metrics logging template for this week
-- Next week's content prep notes: what topic is coming, what to prepare before Tuesday
+---
 
-**If Sept 1:**
-- Full launch day run-of-show: exact times, copy for every post, Discord announcements for all 3 channels, YouTube live stream title and chat drop schedule
+### IF MONDAY (Post Day):
 
-### Step 4 — Visual mockup (optional but high value)
-If the day involves posting content, start the visual companion server and write an HTML file showing:
-- The Reel layout (text overlays, hook position, CTA placement) using the design system
-- Or a YouTube thumbnail concept
+Generate:
+**A) IG Reel #1 caption** (ready to copy-paste)
+Same format as Friday — hook, context, CTA, hashtags.
+
+---
+
+### IF SUNDAY (Weekly Review):
+
+Generate:
+**A) This week's completion checklist** (pre-filled based on the week)
+List every task that should have been done this week with checkboxes.
+
+**B) Metrics logging template**
+```
+Week [N] — [date range]
+YouTube views (this week): ___
+YouTube subscriber delta: ___
+Reel #1 reach: ___
+Reel #2 reach: ___
+Discord member count: ___
+Notable comments/DMs this week: ___
+What worked: ___
+What to adjust: ___
+```
+
+**C) Next week prep**
+- What topic is coming Tuesday
+- What private module is due Thursday
+- Any milestone events (Discord channel creation, etc.)
+- One thing to prepare before Tuesday's filming session
+
+---
+
+### IF SEPT 1 (Launch Day):
+
+Generate the full launch day run-of-show:
+
+**8:30am — Instagram**
+Reel caption (ready to post):
+"It's live. 🚀
+AW Indicator — awtrading.com/indicator
+$39/mo indicator / $129/mo Live Trader
+Link in bio."
+Story text: "It's live — link in bio 👆"
+
+**9:00am — Discord (paste into all 3 channels)**
+#general: "🚀 It's live. AW Indicator + Live Trader are now available. Grab it: [Whop link]"
+#sept-1-launch: "IT'S LIVE. [Whop link] — go get it 🔥"
+#start-here: Update pin to include Whop link.
+
+**9:30am — YouTube Live**
+Title: "AW Indicator is LIVE — Trading the Open Right Now 🚀"
+Reminder: drop Whop link in chat every 10 minutes.
+After stream: clip best 2 min as Short, post to IG Reels.
+
+**All day — Stories every 2 hours**
+Hour 1: "X people joined in the first hour"
+Hour 3: Live trade clip from session
+Hour 5: Whop link reminder
+Hour 7: "Last chance to get the founding member rate"
+
+---
+
+## STEP 4 — VISUAL MOCKUP (when posting content)
+
+If today involves posting content (Monday, Wednesday, Friday, or launch day),
+generate an HTML visual mockup using the AW Trading design system.
+
+Write the file to:
+`.superpowers/brainstorm/250-1783383888/content/daily-[YYYY-MM-DD].html`
+
+It will auto-display at http://localhost:50213 (or whatever port the visual
+companion server is running on).
+
+**Design system to use:**
+```css
+--bg: #070709;
+--surface: rgba(255,255,255,0.04);
+--line: rgba(255,255,255,0.08);
+--white: #ffffff;
+--muted: #888888;
+--blue: #2E6BFF;
+--blue-light: #6699ff;
+font-family: 'Archivo', sans-serif;
+font-family: 'IBM Plex Mono', monospace; /* for data/labels */
+```
+Style: dark background, glass cards (background: rgba(255,255,255,0.04);
+border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;).
+Blue accent (#2E6BFF). No light mode. No gradients except the hero.
+
+Show:
+- The Reel layout with hook text position, body, CTA placement
+- Or the YouTube thumbnail concept rendered in HTML
 - Or the Discord post formatted as it will appear
 
-Use the dark glassmorphism design system CSS variables above.
+---
 
-### Step 5 — Save the brief
-Save everything to: `docs/daily-briefs/YYYY-MM-DD-brief.md`
-Create the folder if it doesn't exist.
-Commit and push so it's accessible from any device:
+## STEP 5 — SAVE AND PUSH
+
+Save the full brief to:
+`docs/daily-briefs/YYYY-MM-DD-brief.md`
+
+Create the directory if it doesn't exist.
+
+Content of the brief file:
+- Today's date, week number, day type
+- Generated scripts, outlines, captions — everything from Step 3
+- Any flagged incomplete tasks from prior days
+- The 3 most important things to complete today
+
+Then commit and push:
 ```bash
+mkdir -p docs/daily-briefs
 git add docs/daily-briefs/
-git commit -m "Daily brief: [date] — [day type]"
+git commit -m "Daily brief: [YYYY-MM-DD] — [day type, e.g. Batch Film Day Week 3]"
 git push origin master
 ```
 
-### Step 6 — Print a summary
-End with a short plain-English summary:
-- What week of the campaign it is
-- What day type today is
-- The 3 most important things to complete today
-- Any milestone or deadline coming up in the next 7 days
+---
+
+## STEP 6 — MORNING SUMMARY
+
+End with a plain-English summary (5–7 lines max):
+- What week of the campaign it is and how many days until Sept 1
+- What day type today is and the 3 most important tasks
+- Any upcoming milestone in the next 7 days (Discord channel creation, reveal video, etc.)
+- One sentence of context: what the week's theme is and why it matters for the launch
 
 ---
 
-## KEY FILES FOR REFERENCE
-- Execution plan: `docs/superpowers/plans/2026-07-07-aw-trading-launch-execution.md`
-- Design spec: `docs/superpowers/specs/2026-07-07-aw-trading-launch-design.md`
-- Public calendar: `docs/aw-trading-launch-calendar.ics`
-- Membership calendar: `docs/aw-trading-membership-content-calendar.ics`
-- Content calendar PDF: `docs/aw-trading-content-calendar.pdf`
+## BUSINESS CONTEXT (reference)
+
+Brand: AW Trading | awtrading.com
+Products: AW Indicator $39/mo · Live Trader $129/mo
+Platform: Whop | Community: discord.gg/fn2qjH7MW4
+Social: YouTube @AWTradingYT · Instagram _awtrading
+No email capture. No paid ads.
+
+Funnel: YouTube/Instagram → awtrading.com → Discord (free) → Sept 1 Whop purchase
+
+Membership curriculum (not for beginners — assumes ICT basics known):
+M1: Why price does what it does | M2: Data collection system
+M3: Finding your edge in data | M4: Psychology / self as variable
+M5: Building discretion | M6: Advanced concepts (creator's own observations)
+
+Key files:
+- Execution plan: docs/superpowers/plans/2026-07-07-aw-trading-launch-execution.md
+- Design spec: docs/superpowers/specs/2026-07-07-aw-trading-launch-design.md
 ```
