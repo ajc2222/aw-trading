@@ -1,18 +1,351 @@
-// AW Indicator — TradingView Pine Script
-// Platform: TradingView
-// Language: Pine Script v6
-//
-// Features built:
-//   - IFVG (Inverse Fair Value Gap)
-//   - CISD (Change in State of Delivery)
-//
-// Features planned:
-//   - (add here as you build)
-//
-// Paste current indicator code below this line
-// ─────────────────────────────────────────────
-
 //@version=6
-indicator("AW Indicator", overlay=true)
+indicator("CISD + IFVG", shorttitle="AW Model", overlay=true, max_bars_back=1000, max_boxes_count=500, max_lines_count=500, max_labels_count=500)
 
-// === PASTE YOUR CODE HERE ===
+g1 = "CISD Settings"
+show_bull_cisd = input.bool(true,      "Show Bullish CISD",          group=g1)
+show_bear_cisd = input.bool(true,      "Show Bearish CISD",          group=g1)
+cisd_col       = input.color(#888888,  "CISD Line Color",             group=g1)
+cisd_label_txt = input.string("CISD",  "Label Text",                  group=g1)
+cisd_window    = input.int(4,  "Trigger Window",  minval=1, maxval=20, group=g1)
+max_leg        = input.int(10, "Max Leg Length",  minval=1, maxval=30, group=g1)
+line_width     = input.int(1,  "Line Width",      minval=1, maxval=5,  group=g1)
+remove_failed  = input.bool(true, "Remove Failed CISD/IFVG",          group=g1)
+
+g2 = "IFVG Settings"
+show_bull_ifvg  = input.bool(true,  "Show Bullish IFVG",               group=g2)
+show_bear_ifvg  = input.bool(true,  "Show Bearish IFVG",               group=g2)
+ifvg_bull_col   = input.color(color.new(#089981, 80), "Bullish IFVG Color", group=g2)
+ifvg_bear_col   = input.color(color.new(#f23645, 80), "Bearish IFVG Color", group=g2)
+ifvg_extend     = input.int(3,   "Rectangle Extension (bars)", minval=1, maxval=20, group=g2)
+use_ifvg_window = input.bool(true, "Use IFVG Trigger Window",          group=g2)
+ifvg_window     = input.int(10,  "IFVG Trigger Window",   minval=1, maxval=50, group=g2)
+ifvg_label      = input.string("IFVG", "IFVG Text",                   group=g2)
+ifvg_text_col   = input.color(color.white, "IFVG Text Color",         group=g2)
+ifvg_text_size  = input.string("tiny", "IFVG Text Size", options=["tiny","small","normal","large"], group=g2)
+max_ifvg        = input.int(3, "Max IFVGs Shown", minval=1, maxval=20, group=g2)
+
+f_text_size(string s) =>
+    switch s
+        "tiny"   => size.tiny
+        "small"  => size.small
+        "normal" => size.normal
+        "large"  => size.large
+        => size.tiny
+
+tf_mins    = timeframe.in_seconds() / 60
+tf_allowed = tf_mins >= 1 and tf_mins <= 5
+tf_ms      = timeframe.in_seconds() * 1000
+
+lowest_10  = ta.lowest(low,  10)[1]
+highest_10 = ta.highest(high, 10)[1]
+
+var bool  pend_bull      = false
+var int   pend_bull_bar  = 0
+var float pend_bull_cisd = na
+var int   pend_bull_leg  = 0
+var float pend_bull_low  = na
+
+var bool  pend_bear      = false
+var int   pend_bear_bar  = 0
+var float pend_bear_cisd = na
+var int   pend_bear_leg  = 0
+var float pend_bear_high = na
+
+var line[]  bull_cisd_lines  = array.new_line(0)
+var label[] bull_cisd_labels = array.new_label(0)
+var float[] bull_cisd_lows   = array.new_float(0)
+
+var line[]  bear_cisd_lines  = array.new_line(0)
+var label[] bear_cisd_labels = array.new_label(0)
+var float[] bear_cisd_highs  = array.new_float(0)
+
+type Fvg
+    float top
+    float bottom
+    int   startTime
+    int   detectedBar
+    bool  isBull
+    bool  inverted = false
+    float sweepLevel
+    bool  isBullCisd
+    box   drawnBox = na
+
+var fvgArray = array.new<Fvg>()
+
+var int   leg_bull_start    = na
+var int   leg_bull_end      = na
+var int   leg_bear_start    = na
+var int   leg_bear_end      = na
+var int   leg_bull_detected = na
+var int   leg_bear_detected = na
+var float leg_bull_low      = na
+var float leg_bear_high     = na
+
+f_trim_ifvgs() =>
+    int drawn = 0
+    for k = 0 to fvgArray.size() - 1
+        fk = fvgArray.get(k)
+        if fk.inverted and not na(fk.drawnBox)
+            drawn += 1
+    while drawn >= max_ifvg
+        int oldest_idx  = -1
+        int oldest_time = int(na)
+        for k = 0 to fvgArray.size() - 1
+            fk = fvgArray.get(k)
+            if fk.inverted and not na(fk.drawnBox)
+                if na(oldest_time) or fk.startTime < oldest_time
+                    oldest_time := fk.startTime
+                    oldest_idx  := k
+        if oldest_idx < 0
+            break
+        fk_old = fvgArray.get(oldest_idx)
+        box.delete(fk_old.drawnBox)
+        fk_old.drawnBox := na
+        fvgArray.set(oldest_idx, fk_old)
+        drawn -= 1
+
+if tf_allowed and barstate.isconfirmed
+
+    float recent_swing_low = na
+    for j = 2 to 50
+        if close[j] < open[j] and close[j-1] > open[j-1]
+            recent_swing_low := math.min(low[j], low[j-1])
+            break
+
+    float recent_swing_high = na
+    for j = 2 to 50
+        if close[j] > open[j] and close[j-1] < open[j-1]
+            recent_swing_high := math.max(high[j], high[j-1])
+            break
+
+    is_lower_low   = low[0]  < lowest_10  or (not na(recent_swing_low)  and low[0]  < recent_swing_low)
+    is_higher_high = high[0] > highest_10 or (not na(recent_swing_high) and high[0] > recent_swing_high)
+
+    if is_lower_low
+        int   bear_start   = -1
+        float highest_open = na
+        int   first_bar    = -1
+
+        for j = 1 to 50
+            if close[j] < open[j]
+                bear_start := j
+                break
+
+        if bear_start >= 0
+            for j = bear_start to bear_start + max_leg - 1
+                if close[j] < open[j]
+                    if na(highest_open) or open[j] > highest_open
+                        highest_open := open[j]
+                    first_bar := j
+                else
+                    break
+
+        if not na(highest_open) and first_bar >= 0
+            pend_bull         := true
+            pend_bull_bar     := bar_index
+            pend_bull_leg     := bar_index - first_bar
+            pend_bull_cisd    := highest_open
+            pend_bull_low     := low[0]
+            leg_bull_start    := bar_index - first_bar
+            leg_bull_end      := bar_index - bear_start
+            leg_bull_detected := bar_index
+            leg_bull_low      := low[0]
+
+    if is_higher_high
+        int   bull_start  = -1
+        float lowest_open = na
+        int   first_bar_b = -1
+
+        for j = 1 to 50
+            if close[j] > open[j]
+                bull_start := j
+                break
+
+        if bull_start >= 0
+            for j = bull_start to bull_start + max_leg - 1
+                if close[j] > open[j]
+                    if na(lowest_open) or open[j] < lowest_open
+                        lowest_open := open[j]
+                    first_bar_b := j
+                else
+                    break
+
+        if not na(lowest_open) and first_bar_b >= 0
+            pend_bear         := true
+            pend_bear_bar     := bar_index
+            pend_bear_leg     := bar_index - first_bar_b
+            pend_bear_cisd    := lowest_open
+            pend_bear_high    := high[0]
+            leg_bear_start    := bar_index - first_bar_b
+            leg_bear_end      := bar_index - bull_start
+            leg_bear_detected := bar_index
+            leg_bear_high     := high[0]
+
+// ── FVG DETECTION — gated by window at push time ──────────────────
+bool bullFvg = low > high[2]
+bool bearFvg = high < low[2]
+int  mid_bar = bar_index - 1
+
+if bearFvg and show_bull_ifvg
+    if not na(leg_bull_start) and mid_bar >= leg_bull_start and mid_bar <= leg_bull_end
+        if not use_ifvg_window or (bar_index - leg_bull_detected <= ifvg_window)
+            fvgArray.push(Fvg.new(
+                 top         = low[2],
+                 bottom      = high,
+                 startTime   = time[1],
+                 detectedBar = leg_bull_detected,
+                 isBull      = false,
+                 sweepLevel  = leg_bull_low,
+                 isBullCisd  = true))
+
+if bullFvg and show_bear_ifvg
+    if not na(leg_bear_start) and mid_bar >= leg_bear_start and mid_bar <= leg_bear_end
+        if not use_ifvg_window or (bar_index - leg_bear_detected <= ifvg_window)
+            fvgArray.push(Fvg.new(
+                 top         = low,
+                 bottom      = high[2],
+                 startTime   = time[1],
+                 detectedBar = leg_bear_detected,
+                 isBull      = true,
+                 sweepLevel  = leg_bear_high,
+                 isBullCisd  = false))
+
+// ── Pending CISD failure ──────────────────────────────────────────
+if pend_bull and remove_failed
+    if low[0] < pend_bull_low
+        pend_bull := false
+
+if pend_bear and remove_failed
+    if high[0] > pend_bear_high
+        pend_bear := false
+
+// ── Confirmed CISD failure ────────────────────────────────────────
+if remove_failed and array.size(bull_cisd_lines) > 0
+    for i = array.size(bull_cisd_lines) - 1 to 0
+        sweep = array.get(bull_cisd_lows, i)
+        if low[0] < sweep
+            line.delete(array.get(bull_cisd_lines,  i))
+            label.delete(array.get(bull_cisd_labels, i))
+            array.remove(bull_cisd_lines,  i)
+            array.remove(bull_cisd_labels, i)
+            array.remove(bull_cisd_lows,   i)
+            if array.size(fvgArray) > 0
+                for k = array.size(fvgArray) - 1 to 0
+                    f = fvgArray.get(k)
+                    if f.isBullCisd and f.sweepLevel == sweep
+                        if not na(f.drawnBox)
+                            box.delete(f.drawnBox)
+                        fvgArray.remove(k)
+
+if remove_failed and array.size(bear_cisd_lines) > 0
+    for i = array.size(bear_cisd_lines) - 1 to 0
+        sweep = array.get(bear_cisd_highs, i)
+        if high[0] > sweep
+            line.delete(array.get(bear_cisd_lines,  i))
+            label.delete(array.get(bear_cisd_labels, i))
+            array.remove(bear_cisd_lines,  i)
+            array.remove(bear_cisd_labels, i)
+            array.remove(bear_cisd_highs,  i)
+            if array.size(fvgArray) > 0
+                for k = array.size(fvgArray) - 1 to 0
+                    f = fvgArray.get(k)
+                    if not f.isBullCisd and f.sweepLevel == sweep
+                        if not na(f.drawnBox)
+                            box.delete(f.drawnBox)
+                        fvgArray.remove(k)
+
+// ── CISD TRIGGER ─────────────────────────────────────────────────
+if pend_bull and show_bull_cisd
+    bars_since = bar_index - pend_bull_bar
+    if bars_since >= 0 and bars_since <= cisd_window
+        if close > pend_bull_cisd
+            l  = line.new(pend_bull_leg, pend_bull_cisd, bar_index, pend_bull_cisd,
+                 color=cisd_col, width=line_width, style=line.style_solid)
+            lb = label.new(bar_index, pend_bull_cisd, cisd_label_txt,
+                 color=color.new(color.black, 100), textcolor=cisd_col,
+                 style=label.style_label_left, size=size.small)
+            array.push(bull_cisd_lines,  l)
+            array.push(bull_cisd_labels, lb)
+            array.push(bull_cisd_lows,   pend_bull_low)
+            pend_bull := false
+    else if bars_since > cisd_window
+        pend_bull := false
+
+if pend_bear and show_bear_cisd
+    bars_since = bar_index - pend_bear_bar
+    if bars_since >= 0 and bars_since <= cisd_window
+        if close < pend_bear_cisd
+            l  = line.new(pend_bear_leg, pend_bear_cisd, bar_index, pend_bear_cisd,
+                 color=cisd_col, width=line_width, style=line.style_solid)
+            lb = label.new(bar_index, pend_bear_cisd, cisd_label_txt,
+                 color=color.new(color.black, 100), textcolor=cisd_col,
+                 style=label.style_label_left, size=size.small)
+            array.push(bear_cisd_lines,  l)
+            array.push(bear_cisd_labels, lb)
+            array.push(bear_cisd_highs,  pend_bear_high)
+            pend_bear := false
+    else if bars_since > cisd_window
+        pend_bear := false
+
+// ── IFVG PROCESSING ───────────────────────────────────────────────
+if fvgArray.size() > 0
+    for i = fvgArray.size() - 1 to 0
+        Fvg f = fvgArray.get(i)
+
+        // Expire unconfirmed FVGs outside window
+        if use_ifvg_window and not f.inverted
+            if bar_index - f.detectedBar > ifvg_window
+                fvgArray.remove(i)
+                continue
+
+        if not f.inverted
+            if not f.isBull and close > f.top
+                f.inverted := true
+                if show_bull_ifvg
+                    f_trim_ifvgs()
+                    b = box.new(
+                         left         = f.startTime,
+                         top          = f.top,
+                         right        = time + tf_ms * ifvg_extend,
+                         bottom       = f.bottom,
+                         xloc         = xloc.bar_time,
+                         bgcolor      = ifvg_bull_col,
+                         border_color = color.new(color.white, 100),
+                         border_width = 0,
+                         text         = ifvg_label,
+                         text_size    = f_text_size(ifvg_text_size),
+                         text_color   = ifvg_text_col,
+                         text_halign  = text.align_right,
+                         text_valign  = text.align_center)
+                    f.drawnBox := b
+
+            else if f.isBull and close < f.bottom
+                f.inverted := true
+                if show_bear_ifvg
+                    f_trim_ifvgs()
+                    b = box.new(
+                         left         = f.startTime,
+                         top          = f.top,
+                         right        = time + tf_ms * ifvg_extend,
+                         bottom       = f.bottom,
+                         xloc         = xloc.bar_time,
+                         bgcolor      = ifvg_bear_col,
+                         border_color = color.new(color.white, 100),
+                         border_width = 0,
+                         text         = ifvg_label,
+                         text_size    = f_text_size(ifvg_text_size),
+                         text_color   = ifvg_text_col,
+                         text_halign  = text.align_right,
+                         text_valign  = text.align_center)
+                    f.drawnBox := b
+
+        else
+            // Re-inversion invalidation
+            if not f.isBull and close < f.bottom
+                if not na(f.drawnBox)
+                    box.delete(f.drawnBox)
+                fvgArray.remove(i)
+            else if f.isBull and close > f.top
+                if not na(f.drawnBox)
+                    box.delete(f.drawnBox)
+                fvgArray.remove(i)
