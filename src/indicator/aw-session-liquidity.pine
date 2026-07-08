@@ -1,0 +1,347 @@
+// AW Session Liquidity — TradingView Pine Script v6
+// Standalone module — merge into AW Indicator once stable.
+//
+// Shows COMPLETED session H/L levels (not the current developing session).
+// Lines run from the actual high/low bar to the current candle and freeze
+// when price closes through them (mitigated).
+//
+// Asia → red  |  London → blue  |  New York → orange  |  Prev Day → black
+
+//@version=6
+indicator("AW Session Liquidity", shorttitle="AW SL", overlay=true,
+     max_lines_count=500, max_labels_count=500)
+
+// ═══════════════════════════════════════════════════════════════════
+// TYPE
+// ═══════════════════════════════════════════════════════════════════
+
+type SessLevel
+    float price
+    bool  is_high
+    bool  mitigated = false
+    int   x1          // bar where the H/L was formed (line left anchor)
+    int   lbl_x_add   // extra bars added to label x vs line x2 (for PD offset)
+    line  ln
+    label lb
+
+// ═══════════════════════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════════════════════
+
+g_gen    = "General"
+g_asia   = "Asia Session"
+g_london = "London Session"
+g_ny     = "New York Session"
+g_pd     = "Previous Day"
+
+lw       = input.int(1, "Line Width",        minval=1, maxval=4, group=g_gen)
+lookback = input.int(1, "Sessions Lookback", minval=1, maxval=5, group=g_gen,
+     tooltip="How many completed sessions to show per type. Default 1 = previous session only.")
+tz       = input.string("UTC-4", "Session Timezone", group=g_gen,
+     tooltip="UTC offset (e.g. UTC-4, UTC+1) or IANA string (e.g. America/New_York, Europe/London)")
+lbl_pos  = input.string("top", "Label Position", options=["top", "middle", "bottom"], group=g_gen,
+     tooltip="Vertical alignment of label text relative to the session line.")
+
+// Asia
+show_asia     = input.bool(true,       "Show Asia H/L",       group=g_asia)
+asia_col      = input.color(color.red, "Color",                group=g_asia)
+asia_sess     = input.session("1800-0300", "Session Time",     group=g_asia)
+show_asia_lbl = input.bool(true,       "Show Labels",          group=g_asia)
+asia_h_txt    = input.string("Asia H.", "High Label",          group=g_asia)
+asia_l_txt    = input.string("Asia L.", "Low Label",           group=g_asia)
+
+// London
+show_london     = input.bool(true,        "Show London H/L",   group=g_london)
+london_col      = input.color(color.blue, "Color",              group=g_london)
+london_sess     = input.session("0300-0800", "Session Time",    group=g_london)
+show_london_lbl = input.bool(true,        "Show Labels",        group=g_london)
+london_h_txt    = input.string("London H.", "High Label",       group=g_london)
+london_l_txt    = input.string("London L.", "Low Label",        group=g_london)
+
+// New York
+show_ny     = input.bool(true,           "Show NY H/L",        group=g_ny)
+ny_col      = input.color(color.orange,  "Color",               group=g_ny)
+ny_sess     = input.session("0800-1600", "Session Time",        group=g_ny)
+show_ny_lbl = input.bool(true,           "Show Labels",         group=g_ny)
+ny_h_txt    = input.string("NY H.",      "High Label",          group=g_ny)
+ny_l_txt    = input.string("NY L.",      "Low Label",           group=g_ny)
+
+// Previous Day
+show_pd     = input.bool(true,          "Show PDH/PDL",        group=g_pd)
+pd_col      = input.color(color.black,  "Color",                group=g_pd)
+show_pd_lbl = input.bool(true,          "Show Labels",          group=g_pd)
+pdh_txt     = input.string("PDH",       "High Label",           group=g_pd)
+pdl_txt     = input.string("PDL",       "Low Label",            group=g_pd)
+
+// Map label position setting to Pine Script label style.
+// lower_right anchor = bottom-right corner of box at price → text ABOVE line
+// right anchor       = center-right of box at price         → text ON line
+// upper_right anchor = top-right corner of box at price     → text BELOW line
+label_style = switch lbl_pos
+    "bottom" => label.style_label_upper_right
+    "middle" => label.style_label_right
+    =>          label.style_label_lower_right  // "top" (default)
+
+// ═══════════════════════════════════════════════════════════════════
+// PREVIOUS DAY DATA
+// ═══════════════════════════════════════════════════════════════════
+
+// Track current day H/L and bar positions intraday.
+// Both price and bar come from the same source so they never desync.
+// (Using request.security for price + manual bar_index tracking diverges
+//  because security() operates in a different execution context.)
+var float day_h     = na
+var float day_l     = na
+var int   day_h_bar = na
+var int   day_l_bar = na
+
+// Saved previous-day values — price and bar always updated together.
+var float pd_high   = na
+var float pd_low    = na
+var int   pd_h_bar  = na
+var int   pd_l_bar  = na
+
+bool new_day = timeframe.change("1D")
+
+if new_day
+    // Save yesterday's H/L (only once we have real data from a full day).
+    if not na(day_h)
+        pd_high  := day_h
+        pd_low   := day_l
+        pd_h_bar := day_h_bar
+        pd_l_bar := day_l_bar
+    // Reset trackers for the incoming day.
+    day_h     := high
+    day_l     := low
+    day_h_bar := bar_index
+    day_l_bar := bar_index
+else
+    if na(day_h) or high > day_h
+        day_h     := high
+        day_h_bar := bar_index
+    if na(day_l) or low < day_l
+        day_l     := low
+        day_l_bar := bar_index
+
+// ═══════════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════════
+
+// Extend unmitigated lines and their labels to current bar.
+// Mitigation is only checked when bar_index > sl.x1 so a level that is
+// created at (or before) the current bar can never be zero-length at death.
+f_update(array<SessLevel> levels) =>
+    int n = array.size(levels)
+    if n > 0
+        for i = 0 to n - 1
+            sl = levels.get(i)
+            if not sl.mitigated
+                line.set_x2(sl.ln, bar_index)
+                if not na(sl.lb)
+                    label.set_x(sl.lb, bar_index + sl.lbl_x_add)
+                if barstate.isconfirmed and bar_index > sl.x1
+                    bool hit = sl.is_high ? high >= sl.price : low <= sl.price
+                    if hit
+                        sl.mitigated := true
+
+// Register a completed level; trims oldest entries beyond lookback.
+// All sessions use lbl_x_add=0: text right-edge lands at bar_index (the line's
+// right endpoint), body extends left onto the line — nothing hangs past the end.
+f_add(array<SessLevel> levels, float price, bool is_high, int x1_bar,
+      string txt, color col, int width, int lb_count, bool show_lbl, int lbl_x_add) =>
+    while array.size(levels) >= lb_count
+        old = array.shift(levels)
+        line.delete(old.ln)
+        label.delete(old.lb)
+    new_ln  = line.new(x1_bar, price, bar_index, price,
+         color=col, width=width, style=line.style_solid)
+    lbl_x   = bar_index + lbl_x_add
+    // label_style is driven by the "Label Position" input (top/middle/bottom).
+    // Transparent color hides the box bubble; textcolor shows only the text.
+    new_lb  = show_lbl ? label.new(lbl_x, price, txt,
+         yloc      = yloc.price,
+         style     = label_style,
+         color     = color.new(color.white, 100),
+         textcolor = col,
+         size      = size.small) : na
+    array.push(levels, SessLevel.new(
+         price=price, is_high=is_high, x1=x1_bar,
+         lbl_x_add=lbl_x_add, ln=new_ln, lb=new_lb))
+
+// When a level in `sess` matches a non-mitigated level in `priority_ref`,
+// delete the sess label (line stays). Called for both PD-vs-session and
+// session-vs-session deduplication (more recent session = priority_ref).
+f_suppress_label_if_match(array<SessLevel> sess, array<SessLevel> priority_ref) =>
+    float tol = syminfo.mintick * 0.5
+    int ns = array.size(sess)
+    int np = array.size(priority_ref)
+    if ns > 0 and np > 0
+        for i = 0 to ns - 1
+            s = sess.get(i)
+            if not na(s.lb)
+                for j = 0 to np - 1
+                    p = priority_ref.get(j)
+                    if not p.mitigated and math.abs(s.price - p.price) <= tol
+                        label.delete(s.lb)
+                        s.lb := na
+                        break
+
+// ═══════════════════════════════════════════════════════════════════
+// PREVIOUS DAY H/L
+// ═══════════════════════════════════════════════════════════════════
+
+var array<SessLevel> pd_h_arr = array.new<SessLevel>()
+var array<SessLevel> pd_l_arr = array.new<SessLevel>()
+
+// PD lines always show only yesterday's H/L — lookback is fixed at 1.
+// (PDH/PDL by definition is the prior single day, not multiple days back.)
+if new_day and not na(pd_high) and not na(pd_h_bar) and show_pd
+    f_add(pd_h_arr, pd_high, true,  pd_h_bar, pdh_txt, pd_col, lw, 1, show_pd_lbl, 0)
+    f_add(pd_l_arr, pd_low,  false, pd_l_bar, pdl_txt, pd_col, lw, 1, show_pd_lbl, 0)
+
+if show_pd
+    f_update(pd_h_arr)
+    f_update(pd_l_arr)
+
+// ═══════════════════════════════════════════════════════════════════
+// ASIA SESSION
+// ═══════════════════════════════════════════════════════════════════
+
+bool in_asia  = not na(time(timeframe.period, asia_sess, tz))
+bool asia_end = not in_asia and in_asia[1]
+
+var float asia_h     = na
+var float asia_l     = na
+var int   asia_h_bar = na
+var int   asia_l_bar = na
+var array<SessLevel> asia_h_arr = array.new<SessLevel>()
+var array<SessLevel> asia_l_arr = array.new<SessLevel>()
+
+if in_asia and not in_asia[1]
+    asia_h     := high
+    asia_l     := low
+    asia_h_bar := bar_index
+    asia_l_bar := bar_index
+
+if in_asia
+    if high > asia_h
+        asia_h     := high
+        asia_h_bar := bar_index
+    if low < asia_l
+        asia_l     := low
+        asia_l_bar := bar_index
+
+if asia_end and not na(asia_h) and show_asia
+    f_add(asia_h_arr, asia_h, true,  asia_h_bar, asia_h_txt, asia_col, lw, lookback, show_asia_lbl, 0)
+    f_add(asia_l_arr, asia_l, false, asia_l_bar, asia_l_txt, asia_col, lw, lookback, show_asia_lbl, 0)
+
+if show_asia
+    f_update(asia_h_arr)
+    f_update(asia_l_arr)
+
+// ═══════════════════════════════════════════════════════════════════
+// LONDON SESSION
+// ═══════════════════════════════════════════════════════════════════
+
+bool in_london  = not na(time(timeframe.period, london_sess, tz))
+bool london_end = not in_london and in_london[1]
+
+var float london_h     = na
+var float london_l     = na
+var int   london_h_bar = na
+var int   london_l_bar = na
+var array<SessLevel> london_h_arr = array.new<SessLevel>()
+var array<SessLevel> london_l_arr = array.new<SessLevel>()
+
+if in_london and not in_london[1]
+    london_h     := high
+    london_l     := low
+    london_h_bar := bar_index
+    london_l_bar := bar_index
+
+if in_london
+    if high > london_h
+        london_h     := high
+        london_h_bar := bar_index
+    if low < london_l
+        london_l     := low
+        london_l_bar := bar_index
+
+if london_end and not na(london_h) and show_london
+    f_add(london_h_arr, london_h, true,  london_h_bar, london_h_txt, london_col, lw, lookback, show_london_lbl, 0)
+    f_add(london_l_arr, london_l, false, london_l_bar, london_l_txt, london_col, lw, lookback, show_london_lbl, 0)
+
+if show_london
+    f_update(london_h_arr)
+    f_update(london_l_arr)
+
+// ═══════════════════════════════════════════════════════════════════
+// NEW YORK SESSION
+// ═══════════════════════════════════════════════════════════════════
+
+bool in_ny  = not na(time(timeframe.period, ny_sess, tz))
+bool ny_end = not in_ny and in_ny[1]
+
+var float ny_h     = na
+var float ny_l     = na
+var int   ny_h_bar = na
+var int   ny_l_bar = na
+var array<SessLevel> ny_h_arr = array.new<SessLevel>()
+var array<SessLevel> ny_l_arr = array.new<SessLevel>()
+
+if in_ny and not in_ny[1]
+    ny_h     := high
+    ny_l     := low
+    ny_h_bar := bar_index
+    ny_l_bar := bar_index
+
+if in_ny
+    if high > ny_h
+        ny_h     := high
+        ny_h_bar := bar_index
+    if low < ny_l
+        ny_l     := low
+        ny_l_bar := bar_index
+
+if ny_end and not na(ny_h) and show_ny
+    f_add(ny_h_arr, ny_h, true,  ny_h_bar, ny_h_txt, ny_col, lw, lookback, show_ny_lbl, 0)
+    f_add(ny_l_arr, ny_l, false, ny_l_bar, ny_l_txt, ny_col, lw, lookback, show_ny_lbl, 0)
+
+if show_ny
+    f_update(ny_h_arr)
+    f_update(ny_l_arr)
+
+// ═══════════════════════════════════════════════════════════════════
+// LABEL DEDUPLICATION
+// ═══════════════════════════════════════════════════════════════════
+// When two levels share the same price, the higher-priority level keeps
+// its label; the lower-priority label is deleted (line stays visible).
+//
+// Priority: PD > NY > London > Asia
+// London/NY overlap is common because their sessions share 13:00–16:00 UTC;
+// whichever session's high/low forms in that window gets the same price.
+//
+// Run every bar — idempotent once lb is nil.
+
+// PD beats all sessions
+if show_pd and show_pd_lbl
+    f_suppress_label_if_match(asia_h_arr,   pd_h_arr)
+    f_suppress_label_if_match(asia_l_arr,   pd_l_arr)
+    f_suppress_label_if_match(london_h_arr, pd_h_arr)
+    f_suppress_label_if_match(london_l_arr, pd_l_arr)
+    f_suppress_label_if_match(ny_h_arr,     pd_h_arr)
+    f_suppress_label_if_match(ny_l_arr,     pd_l_arr)
+
+// NY beats London and Asia
+if show_ny
+    if show_london
+        f_suppress_label_if_match(london_h_arr, ny_h_arr)
+        f_suppress_label_if_match(london_l_arr, ny_l_arr)
+    if show_asia
+        f_suppress_label_if_match(asia_h_arr, ny_h_arr)
+        f_suppress_label_if_match(asia_l_arr, ny_l_arr)
+
+// London beats Asia
+if show_london and show_asia
+    f_suppress_label_if_match(asia_h_arr, london_h_arr)
+    f_suppress_label_if_match(asia_l_arr, london_l_arr)
