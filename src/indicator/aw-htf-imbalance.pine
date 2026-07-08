@@ -1,0 +1,25 @@
+//@version=6
+indicator("AW HTF Imbalance", overlay=true, max_bars_back=500)
+
+// ═══════════════════════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════════════════════
+g = "HTF Imbalance"
+zone_col   = input.color(color.new(#888888, 70), "Zone Color",   group=g)
+show_label = input.bool(true, "Show Label",                       group=g)
+label_col  = input.color(color.white, "Label Color",             group=g)
+label_size = input.string("small", "Label Size",
+              options=["tiny","small","normal","large"],           group=g)
+lookback   = input.int(100, "Lookback (HTF bars)",
+              minval=10, maxval=500,                               group=g)
+
+// ═══════════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════════
+f_size(string s) =>
+    switch s
+        "tiny"   => size.tiny
+        "small"  => size.small
+        "normal" => size.normal
+        "large"  => size.large
+        => size.small
