@@ -1,30 +1,26 @@
 //@version=6
 // AW Trailing Stop — Protected Levels
-// On each bullish CISD: draw a line at the pivot low level from CISD bar to current bar.
-// On each bearish CISD: draw a line at the pivot high level from CISD bar to current bar.
-// Line x2 and label x update every bar to track current price position.
-// If price closes through the level the line and label are deleted completely.
+// Bullish CISD: line from the swing low that preceded the broken pivot high → current bar.
+// Bearish CISD: line from the swing high that preceded the broken pivot low → current bar.
+// Line extends to current bar each tick. Deleted completely on mitigation.
 indicator("AW Trailing Stop — Protected Levels", overlay=true, max_lines_count=200, max_labels_count=100)
 
-// ─── Settings: Trailing Stop ───────────────────────────────────────────────
+// ─── Settings ──────────────────────────────────────────────────────────────
 var string G  = "Trailing Stop"
-enable        = input.bool(true,      "Enable",                group=G)
-show_inactive = input.bool(true,      "Show Inactive Trail",   group=G)
-line_width    = input.int(2,          "Line Width",            group=G, minval=1, maxval=4)
-color_bull    = input.color(#26a69a,  "Protected Low Color",   group=G)
-color_bear    = input.color(#ef5350,  "Protected High Color",  group=G)
-inact_transp  = input.int(60,         "Inactive Opacity %",    group=G, minval=10, maxval=90)
+enable        = input.bool(true,      "Enable",              group=G)
+show_inactive = input.bool(true,      "Show Inactive Trail", group=G)
+line_width    = input.int(2,          "Line Width",          group=G, minval=1, maxval=4)
+color_bull    = input.color(#26a69a,  "Protected Low Color", group=G)
+color_bear    = input.color(#ef5350,  "Protected High Color",group=G)
+inact_transp  = input.int(60,         "Inactive Opacity %",  group=G, minval=10, maxval=90)
 
-// ─── Settings: Labels ─────────────────────────────────────────────────────
 var string GL = "Labels"
-show_lbl      = input.bool(true,      "Show Level Labels",     group=GL)
-lbl_size_str  = input.string("Small", "Label Size",            group=GL, options=["Tiny","Small","Normal","Large"])
+show_lbl      = input.bool(true,      "Show Level Labels",   group=GL)
+lbl_size_str  = input.string("Small", "Label Size",          group=GL, options=["Tiny","Small","Normal","Large"])
 
-// ─── Settings: CISD / Swing ────────────────────────────────────────────────
 var string GC = "CISD / Swing Detection"
-lookback      = input.int(5,          "Swing Lookback",        group=GC, minval=2, maxval=20)
+lookback      = input.int(5,          "Swing Lookback",      group=GC, minval=2, maxval=20)
 
-// ─── Label size ────────────────────────────────────────────────────────────
 lbl_sz = switch lbl_size_str
     "Tiny"   => size.tiny
     "Small"  => size.small
@@ -32,17 +28,38 @@ lbl_sz = switch lbl_size_str
     "Large"  => size.large
     => size.small
 
-// ─── Pivot detection ───────────────────────────────────────────────────────
+// ─── Pivot tracking ────────────────────────────────────────────────────────
 swing_high = ta.pivothigh(high, lookback, lookback)
 swing_low  = ta.pivotlow(low,  lookback, lookback)
 
-var float last_ph = na
-var float last_pl = na
+// Running most-recent pivot values
+var float last_ph     = na
+var int   last_ph_bar = na
+var float last_pl     = na
+var int   last_pl_bar = na
+
+// When a new pivot high is confirmed, snapshot the pivot low that preceded it.
+// This is the swing low "of which the bullish CISD will be formed."
+var float bull_sl_lvl = na   // protected low level to use on next bullish CISD
+var int   bull_sl_bar = na   // bar index of that pivot low
+
+// When a new pivot low is confirmed, snapshot the pivot high that preceded it.
+var float bear_sh_lvl = na   // protected high level to use on next bearish CISD
+var int   bear_sh_bar = na
 
 if not na(swing_high)
-    last_ph := swing_high
+    // Snapshot the current pivot low BEFORE updating last_ph
+    bull_sl_lvl   := last_pl
+    bull_sl_bar   := last_pl_bar
+    last_ph       := swing_high
+    last_ph_bar   := bar_index - lookback
+
 if not na(swing_low)
-    last_pl := swing_low
+    // Snapshot the current pivot high BEFORE updating last_pl
+    bear_sh_lvl   := last_ph
+    bear_sh_bar   := last_ph_bar
+    last_pl       := swing_low
+    last_pl_bar   := bar_index - lookback
 
 // ─── CISD signals ──────────────────────────────────────────────────────────
 cisd_bull = barstate.isconfirmed and not na(last_ph) and close > last_ph and close[1] <= last_ph
@@ -66,18 +83,17 @@ var float bear_lvl = na
 // ─── Main logic ────────────────────────────────────────────────────────────
 if enable and barstate.isconfirmed
 
-    // Extend line x2 and label x to current bar every confirmed bar
+    // Track right end of lines to current bar
     if not na(bull_ln)
         line.set_x2(bull_ln, bar_index)
     if not na(bull_lbl)
         label.set_x(bull_lbl, bar_index)
-
     if not na(bear_ln)
         line.set_x2(bear_ln, bar_index)
     if not na(bear_lbl)
         label.set_x(bear_lbl, bar_index)
 
-    // Mitigation: bull level broken to the downside
+    // Mitigation: close below bull level → delete
     if not na(bull_ln) and not na(bull_lvl) and close < bull_lvl
         line.delete(bull_ln)
         label.delete(bull_lbl)
@@ -85,7 +101,7 @@ if enable and barstate.isconfirmed
         bull_lbl := na
         bull_lvl := na
 
-    // Mitigation: bear level broken to the upside
+    // Mitigation: close above bear level → delete
     if not na(bear_ln) and not na(bear_lvl) and close > bear_lvl
         line.delete(bear_ln)
         label.delete(bear_lbl)
@@ -93,24 +109,24 @@ if enable and barstate.isconfirmed
         bear_lbl := na
         bear_lvl := na
 
-    // New bullish CISD: line starts at CISD bar, level = most recent pivot low
-    if cisd_bull and not na(last_pl)
+    // Bullish CISD: draw from the swing low that preceded the broken pivot high
+    if cisd_bull and not na(bull_sl_lvl) and not na(bull_sl_bar)
         line.delete(bull_ln)
         label.delete(bull_lbl)
-        bull_lvl := last_pl
-        bull_ln  := line.new(bar_index, bull_lvl, bar_index, bull_lvl,
+        bull_lvl := bull_sl_lvl
+        bull_ln  := line.new(bull_sl_bar, bull_lvl, bar_index, bull_lvl,
                              color=color_bull, width=line_width)
         bull_lbl := show_lbl ?
              label.new(bar_index, bull_lvl, "Protected Low", yloc=yloc.price,
                        style=label.style_none, textcolor=color_bull,
                        size=lbl_sz, textalign=text.align_right) : na
 
-    // New bearish CISD: line starts at CISD bar, level = most recent pivot high
-    if cisd_bear and not na(last_ph)
+    // Bearish CISD: draw from the swing high that preceded the broken pivot low
+    if cisd_bear and not na(bear_sh_lvl) and not na(bear_sh_bar)
         line.delete(bear_ln)
         label.delete(bear_lbl)
-        bear_lvl := last_ph
-        bear_ln  := line.new(bar_index, bear_lvl, bar_index, bear_lvl,
+        bear_lvl := bear_sh_lvl
+        bear_ln  := line.new(bear_sh_bar, bear_lvl, bar_index, bear_lvl,
                              color=color_bear, width=line_width)
         bear_lbl := show_lbl ?
              label.new(bar_index, bear_lvl, "Protected High", yloc=yloc.price,
