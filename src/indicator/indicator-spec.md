@@ -196,7 +196,7 @@ The trading day/week is divided into four equal quarterly segments. Price action
 
 ---
 
-### 10. Trailing Stop Loss / Protected High-Low Formation
+### 10. Trailing Stop Loss / Protected High-Low Formation 🔄 IN PROGRESS
 **File:** `src/indicator/aw-trailing-stop.pine`
 
 **What it does:**
