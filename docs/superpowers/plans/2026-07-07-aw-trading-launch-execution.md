@@ -37,10 +37,11 @@
   YouTube channel description → `awtrading.com` + Discord link
   If either is missing, update now.
 
-- [ ] **Step 3: Import Google Calendar file**
+- [x] **Step 3: Import Google Calendar file**
 
   Open `docs/aw-trading-launch-calendar.ics` → drag into Google Calendar.
   Verify "AW Trading — Sept 1 Launch" calendar appears with events through Sept 1.
+  Confirmed imported by AJ Jul 8. (Not visible on the Cowork-connected Google account — likely imported on a different calendar account. Verify the connected account matches the one you actually check daily.)
 
 - [ ] **Step 4: Set up screen recorder**
 
@@ -112,7 +113,7 @@
   Don't restart on mistakes — keep filming, edit out later. One take is fine.
   Save to `Raw Footage/W1-youtube-ict-breakdown.mp4`
 
-- [ ] **Step 3: Film Reel #1 — "3 ICT terms"**
+- [x] **Step 3: Film Reel #1 — "3 ICT terms"**
 
   Script (60 sec):
   ```
@@ -140,7 +141,7 @@
 
 ### Wednesday Jul 8 — Upload Day
 
-- [ ] **Step 6: Post Reel #1 — "3 ICT terms"**
+- [x] **Step 6: Post Reel #1 — "3 ICT terms"**
 
   Caption:
   ```

@@ -504,16 +504,16 @@ END:VEVENT
 
 BEGIN:VEVENT
 UID:aw-ind-htf-imbalance@awtrading
-DTSTART:20260709T190000
-DTEND:20260709T203000
-SUMMARY:🛠️ INDICATOR — HTF Imbalance Levels
-DESCRIPTION:Feature 4: HTF Imbalance\n\nFetch FVGs from a higher timeframe (default 1H) and draw them on the current chart.\nLevel only activates when price enters the zone.\nMark as mitigated when price closes past midpoint.\n• Use request.security() with lookahead_off\n• Max 5 zones displayed at once\n• Spec: src/indicator/indicator-spec.md
+DTSTART:20260708T150000
+DTEND:20260708T170000
+SUMMARY:✅ INDICATOR — HTF Imbalance Levels (DONE)
+DESCRIPTION:Feature 4: HTF Imbalance — COMPLETED Jul 8 2026\n\nMoved up from Jul 9 — completed same day as Session Liquidity.
 END:VEVENT
 
 BEGIN:VEVENT
 UID:aw-ind-psp@awtrading
-DTSTART:20260710T190000
-DTEND:20260710T203000
+DTSTART:20260709T190000
+DTEND:20260709T203000
 SUMMARY:🛠️ INDICATOR — PSP (Precision Swing Point)
 DESCRIPTION:Feature 5: PSP\n\nOn each confirmed bar:\n• If Symbol A closes bullish AND Symbol B closes bearish → Bearish PSP\n• If Symbol A closes bearish AND Symbol B closes bullish → Bullish PSP\n• Draw a label/shape on the chart\n• Default symbols: ES1! and NQ1!\n• Spec: src/indicator/indicator-spec.md\n\nAgent prompt:\n"Implement Feature 5 (PSP) from the spec. Use request.security() for Symbol B. Only fire on barstate.isconfirmed."
 END:VEVENT

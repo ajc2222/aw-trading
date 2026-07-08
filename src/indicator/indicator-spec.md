@@ -25,14 +25,14 @@ Detects fair value gaps within the leg identified by CISD.
 Draws filled rectangles for IFVGs, filtered to the relevant leg only.
 Settings group: "IFVG Settings"
 
-### 3. Session Liquidity 🔄 IN PROGRESS
+### 3. Session Liquidity ✅ DONE
 **What it does:**
 - Mark session highs and lows for Asia, London, and New York sessions
 - Draw horizontal lines at each session's high and low
 - When price sweeps (closes beyond) a session high or low, mark the sweep visually (change line style, add label)
 - Option to show/hide each session independently
 
-**Settings group:** "Session Liquidity"
+**Settings group:** "Session Liquidity" 
 **Inputs:**
 - Show Asia liquidity (bool, default true)
 - Show London liquidity (bool, default true)
@@ -48,7 +48,7 @@ Settings group: "IFVG Settings"
 
 ---
 
-### 4. HTF Imbalance Levels
+### 4. HTF Imbalance Levels ✅ DONE
 **What it does:**
 Fetches fair value gaps (imbalances) from a higher timeframe and draws them on the current chart. Unlike the IFVG feature (which is leg-filtered on the current TF), these are raw HTF FVGs — they represent unfilled imbalances on a larger context chart.
 
