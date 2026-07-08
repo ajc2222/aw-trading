@@ -373,7 +373,7 @@ var box   tf_box      = na
 var float tf_prev_top = na
 var float tf_prev_bot = na
 
-right_ms = timenow + timeframe.in_seconds() * 1000 * extend_bars
+right_ms = time + timeframe.in_seconds() * 1000 * (extend_bars + 1)
 
 // — Box 1 (HTF) ——————————————————————————————————————————————————
 zone_changed = act_top != prev_top or act_bot != prev_bot
