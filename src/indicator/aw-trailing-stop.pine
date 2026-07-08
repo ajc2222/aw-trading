@@ -3,7 +3,7 @@
 // Trails to the swing low/high of each new CISD formation.
 // Bullish CISD → protected low trail. Bearish CISD → protected high trail.
 // Both trails always visible; active one is highlighted, inactive is dimmed.
-// When a protected level is mitigated (close through), that segment turns red.
+// On mitigation: line and label are deleted completely.
 indicator("AW Trailing Stop — Protected Levels", overlay=true, max_lines_count=500, max_labels_count=200)
 
 // ─── Settings: Trailing Stop ───────────────────────────────────────────────
@@ -13,7 +13,6 @@ show_inactive = input.bool(true,      "Show Inactive Trail",   group=G)
 line_width    = input.int(2,          "Line Width",            group=G, minval=1, maxval=4)
 color_bull    = input.color(#26a69a,  "Protected Low Color",   group=G)
 color_bear    = input.color(#ef5350,  "Protected High Color",  group=G)
-color_hit     = input.color(#ef5350,  "Mitigated Color",       group=G)
 inact_transp  = input.int(60,         "Inactive Opacity %",    group=G, minval=10, maxval=90,
                            tooltip="Opacity applied to the inactive trail when both are visible")
 max_segs      = input.int(10,         "Max Visible Segments",  group=G, minval=2, maxval=20)
@@ -21,7 +20,6 @@ max_segs      = input.int(10,         "Max Visible Segments",  group=G, minval=2
 // ─── Settings: Labels ─────────────────────────────────────────────────────
 var string GL = "Labels"
 show_lbl      = input.bool(true,      "Show Level Labels",     group=GL)
-show_hit_lbl  = input.bool(true,      "Show Mitigated Label",  group=GL)
 lbl_size_str  = input.string("Small", "Label Size",            group=GL, options=["Tiny","Small","Normal","Large"])
 
 // ─── Settings: CISD / Swing ────────────────────────────────────────────────
@@ -37,7 +35,7 @@ lbl_sz = switch lbl_size_str
     "Large"  => size.large
     => size.small
 
-// Archive a terminated line and prune oldest if over limit
+// Archive a terminated line; prune oldest if over limit
 archive(line ln, line[] segs, int max_n) =>
     array.push(segs, ln)
     if array.size(segs) > max_n
@@ -47,17 +45,19 @@ archive(line ln, line[] segs, int max_n) =>
 swing_high = ta.pivothigh(high, lookback, lookback)
 swing_low  = ta.pivotlow(low,  lookback, lookback)
 
-var float last_ph = na
-var float last_pl = na
+var float last_ph     = na
+var int   last_ph_bar = na  // bar where pivot high actually formed
+var float last_pl     = na
+var int   last_pl_bar = na  // bar where pivot low actually formed
 
 if not na(swing_high)
-    last_ph := swing_high
+    last_ph     := swing_high
+    last_ph_bar := bar_index - lookback  // pivot formed lookback bars ago
 if not na(swing_low)
-    last_pl := swing_low
+    last_pl     := swing_low
+    last_pl_bar := bar_index - lookback
 
 // ─── CISD signals ──────────────────────────────────────────────────────────
-// Bullish CISD: confirmed close crosses above most recent pivot high
-// Bearish CISD: confirmed close crosses below most recent pivot low
 cisd_bull = barstate.isconfirmed and not na(last_ph) and close > last_ph and close[1] <= last_ph
 cisd_bear = barstate.isconfirmed and not na(last_pl) and close < last_pl and close[1] >= last_pl
 
@@ -70,8 +70,10 @@ if cisd_bear
 
 // ─── Trail state ───────────────────────────────────────────────────────────
 var line   bull_ln   = na
+var label  bull_lbl  = na
 var float  bull_lvl  = na
 var line   bear_ln   = na
+var label  bear_lbl  = na
 var float  bear_lvl  = na
 var line[] bull_segs = array.new<line>()
 var line[] bear_segs = array.new<line>()
@@ -79,59 +81,52 @@ var line[] bear_segs = array.new<line>()
 // ─── Main logic ────────────────────────────────────────────────────────────
 if enable and barstate.isconfirmed
 
-    // Mitigation: bull protected low broken to the downside
+    // Mitigation: bull protected low broken to the downside → delete entirely
     if not na(bull_ln) and not na(bull_lvl) and close < bull_lvl
-        line.set_extend(bull_ln, extend.none)
-        line.set_x2(bull_ln,    bar_index)
-        line.set_color(bull_ln, color_hit)
-        archive(bull_ln, bull_segs, max_segs)
-        if show_hit_lbl
-            label.new(bar_index, bull_lvl, "Mitigated", yloc=yloc.price,
-                      style=label.style_none, textcolor=color_hit,
-                      size=lbl_sz, textalign=text.align_left)
+        line.delete(bull_ln)
+        label.delete(bull_lbl)
         bull_ln  := na
+        bull_lbl := na
         bull_lvl := na
 
-    // Mitigation: bear protected high broken to the upside
+    // Mitigation: bear protected high broken to the upside → delete entirely
     if not na(bear_ln) and not na(bear_lvl) and close > bear_lvl
-        line.set_extend(bear_ln, extend.none)
-        line.set_x2(bear_ln,    bar_index)
-        line.set_color(bear_ln, color_hit)
-        archive(bear_ln, bear_segs, max_segs)
-        if show_hit_lbl
-            label.new(bar_index, bear_lvl, "Mitigated", yloc=yloc.price,
-                      style=label.style_none, textcolor=color_hit,
-                      size=lbl_sz, textalign=text.align_left)
+        line.delete(bear_ln)
+        label.delete(bear_lbl)
         bear_ln  := na
+        bear_lbl := na
         bear_lvl := na
 
-    // New bullish CISD: step trail to the pivot low of this CISD leg
-    if cisd_bull and not na(last_pl)
+    // New bullish CISD: step trail to pivot low of this CISD leg
+    if cisd_bull and not na(last_pl) and not na(last_pl_bar)
         if not na(bull_ln)
+            // Terminate old segment at current bar, archive without label
             line.set_extend(bull_ln, extend.none)
             line.set_x2(bull_ln, bar_index)
+            label.delete(bull_lbl)
             archive(bull_ln, bull_segs, max_segs)
         bull_lvl := last_pl
-        bull_ln  := line.new(bar_index, bull_lvl, bar_index + 1, bull_lvl,
+        bull_ln  := line.new(last_pl_bar, bull_lvl, bar_index, bull_lvl,
                              extend=extend.right, color=color_bull, width=line_width)
-        if show_lbl
-            label.new(bar_index, bull_lvl, "Protected Low", yloc=yloc.price,
-                      style=label.style_none, textcolor=color_bull,
-                      size=lbl_sz, textalign=text.align_left)
+        bull_lbl := show_lbl ?
+             label.new(last_pl_bar, bull_lvl, "Protected Low", yloc=yloc.price,
+                       style=label.style_none, textcolor=color_bull,
+                       size=lbl_sz, textalign=text.align_left) : na
 
-    // New bearish CISD: step trail to the pivot high of this CISD leg
-    if cisd_bear and not na(last_ph)
+    // New bearish CISD: step trail to pivot high of this CISD leg
+    if cisd_bear and not na(last_ph) and not na(last_ph_bar)
         if not na(bear_ln)
             line.set_extend(bear_ln, extend.none)
             line.set_x2(bear_ln, bar_index)
+            label.delete(bear_lbl)
             archive(bear_ln, bear_segs, max_segs)
         bear_lvl := last_ph
-        bear_ln  := line.new(bar_index, bear_lvl, bar_index + 1, bear_lvl,
+        bear_ln  := line.new(last_ph_bar, bear_lvl, bar_index, bear_lvl,
                              extend=extend.right, color=color_bear, width=line_width)
-        if show_lbl
-            label.new(bar_index, bear_lvl, "Protected High", yloc=yloc.price,
-                      style=label.style_none, textcolor=color_bear,
-                      size=lbl_sz, textalign=text.align_left)
+        bear_lbl := show_lbl ?
+             label.new(last_ph_bar, bear_lvl, "Protected High", yloc=yloc.price,
+                       style=label.style_none, textcolor=color_bear,
+                       size=lbl_sz, textalign=text.align_left) : na
 
     // Update active/inactive color each bar
     if not na(bull_ln)
