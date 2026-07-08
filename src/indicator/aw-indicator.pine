@@ -10,6 +10,7 @@ cisd_window    = input.int(4,  "Trigger Window",  minval=1, maxval=20, group=g1)
 max_leg        = input.int(10, "Max Leg Length",  minval=1, maxval=30, group=g1)
 line_width     = input.int(1,  "Line Width",      minval=1, maxval=5,  group=g1)
 remove_failed  = input.bool(true, "Remove Failed CISD/IFVG",          group=g1)
+max_cisd       = input.int(5,  "Max CISDs Shown",  minval=1, maxval=20, group=g1)
 
 g2 = "IFVG Settings"
 show_bull_ifvg  = input.bool(true,  "Show Bullish IFVG",               group=g2)
@@ -267,6 +268,10 @@ if pend_bull and show_bull_cisd
             array.push(bull_cisd_lines,  l)
             array.push(bull_cisd_labels, lb)
             array.push(bull_cisd_lows,   pend_bull_low)
+            if array.size(bull_cisd_lines) > max_cisd
+                line.delete(array.shift(bull_cisd_lines))
+                label.delete(array.shift(bull_cisd_labels))
+                array.shift(bull_cisd_lows)
             pend_bull := false
     else if bars_since > cisd_window
         pend_bull := false
@@ -283,6 +288,10 @@ if pend_bear and show_bear_cisd
             array.push(bear_cisd_lines,  l)
             array.push(bear_cisd_labels, lb)
             array.push(bear_cisd_highs,  pend_bear_high)
+            if array.size(bear_cisd_lines) > max_cisd
+                line.delete(array.shift(bear_cisd_lines))
+                label.delete(array.shift(bear_cisd_labels))
+                array.shift(bear_cisd_highs)
             pend_bear := false
     else if bars_since > cisd_window
         pend_bear := false
