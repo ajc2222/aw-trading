@@ -1,9 +1,9 @@
 //@version=6
 // AW Trailing Stop — Protected Levels
-// On each bullish CISD: draw a line from the pivot low to the current bar.
-// On each bearish CISD: draw a line from the pivot high to the current bar.
-// Line x2 updates every bar to track current price position.
-// If price closes through the level the line is deleted completely.
+// On each bullish CISD: draw a line at the pivot low level from CISD bar to current bar.
+// On each bearish CISD: draw a line at the pivot high level from CISD bar to current bar.
+// Line x2 and label x update every bar to track current price position.
+// If price closes through the level the line and label are deleted completely.
 indicator("AW Trailing Stop — Protected Levels", overlay=true, max_lines_count=200, max_labels_count=100)
 
 // ─── Settings: Trailing Stop ───────────────────────────────────────────────
@@ -33,54 +33,51 @@ lbl_sz = switch lbl_size_str
     => size.small
 
 // ─── Pivot detection ───────────────────────────────────────────────────────
-// ta.pivothigh/low confirm the pivot `lookback` bars after it actually formed,
-// so the pivot bar is bar_index - lookback at confirmation time.
 swing_high = ta.pivothigh(high, lookback, lookback)
 swing_low  = ta.pivotlow(low,  lookback, lookback)
 
-var float last_ph     = na
-var int   last_ph_bar = na
-var float last_pl     = na
-var int   last_pl_bar = na
+var float last_ph = na
+var float last_pl = na
 
 if not na(swing_high)
-    last_ph     := swing_high
-    last_ph_bar := bar_index - lookback
+    last_ph := swing_high
 if not na(swing_low)
-    last_pl     := swing_low
-    last_pl_bar := bar_index - lookback
+    last_pl := swing_low
 
 // ─── CISD signals ──────────────────────────────────────────────────────────
-// Bullish CISD: close crosses above most recent pivot high
-// Bearish CISD: close crosses below most recent pivot low
 cisd_bull = barstate.isconfirmed and not na(last_ph) and close > last_ph and close[1] <= last_ph
 cisd_bear = barstate.isconfirmed and not na(last_pl) and close < last_pl and close[1] >= last_pl
 
-var int cisd_dir = 0  // 1 = bullish, -1 = bearish
+var int cisd_dir = 0
 if cisd_bull
     cisd_dir := 1
 if cisd_bear
     cisd_dir := -1
 
 // ─── Trail state ───────────────────────────────────────────────────────────
-var line  bull_ln  = na   // current protected low line
+var line  bull_ln  = na
 var label bull_lbl = na
 var float bull_lvl = na
 
-var line  bear_ln  = na   // current protected high line
+var line  bear_ln  = na
 var label bear_lbl = na
 var float bear_lvl = na
 
 // ─── Main logic ────────────────────────────────────────────────────────────
 if enable and barstate.isconfirmed
 
-    // Extend active lines to current bar every tick
+    // Extend line x2 and label x to current bar every confirmed bar
     if not na(bull_ln)
         line.set_x2(bull_ln, bar_index)
+    if not na(bull_lbl)
+        label.set_x(bull_lbl, bar_index)
+
     if not na(bear_ln)
         line.set_x2(bear_ln, bar_index)
+    if not na(bear_lbl)
+        label.set_x(bear_lbl, bar_index)
 
-    // Mitigation: bull level broken to the downside → delete line + label
+    // Mitigation: bull level broken to the downside
     if not na(bull_ln) and not na(bull_lvl) and close < bull_lvl
         line.delete(bull_ln)
         label.delete(bull_lbl)
@@ -88,7 +85,7 @@ if enable and barstate.isconfirmed
         bull_lbl := na
         bull_lvl := na
 
-    // Mitigation: bear level broken to the upside → delete line + label
+    // Mitigation: bear level broken to the upside
     if not na(bear_ln) and not na(bear_lvl) and close > bear_lvl
         line.delete(bear_ln)
         label.delete(bear_lbl)
@@ -96,31 +93,31 @@ if enable and barstate.isconfirmed
         bear_lbl := na
         bear_lvl := na
 
-    // New bullish CISD: replace bull trail with line from new pivot low to now
-    if cisd_bull and not na(last_pl) and not na(last_pl_bar)
+    // New bullish CISD: line starts at CISD bar, level = most recent pivot low
+    if cisd_bull and not na(last_pl)
         line.delete(bull_ln)
         label.delete(bull_lbl)
         bull_lvl := last_pl
-        bull_ln  := line.new(last_pl_bar, bull_lvl, bar_index, bull_lvl,
+        bull_ln  := line.new(bar_index, bull_lvl, bar_index, bull_lvl,
                              color=color_bull, width=line_width)
         bull_lbl := show_lbl ?
-             label.new(last_pl_bar, bull_lvl, "Protected Low", yloc=yloc.price,
+             label.new(bar_index, bull_lvl, "Protected Low", yloc=yloc.price,
                        style=label.style_none, textcolor=color_bull,
-                       size=lbl_sz, textalign=text.align_left) : na
+                       size=lbl_sz, textalign=text.align_right) : na
 
-    // New bearish CISD: replace bear trail with line from new pivot high to now
-    if cisd_bear and not na(last_ph) and not na(last_ph_bar)
+    // New bearish CISD: line starts at CISD bar, level = most recent pivot high
+    if cisd_bear and not na(last_ph)
         line.delete(bear_ln)
         label.delete(bear_lbl)
         bear_lvl := last_ph
-        bear_ln  := line.new(last_ph_bar, bear_lvl, bar_index, bear_lvl,
+        bear_ln  := line.new(bar_index, bear_lvl, bar_index, bear_lvl,
                              color=color_bear, width=line_width)
         bear_lbl := show_lbl ?
-             label.new(last_ph_bar, bear_lvl, "Protected High", yloc=yloc.price,
+             label.new(bar_index, bear_lvl, "Protected High", yloc=yloc.price,
                        style=label.style_none, textcolor=color_bear,
-                       size=lbl_sz, textalign=text.align_left) : na
+                       size=lbl_sz, textalign=text.align_right) : na
 
-    // Active/inactive dimming based on CISD direction
+    // Active/inactive dimming
     if not na(bull_ln)
         bool bull_active = cisd_dir >= 0
         line.set_color(bull_ln,
