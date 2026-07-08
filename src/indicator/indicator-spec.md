@@ -196,6 +196,57 @@ The trading day/week is divided into four equal quarterly segments. Price action
 
 ---
 
+### 10. Trailing Stop Loss / Protected High-Low Formation
+**File:** `src/indicator/aw-trailing-stop.pine`
+
+**What it does:**
+Trails a stop level to the swing low/high of each new CISD formation. Both the protected low (long stop) and protected high (short stop) are always visible — the active one is highlighted, the inactive one is dimmed. When a protected level is mitigated (price closes through it), that segment turns red and terminates at the mitigation candle.
+
+**Stepping logic:**
+- Trail steps are triggered by **CISD formations**, not just any swing
+- **Bullish CISD fires** → trail steps to the pivot low of that CISD leg (new protected low)
+- **Bearish CISD fires** → trail steps to the pivot high of that CISD leg (new protected high)
+- CISD direction also determines which trail is "active" (highlighted)
+- Only fires on `barstate.isconfirmed` — no repainting
+
+**CISD detection (standalone):**
+- Bullish CISD: confirmed close crosses above most recent `ta.pivothigh`
+- Bearish CISD: confirmed close crosses below most recent `ta.pivotlow`
+- Lookback configurable (default 5 bars each side)
+
+**Visual behavior:**
+- Both trails always draw simultaneously
+- **Active trail** (matching CISD direction): solid line, full color opacity
+- **Inactive trail**: dimmed to configurable opacity, or fully hidden
+- Each new CISD terminates the previous segment at the current bar and starts a new one → natural staircase pattern
+- **Mitigation**: when price closes beyond the protected level → that segment turns red (`color_hit`), line stops exactly at the mitigation candle, "Mitigated" label placed at that bar
+- Prior staircase segments keep their original color — only the mitigated segment turns red
+- After mitigation, trail resets and waits for the next CISD
+
+**Inputs:**
+
+*Trailing Stop group:*
+- Enable (bool, default true)
+- Show Inactive Trail (bool, default true)
+- Line Width (1–4, default 2)
+- Protected Low Color (default #26a69a)
+- Protected High Color (default #ef5350)
+- Mitigated Color (default #ef5350)
+- Inactive Opacity % (10–90, default 60)
+- Max Visible Segments (2–20, default 10)
+
+*Labels group:*
+- Show Level Labels (bool, default true) — "Protected Low" / "Protected High" on each new segment
+- Show Mitigated Label (bool, default true) — "Mitigated" at the breach candle
+- Label Size (Tiny / Small / Normal / Large, default Small)
+
+*CISD / Swing Detection group:*
+- Swing Lookback (2–20, default 5)
+
+**Note:** Shipped as a standalone Pine file. When integrating into the main AW Indicator, reuse the CISD signal from Feature 1 rather than re-detecting it.
+
+---
+
 ---
 
 ### Suggested Future Features (evaluate after v1 is complete)
