@@ -7,104 +7,344 @@
 <style>
 :root {
   --bg:#070709; --surface:rgba(255,255,255,0.04); --line:rgba(255,255,255,0.08);
-  --white:#fff; --muted:#888; --blue:#2E6BFF; --blue-light:#6699ff; --red:#ff5c5c; --green:#4ade80;
+  --white:#fff; --muted:#888; --blue:#2E6BFF; --blue-light:#6699ff;
+  --red:#ff5c5c; --green:#4ade80; --orange:#f59e0b;
 }
-* { box-sizing:border-box; }
-body { background:var(--bg); color:var(--white); font-family:'Archivo',sans-serif; margin:0; padding:40px 24px; }
-.wrap { max-width:920px; margin:0 auto; }
-.hero { display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px; margin-bottom:28px; }
-.hero h1 { font-size:26px; margin:0 0 4px; }
-.hero .sub { color:var(--muted); font-family:'IBM Plex Mono',monospace; font-size:13px; }
-.countdown { text-align:right; }
-.countdown .num { font-size:40px; font-weight:900; color:var(--blue-light); line-height:1; }
-.countdown .lbl { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
-.overall { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px 24px; margin-bottom:24px; }
-.overall .label { font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; }
-.bar { background:rgba(255,255,255,0.06); border-radius:6px; height:10px; overflow:hidden; }
-.fill { background:linear-gradient(90deg,var(--blue),var(--blue-light)); height:100%; border-radius:6px; }
-.overdue { background:rgba(255,92,92,0.07); border:1px solid rgba(255,92,92,0.25); border-radius:14px; padding:18px 22px; margin-bottom:24px; }
-.ind-section { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px 24px; margin-bottom:24px; }
-.ind-section h2 { margin:0 0 4px; font-size:16px; }
-.ind-section .sub { color:var(--muted); font-family:'IBM Plex Mono',monospace; font-size:12px; margin-bottom:16px; }
-.ind-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; }
-.ind-feature { background:rgba(255,255,255,0.03); border:1px solid var(--line); border-radius:10px; padding:12px 14px; display:flex; align-items:flex-start; gap:10px; }
-.ind-feature .badge { font-size:16px; line-height:1; flex-shrink:0; margin-top:2px; }
-.ind-feature .info { min-width:0; }
-.ind-feature .name { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.ind-feature .status { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); margin-top:2px; }
-.ind-feature.done { border-color:rgba(74,222,128,0.2); }
-.ind-feature.done .status { color:#4ade80; }
-.ind-feature.inprog { border-color:rgba(46,107,255,0.35); }
-.ind-feature.inprog .status { color:var(--blue-light); }
-.ind-deadline { display:flex; gap:20px; margin-top:16px; padding-top:14px; border-top:1px solid var(--line); font-family:'IBM Plex Mono',monospace; font-size:12px; }
-.ind-deadline .dl { flex:1; }
-.ind-deadline .dl-date { color:var(--blue-light); font-weight:600; }
-.ind-deadline .dl-label { color:var(--muted); margin-top:2px; }
-.overdue .label { color:var(--red); font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px; }
-.overdue ul { margin:0; padding-left:18px; font-size:14px; line-height:1.8; }
-.week-card { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin-bottom:18px; }
-.week-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-.week-head h3 { margin:0; font-size:16px; }
-.week-pct { font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted); }
-.days { margin-top:14px; display:grid; gap:10px; }
-.day { border-left:2px solid var(--line); padding:6px 0 6px 14px; }
-.day.today { border-left-color:var(--blue); background:rgba(46,107,255,0.06); border-radius:0 8px 8px 0; }
-.day-head { display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted); margin-bottom:4px; }
-.day-name { color:var(--white); font-weight:600; }
-.steps { list-style:none; margin:0; padding:0; font-size:13.5px; line-height:1.9; }
-.steps li { display:flex; gap:8px; align-items:flex-start; }
-.steps li.done { color:var(--muted); text-decoration:line-through; }
-.steps li.pending .chk { color:var(--blue-light); }
-.steps li.done .chk { color:var(--green); text-decoration:none; }
-footer { text-align:center; color:var(--muted); font-family:'IBM Plex Mono',monospace; font-size:11px; margin-top:30px; }
+*{box-sizing:border-box;}
+body{background:var(--bg);color:var(--white);font-family:'Archivo',sans-serif;margin:0;padding:40px 24px;}
+.wrap{max-width:960px;margin:0 auto;}
+/* Hero */
+.hero{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:28px;}
+.hero h1{font-size:26px;margin:0 0 4px;}
+.hero .sub{color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:13px;}
+.countdown{text-align:right;}
+.countdown .num{font-size:40px;font-weight:900;color:var(--blue-light);line-height:1;}
+.countdown .lbl{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 24px;margin-bottom:20px;}
+.card-title{font-size:15px;font-weight:700;margin:0 0 4px;}
+.card-sub{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:14px;}
+/* Progress bar */
+.bar-wrap{margin-bottom:6px;}
+.bar-label{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:6px;}
+.bar{background:rgba(255,255,255,0.06);border-radius:6px;height:8px;overflow:hidden;}
+.fill{background:linear-gradient(90deg,var(--blue),var(--blue-light));height:100%;border-radius:6px;transition:width .4s;}
+/* Overdue */
+.overdue-card{background:rgba(255,92,92,0.06);border:1px solid rgba(255,92,92,0.22);border-radius:14px;padding:18px 22px;margin-bottom:20px;}
+.overdue-card .oc-title{color:var(--red);font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;font-weight:600;}
+/* Today card */
+.today-card{background:rgba(46,107,255,0.07);border:1px solid rgba(46,107,255,0.28);border-radius:14px;padding:18px 22px;margin-bottom:20px;}
+.today-card .tc-title{color:var(--blue-light);font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;font-weight:600;}
+/* Task list */
+.tasks{list-style:none;margin:0;padding:0;}
+.tasks li{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;line-height:1.5;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.tasks li:last-child{border-bottom:none;}
+.chk{flex-shrink:0;margin-top:1px;font-size:14px;}
+.chk.done{color:var(--green);}
+.chk.open{color:var(--blue-light);}
+.chk.over{color:var(--red);}
+.task-text{flex:1;}
+.task-text.done{color:var(--muted);text-decoration:line-through;}
+.task-meta{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);flex-shrink:0;margin-top:2px;}
+/* Week sections */
+.week-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.week-head h3{margin:0;font-size:15px;}
+.week-pct{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);}
+.day-group{margin-top:14px;}
+.day-label{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em;}
+/* Indicator section */
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-top:2px;}
+.ind-item{background:rgba(255,255,255,0.03);border:1px solid var(--line);border-radius:10px;padding:11px 14px;display:flex;align-items:flex-start;gap:10px;}
+.ind-item.done{border-color:rgba(74,222,128,0.2);}
+.ind-item.inprog{border-color:rgba(46,107,255,0.32);}
+.ind-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.ind-name{font-size:13px;font-weight:600;}
+.ind-status{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px;}
+.ind-item.done .ind-status{color:var(--green);}
+.ind-item.inprog .ind-status{color:var(--blue-light);}
+.ind-deadlines{display:flex;gap:24px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);}
+.dl-item .dl-date{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--blue-light);}
+.dl-item .dl-desc{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px;}
+footer{text-align:center;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:11px;margin-top:36px;padding-top:20px;border-top:1px solid var(--line);}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="hero">
+<div class="wrap" id="root"></div>
+
+<script>
+// ─── COMPLETED TASK IDs ────────────────────────────────────────────────────
+// When you finish a task, tell Claude and it will add the ID here.
+const COMPLETED = new Set([
+  'w1-reel1-film',
+]);
+
+// ─── INDICATOR FEATURES ───────────────────────────────────────────────────
+const INDICATOR = [
+  { name:'CISD',                    status:'done',    note:'Done' },
+  { name:'IFVG',                    status:'done',    note:'Done' },
+  { name:'Session Liquidity',       status:'done',    note:'Done · Jul 8' },
+  { name:'HTF Imbalance',           status:'done',    note:'Done · Jul 8' },
+  { name:'Trailing Stop Loss',      status:'inprog',  note:'In progress' },
+  { name:'PSP',                     status:'todo',    note:'Jul 9 evening' },
+  { name:'SMT (single pair)',       status:'todo',    note:'Jul 13' },
+  { name:'Multi-Pair SMT + SSMT',   status:'todo',    note:'Jul 16' },
+  { name:'QT — Quarterly Theory',   status:'todo',    note:'Jul 20' },
+  { name:'Suggested features',      status:'todo',    note:'Jul 23' },
+  { name:'Full QA + Polish',        status:'todo',    note:'Jul 27' },
+];
+
+// ─── ALL TASKS ────────────────────────────────────────────────────────────
+// id: unique string (used in COMPLETED set)
+// date: 'YYYY-MM-DD'
+// text: display label
+// section: grouping label shown in the week view
+// tag: optional short badge
+const TASKS = [
+  // ── WEEK 1 ──
+  { id:'w1-outline',      date:'2026-07-07', text:'Draft YouTube outline — "What is ICT and why does it actually work?"', section:'W1 · Tue Jul 7 · Batch Film' },
+  { id:'w1-yt-film',      date:'2026-07-07', text:'Film YouTube video (12–15 min)', section:'W1 · Tue Jul 7 · Batch Film' },
+  { id:'w1-reel1-film',   date:'2026-07-07', text:'Film Reel #1 — "3 ICT terms"', section:'W1 · Tue Jul 7 · Batch Film' },
+  { id:'w1-reel2-film',   date:'2026-07-07', text:'Film Reel #2 — P&L + chart annotation', section:'W1 · Tue Jul 7 · Batch Film' },
+  { id:'w1-edit',         date:'2026-07-07', text:'Edit all three (YouTube + 2 Reels)', section:'W1 · Tue Jul 7 · Batch Film' },
+  { id:'w1-post-reel1',   date:'2026-07-08', text:'Post Reel #1 — "3 ICT terms"', section:'W1 · Wed Jul 8 · Upload Day' },
+  { id:'w1-yt-upload',    date:'2026-07-08', text:'Upload YouTube video to YouTube Studio', section:'W1 · Wed Jul 8 · Upload Day' },
+  { id:'w1-story',        date:'2026-07-08', text:'Post IG Story — audience poll', section:'W1 · Wed Jul 8 · Upload Day' },
+  { id:'w1-mod1',         date:'2026-07-10', text:'Film Module 1 — Why Price Does What It Does (45–60 min)', section:'W1 · Thu Jul 10 · Private Module' },
+  { id:'w1-mod1-note',    date:'2026-07-10', text:'Note one concept to tease publicly this week', section:'W1 · Thu Jul 10 · Private Module' },
+  { id:'w1-post-reel2',   date:'2026-07-10', text:'Post Reel #2 — P&L + chart', section:'W1 · Fri Jul 10 · Post Day' },
+  { id:'w1-discord',      date:'2026-07-10', text:'Post in Discord #free-education', section:'W1 · Fri Jul 10 · Post Day' },
+  { id:'w1-review',       date:'2026-07-12', text:'Log metrics (views, subs, Reel reach, Discord count)', section:'W1 · Sun Jul 12 · Review' },
+  { id:'w1-prep-w2',      date:'2026-07-12', text:'Prep Week 2 topic — Full NY open trade breakdown', section:'W1 · Sun Jul 12 · Review' },
+
+  // ── WEEK 2 ──
+  { id:'w2-reel1-post',   date:'2026-07-13', text:'Post Reel #1 (from W2 filming)', section:'W2 · Mon Jul 13 · Post Day' },
+  { id:'w2-yt-film',      date:'2026-07-15', text:'Film YouTube — Full NY open trade breakdown (12–15 min)', section:'W2 · Tue Jul 15 · Batch Film' },
+  { id:'w2-short-film',   date:'2026-07-15', text:'Film YouTube Short — clip from trade breakdown', section:'W2 · Tue Jul 15 · Batch Film' },
+  { id:'w2-reel1-film',   date:'2026-07-15', text:'Film Reel #1 — A+ ICT setup annotation', section:'W2 · Tue Jul 15 · Batch Film' },
+  { id:'w2-reel2-film',   date:'2026-07-15', text:'Film Reel #2 — cert or prop firm pass', section:'W2 · Tue Jul 15 · Batch Film' },
+  { id:'w2-edit',         date:'2026-07-15', text:'Edit all content', section:'W2 · Tue Jul 15 · Batch Film' },
+  { id:'w2-yt-upload',    date:'2026-07-16', text:'Upload YouTube + Short', section:'W2 · Wed Jul 16 · Upload Day' },
+  { id:'w2-story',        date:'2026-07-16', text:'Post IG Story — drive to YouTube', section:'W2 · Wed Jul 16 · Upload Day' },
+  { id:'w2-mod2',         date:'2026-07-17', text:'Film Module 2 — Building Your Data Collection System (2 videos)', section:'W2 · Thu Jul 17 · Private Module' },
+  { id:'w2-tradelog',     date:'2026-07-17', text:'Write trade log template PDF', section:'W2 · Thu Jul 17 · Private Module' },
+  { id:'w2-post-reel2',   date:'2026-07-18', text:'Post Reel #2 — prop pass', section:'W2 · Fri Jul 18 · Post Day' },
+  { id:'w2-discord',      date:'2026-07-18', text:'Post in Discord #free-education', section:'W2 · Fri Jul 18 · Post Day' },
+  { id:'w2-review',       date:'2026-07-19', text:'Log metrics', section:'W2 · Sun Jul 19 · Review' },
+  { id:'w2-qa-reminder',  date:'2026-07-19', text:'Reminder: Week 3 Story will collect Q&A — save every response', section:'W2 · Sun Jul 19 · Review' },
+
+  // ── WEEK 3 ──
+  { id:'w3-reel1-post',   date:'2026-07-20', text:'Post Reel #1 (from W3 filming)', section:'W3 · Mon Jul 20 · Post Day' },
+  { id:'w3-yt-film',      date:'2026-07-22', text:'Film YouTube — "How I find liquidity grabs before they happen"', section:'W3 · Tue Jul 22 · Batch Film' },
+  { id:'w3-reel1-film',   date:'2026-07-22', text:'Film Reel #1 — prop eval pass', section:'W3 · Tue Jul 22 · Batch Film' },
+  { id:'w3-reel2-film',   date:'2026-07-22', text:'Film Reel #2 — YouTube clip hook', section:'W3 · Tue Jul 22 · Batch Film' },
+  { id:'w3-edit',         date:'2026-07-22', text:'Edit all content', section:'W3 · Tue Jul 22 · Batch Film' },
+  { id:'w3-yt-upload',    date:'2026-07-23', text:'Upload YouTube video', section:'W3 · Wed Jul 23 · Upload Day' },
+  { id:'w3-story-qa',     date:'2026-07-23', text:'Post IG Story — Q&A sticker ⚠️ SAVE EVERY RESPONSE (use for W6 objection content)', section:'W3 · Wed Jul 23 · Upload Day' },
+  { id:'w3-mod3',         date:'2026-07-24', text:'Film Module 3 — Finding Your Edge in the Data (2 videos)', section:'W3 · Thu Jul 24 · Private Module' },
+  { id:'w3-review-pdf',   date:'2026-07-24', text:'Write monthly data review framework PDF', section:'W3 · Thu Jul 24 · Private Module' },
+  { id:'w3-post-reel2',   date:'2026-07-25', text:'Post Reel #2 — YouTube clip teaser', section:'W3 · Fri Jul 25 · Post Day' },
+  { id:'w3-discord',      date:'2026-07-25', text:'Post in Discord #free-education', section:'W3 · Fri Jul 25 · Post Day' },
+  { id:'w3-review',       date:'2026-07-26', text:'Log metrics', section:'W3 · Sun Jul 26 · Review' },
+  { id:'w3-qa-review',    date:'2026-07-26', text:'Review Q&A Story responses — note objections for W6', section:'W3 · Sun Jul 26 · Review' },
+
+  // ── WEEK 4 ──
+  { id:'w4-reel1-post',   date:'2026-07-27', text:'Post Reel #1 (from W4 filming)', section:'W4 · Mon Jul 28 · Post Day' },
+  { id:'w4-yt-film',      date:'2026-07-29', text:'Film YouTube — Weekly recap vlog (10–15 min)', section:'W4 · Tue Jul 29 · Batch Film' },
+  { id:'w4-short',        date:'2026-07-29', text:'Film YouTube Short — live trade clip', section:'W4 · Tue Jul 29 · Batch Film' },
+  { id:'w4-reel1-film',   date:'2026-07-29', text:'Film Reel #1 — Discord server tour', section:'W4 · Tue Jul 29 · Batch Film' },
+  { id:'w4-reel2-film',   date:'2026-07-29', text:'Film Reel #2 — trading mistake', section:'W4 · Tue Jul 29 · Batch Film' },
+  { id:'w4-edit',         date:'2026-07-29', text:'Edit all content', section:'W4 · Tue Jul 29 · Batch Film' },
+  { id:'w4-yt-upload',    date:'2026-07-30', text:'Upload YouTube vlog + Short', section:'W4 · Wed Jul 30 · Upload Day' },
+  { id:'w4-story-tease',  date:'2026-07-30', text:'Post IG Story — soft tease "something big in 4 weeks"', section:'W4 · Wed Jul 30 · Upload Day' },
+  { id:'w4-mod4',         date:'2026-07-31', text:'Film Module 4 — Psychology: Understanding Yourself as the Variable (2 videos)', section:'W4 · Thu Jul 31 · Private Module' },
+  { id:'w4-psych-pdf',    date:'2026-07-31', text:'Write psychology self-audit PDF', section:'W4 · Thu Jul 31 · Private Module' },
+  { id:'w4-post-reel2',   date:'2026-08-01', text:'Post Reel #2 — trading mistake', section:'W4 · Fri Aug 1 · Post Day' },
+  { id:'w4-discord',      date:'2026-08-01', text:'Post in Discord #free-education', section:'W4 · Fri Aug 1 · Post Day' },
+  { id:'w4-review',       date:'2026-08-02', text:'Log metrics', section:'W4 · Sun Aug 2 · Review' },
+  { id:'w4-pre-tease',    date:'2026-08-02', text:'Pre-Week 5 checklist: indicator tested on chart, 3 clips ready', section:'W4 · Sun Aug 2 · Review' },
+
+  // ── WEEK 5 ──
+  { id:'w5-discord-ch',   date:'2026-08-03', text:'Create #indicator-preview channel in Discord', section:'W5 · Mon Aug 3 · Milestone' },
+  { id:'w5-reel1-post',   date:'2026-08-03', text:'Post Reel #1 — indicator mystery clip', section:'W5 · Mon Aug 3 · Post Day' },
+  { id:'w5-yt-film',      date:'2026-08-05', text:'Film YouTube tease — "I\'ve been building something…" (8–10 min, no name/price)', section:'W5 · Tue Aug 5 · Batch Film' },
+  { id:'w5-reel2-film',   date:'2026-08-05', text:'Film Reel #2 — indicator signal + result', section:'W5 · Tue Aug 5 · Batch Film' },
+  { id:'w5-edit',         date:'2026-08-05', text:'Edit all content', section:'W5 · Tue Aug 5 · Batch Film' },
+  { id:'w5-yt-upload',    date:'2026-08-06', text:'Upload YouTube tease video', section:'W5 · Wed Aug 6 · Upload Day' },
+  { id:'w5-story',        date:'2026-08-06', text:'Post IG Story — "Discord members find out first"', section:'W5 · Wed Aug 6 · Upload Day' },
+  { id:'w5-mod5',         date:'2026-08-07', text:'Film Module 5 — Building Discretion (2 videos)', section:'W5 · Thu Aug 7 · Private Module' },
+  { id:'w5-risk-pdf',     date:'2026-08-07', text:'Write risk and sizing guide PDF', section:'W5 · Thu Aug 7 · Private Module' },
+  { id:'w5-post-reel2',   date:'2026-08-08', text:'Post Reel #2 — signal + result', section:'W5 · Fri Aug 8 · Post Day' },
+  { id:'w5-discord-drop', date:'2026-08-08', text:'Post 3rd teaser clip in Discord #indicator-preview', section:'W5 · Fri Aug 8 · Post Day' },
+  { id:'w5-review',       date:'2026-08-09', text:'Log metrics', section:'W5 · Sun Aug 9 · Review' },
+  { id:'w5-pre-announce', date:'2026-08-09', text:'Pre-announce checklist: Whop page ready, pricing confirmed, link live', section:'W5 · Sun Aug 9 · Review' },
+
+  // ── WEEK 6 ──
+  { id:'w6-discord-ch1',  date:'2026-08-10', text:'Create #sept-1-launch channel in Discord', section:'W6 · Mon Aug 10 · Milestone' },
+  { id:'w6-discord-ch2',  date:'2026-08-10', text:'Create #testimonials channel in Discord', section:'W6 · Mon Aug 10 · Milestone' },
+  { id:'w6-reel1-post',   date:'2026-08-10', text:'Post Reel #1 — announcement Reel', section:'W6 · Mon Aug 10 · Post Day' },
+  { id:'w6-yt-film',      date:'2026-08-12', text:'⚠️ Film YouTube — FULL REVEAL (15–20 min, most important video of 8 weeks)', section:'W6 · Tue Aug 12 · Batch Film' },
+  { id:'w6-reel-obj-film', date:'2026-08-12', text:'Film Reel — objection flip (use Week 3 Q&A responses)', section:'W6 · Tue Aug 12 · Batch Film' },
+  { id:'w6-edit',         date:'2026-08-12', text:'Edit all content', section:'W6 · Tue Aug 12 · Batch Film' },
+  { id:'w6-yt-upload',    date:'2026-08-13', text:'Upload YouTube reveal video', section:'W6 · Wed Aug 13 · Upload Day' },
+  { id:'w6-story-series', date:'2026-08-13', text:'Post 3-part IG Story series → Discord CTA', section:'W6 · Wed Aug 13 · Upload Day' },
+  { id:'w6-mod6-plan',    date:'2026-08-13', text:'Write out 4–6 advanced concepts for Module 6 filming tomorrow', section:'W6 · Thu Aug 14 · Private Module' },
+  { id:'w6-mod6',         date:'2026-08-14', text:'Film Module 6 — Advanced Concepts: What I\'ve Actually Picked Up (3–4 videos)', section:'W6 · Thu Aug 14 · Private Module' },
+  { id:'w6-presession-pdf', date:'2026-08-14', text:'Write pre-session framework PDF', section:'W6 · Thu Aug 14 · Private Module' },
+  { id:'w6-post-reel2',   date:'2026-08-15', text:'Post Reel #2 — objection flip', section:'W6 · Fri Aug 15 · Post Day' },
+  { id:'w6-discord-ann',  date:'2026-08-15', text:'Post in Discord #sept-1-launch — first hard CTA', section:'W6 · Fri Aug 15 · Post Day' },
+  { id:'w6-review',       date:'2026-08-16', text:'Log metrics', section:'W6 · Sun Aug 16 · Review' },
+  { id:'w6-w7-prep',      date:'2026-08-16', text:'Prep Week 7 — daily indicator clips ready, countdown sticker set up', section:'W6 · Sun Aug 16 · Review' },
+
+  // ── WEEK 7 ──
+  { id:'w7-daily-reels',  date:'2026-08-17', text:'Post one indicator Reel per day (Mon–Fri)', section:'W7 · Aug 17–21 · Daily Posts' },
+  { id:'w7-yt-live-film', date:'2026-08-19', text:'Record raw live trading session with indicator (30–45 min uncut)', section:'W7 · Tue Aug 19 · Batch Film' },
+  { id:'w7-short-film',   date:'2026-08-19', text:'Film Short — "Why I built this indicator"', section:'W7 · Tue Aug 19 · Batch Film' },
+  { id:'w7-yt-upload',    date:'2026-08-19', text:'Upload YouTube live session + Short', section:'W7 · Wed Aug 19 · Upload Day' },
+  { id:'w7-objection',    date:'2026-08-20', text:'Post objection Reel — "Is $39/mo worth it?"', section:'W7 · Thu Aug 20' },
+  { id:'w7-countdown',    date:'2026-08-20', text:'Post Instagram countdown sticker Story to Sept 1', section:'W7 · Thu Aug 20' },
+  { id:'w7-testimonials', date:'2026-08-21', text:'Populate #testimonials with P&L screenshots and certs', section:'W7 · Fri Aug 21' },
+  { id:'w7-discord-heat', date:'2026-08-21', text:'Discord reminder post in #sept-1-launch', section:'W7 · Fri Aug 21' },
+  { id:'w7-review',       date:'2026-08-23', text:'Log metrics + draft all launch day posts', section:'W7 · Sun Aug 23 · Review' },
+  { id:'w7-whop-check',   date:'2026-08-23', text:'Final tech checklist: Whop link live, Discord channels ready', section:'W7 · Sun Aug 23 · Review' },
+
+  // ── MODULE EDIT + QA ──
+  { id:'edit-modules',    date:'2026-08-22', text:'Edit all 6 membership modules (trim, chapter overlays, export 1080p)', section:'Sat Aug 22 · Big Session' },
+  { id:'whop-upload',     date:'2026-08-22', text:'Upload all 6 modules to Whop + create Live Trader course section', section:'Sat Aug 22 · Big Session' },
+  { id:'whop-pdfs',       date:'2026-08-22', text:'Upload all 5 PDFs to Whop resources section', section:'Sat Aug 22 · Big Session' },
+  { id:'discord-setup',   date:'2026-08-22', text:'Create members-only Discord channels (#live-trader-lounge, #trade-alerts, etc.)', section:'Sat Aug 22 · Big Session' },
+  { id:'qa-modules',      date:'2026-08-24', text:'Watch all 6 modules start to finish — fix anything before Sept 1', section:'Mon Aug 24 · QA' },
+  { id:'qa-whop',         date:'2026-08-24', text:'Test $39 tier access (incognito) and $129 tier access', section:'Mon Aug 24 · QA' },
+  { id:'qa-welcome',      date:'2026-08-24', text:'Write + schedule welcome message for new $129 members', section:'Mon Aug 24 · QA' },
+
+  // ── LAUNCH DAY ──
+  { id:'launch-ig',       date:'2026-09-01', text:'8:30am — Post launch IG Reel + Story', section:'Sept 1 · Launch Day' },
+  { id:'launch-discord',  date:'2026-09-01', text:'9:00am — Post in Discord #general, #sept-1-launch, update #start-here pin', section:'Sept 1 · Launch Day' },
+  { id:'launch-yt-live',  date:'2026-09-01', text:'9:30am — Go live on YouTube — trading the open with the indicator', section:'Sept 1 · Launch Day' },
+  { id:'launch-stories',  date:'2026-09-01', text:'All day — IG Stories every 2 hours (member count, clips, link)', section:'Sept 1 · Launch Day' },
+];
+
+// ─── RENDER ────────────────────────────────────────────────────────────────
+(function(){
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  function parseDate(s){ const [y,m,d]=s.split('-'); return new Date(y,m-1,d); }
+  function fmtDate(s){ return parseDate(s).toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+  function daysUntil(target){ return Math.ceil((new Date('2026-09-01')-today)/(1000*60*60*24)); }
+
+  const overdue=[], todayTasks=[], upcoming=new Map();
+
+  TASKS.forEach(t=>{
+    const td=parseDate(t.date);
+    const done=COMPLETED.has(t.id);
+    if(td<today && !done){ overdue.push(t); }
+    else if(td.getTime()===today.getTime()){ todayTasks.push({...t,done}); }
+    else{
+      const key=t.section;
+      if(!upcoming.has(key)) upcoming.set(key,[]);
+      upcoming.get(key).push({...t,done});
+    }
+  });
+
+  // Count totals for progress
+  const total=TASKS.length, doneCount=TASKS.filter(t=>COMPLETED.has(t.id)).length;
+  const pct=Math.round(doneCount/total*100);
+
+  // Indicator counts
+  const indDone=INDICATOR.filter(f=>f.status==='done').length;
+  const indTotal=INDICATOR.length;
+
+  let html='';
+
+  // Hero
+  html+=`<div class="hero">
     <div>
       <h1>AW Trading — Launch Dashboard</h1>
-      <div class="sub">Week 1 of 8 · Generated Wednesday, July 8, 2026</div>
+      <div class="sub">Week ${getWeek(today)} of 8 · ${today.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</div>
     </div>
     <div class="countdown">
-      <div class="num">55</div>
+      <div class="num">${daysUntil()}</div>
       <div class="lbl">days to Sept 1 launch</div>
     </div>
-  </div>
+  </div>`;
 
-  <div class="overall">
-    <div class="label">Overall Campaign Progress — 2/103 steps (2%)</div>
-    <div class="bar"><div class="fill" style="width:2%"></div></div>
-  </div>
+  // Overall progress
+  html+=`<div class="card">
+    <div class="bar-label">Campaign Progress — ${doneCount}/${total} tasks complete (${pct}%)</div>
+    <div class="bar"><div class="fill" style="width:${pct}%"></div></div>
+  </div>`;
 
-  <div class="ind-section">
-    <h2>AW Indicator — Feature Progress</h2>
-    <div class="sub">src/indicator/aw-indicator.pine · Tease deadline Aug 3 · Reveal Aug 10</div>
-    <div class="ind-grid">
-      <div class="ind-feature done"><div class="badge">✅</div><div class="info"><div class="name">CISD</div><div class="status">Done</div></div></div>
-      <div class="ind-feature done"><div class="badge">✅</div><div class="info"><div class="name">IFVG</div><div class="status">Done</div></div></div>
-      <div class="ind-feature done"><div class="badge">✅</div><div class="info"><div class="name">Session Liquidity</div><div class="status">Done · Jul 8</div></div></div>
-      <div class="ind-feature done"><div class="badge">✅</div><div class="info"><div class="name">HTF Imbalance</div><div class="status">Done · Jul 8</div></div></div>
-      <div class="ind-feature inprog"><div class="badge">🔄</div><div class="info"><div class="name">Trailing Stop Loss</div><div class="status">In progress</div></div></div>
-      <div class="ind-feature"><div class="badge">○</div><div class="info"><div class="name">PSP</div><div class="status">Jul 9 evening</div></div></div>
-      <div class="ind-feature"><div class="badge">○</div><div class="info"><div class="name">SMT (single pair)</div><div class="status">Jul 13</div></div></div>
-      <div class="ind-feature"><div class="badge">○</div><div class="info"><div class="name">Multi-Pair SMT + SSMT</div><div class="status">Jul 16</div></div></div>
-      <div class="ind-feature"><div class="badge">○</div><div class="info"><div class="name">QT — Quarterly Theory</div><div class="status">Jul 20</div></div></div>
-      <div class="ind-feature"><div class="badge">○</div><div class="info"><div class="name">Suggested features</div><div class="status">Jul 23</div></div></div>
-      <div class="ind-feature"><div class="badge">○</div><div class="info"><div class="name">Full QA + Polish</div><div class="status">Jul 27</div></div></div>
+  // Indicator section
+  html+=`<div class="card">
+    <div class="card-title">AW Indicator — Feature Progress</div>
+    <div class="card-sub">${indDone}/${indTotal} features complete · Tease-ready deadline Aug 3</div>
+    <div class="ind-grid">`;
+  INDICATOR.forEach(f=>{
+    const icon = f.status==='done'?'✅':f.status==='inprog'?'🔄':'○';
+    html+=`<div class="ind-item ${f.status}">
+      <div class="ind-icon">${icon}</div>
+      <div><div class="ind-name">${f.name}</div><div class="ind-status">${f.note}</div></div>
+    </div>`;
+  });
+  html+=`</div>
+    <div class="ind-deadlines">
+      <div class="dl-item"><div class="dl-date">Aug 3</div><div class="dl-desc">Tease-ready on camera</div></div>
+      <div class="dl-item"><div class="dl-date">Aug 10</div><div class="dl-desc">Fully polished for reveal</div></div>
+      <div class="dl-item"><div class="dl-date">Sept 1</div><div class="dl-desc">Launch day</div></div>
     </div>
-    <div class="ind-deadline">
-      <div class="dl"><div class="dl-date">Aug 3</div><div class="dl-label">Tease-ready on camera</div></div>
-      <div class="dl"><div class="dl-date">Aug 10</div><div class="dl-label">Fully polished for reveal video</div></div>
-      <div class="dl"><div class="dl-date">Sept 1</div><div class="dl-label">Launch day</div></div>
-    </div>
-  </div>
+  </div>`;
 
-  <div class="overdue"><div class="label">⚠ Overdue / Unchecked (past date)</div><ul><li><b>Tuesday Jul 7</b> — Draft YouTube outline</li><li><b>Tuesday Jul 7</b> — Film YouTube video</li><li><b>Tuesday Jul 7</b> — Film Reel #2 — P&L + chart annotation</li><li><b>Tuesday Jul 7</b> — Edit all three</li></ul></div>
+  // Overdue
+  if(overdue.length){
+    html+=`<div class="overdue-card">
+      <div class="oc-title">⚠ Carry Forward — ${overdue.length} overdue task${overdue.length>1?'s':''}</div>
+      <ul class="tasks">`;
+    overdue.forEach(t=>{
+      html+=`<li><span class="chk over">!</span><span class="task-text">${t.text}</span><span class="task-meta">${fmtDate(t.date)}</span></li>`;
+    });
+    html+=`</ul></div>`;
+  }
 
-  <div class="week-card"><div class="week-head"><h3>Week 1 — Establish Authority (Jul 6–12)</h3><span class="week-pct">2/13 · 15%</span></div><div class="bar"><div class="fill" style="width:15%"></div></div><div class="days"><div class="day"><div class="day-head"><span class="day-name">Tuesday Jul 7</span><span class="day-label">Batch Film Day</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Draft YouTube outline</li><li class="pending"><span class="chk">○</span> Film YouTube video</li><li class="done"><span class="chk">✓</span> Film Reel #1 — "3 ICT terms"</li><li class="pending"><span class="chk">○</span> Film Reel #2 — P&L + chart annotation</li><li class="pending"><span class="chk">○</span> Edit all three</li></ul></div><div class="day today"><div class="day-head"><span class="day-name">Wednesday Jul 8</span><span class="day-label">Upload Day</span></div><ul class="steps"><li class="done"><span class="chk">✓</span> Post Reel #1 — "3 ICT terms"</li><li class="pending"><span class="chk">○</span> Upload YouTube video</li><li class="pending"><span class="chk">○</span> Post IG Story — audience poll</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Friday Jul 10</span><span class="day-label">Second post day</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Post Reel #2 — P&L + chart</li><li class="pending"><span class="chk">○</span> Post in Discord #free-education</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Sunday Jul 12</span><span class="day-label">Weekly Review</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Log metrics</li><li class="pending"><span class="chk">○</span> Review checklist</li><li class="pending"><span class="chk">○</span> Prep Week 2 topic</li></ul></div></div></div><div class="week-card"><div class="week-head"><h3>Week 2 — Teach a System (Jul 13–19)</h3><span class="week-pct">0/12 · 0%</span></div><div class="bar"><div class="fill" style="width:0%"></div></div><div class="days"><div class="day"><div class="day-head"><span class="day-name">Tuesday Jul 15</span><span class="day-label">Batch Film Day</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Film YouTube — full trade breakdown</li><li class="pending"><span class="chk">○</span> Film YouTube Short — "Why most traders enter too early"</li><li class="pending"><span class="chk">○</span> Film Reel #1 — A+ ICT setup annotation</li><li class="pending"><span class="chk">○</span> Film Reel #2 — cert or prop pass</li><li class="pending"><span class="chk">○</span> Edit all content</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Wednesday Jul 16</span><span class="day-label">Upload Day</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Post Reel #1 — A+ setup</li><li class="pending"><span class="chk">○</span> Upload YouTube + Short</li><li class="pending"><span class="chk">○</span> Post IG Story — drive to YouTube</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Friday Jul 18</span><span class="day-label"></span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Post Reel #2 — prop pass</li><li class="pending"><span class="chk">○</span> Discord #free-education post</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Sunday Jul 19</span><span class="day-label">Weekly Review</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Log metrics</li><li class="pending"><span class="chk">○</span> Screenshot and save the Week 3 Q&A Story responses reminder</li></ul></div></div></div><div class="week-card"><div class="week-head"><h3>Week 3 — Social Proof + Education (Jul 20–26)</h3><span class="week-pct">0/10 · 0%</span></div><div class="bar"><div class="fill" style="width:0%"></div></div><div class="days"><div class="day"><div class="day-head"><span class="day-name">Tuesday Jul 22</span><span class="day-label">Batch Film Day</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Film YouTube — "How I find liquidity grabs before they happen"</li><li class="pending"><span class="chk">○</span> Film Reel #1 — "I passed a $50K prop eval using this one concept"</li><li class="pending"><span class="chk">○</span> Edit all content</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Wednesday Jul 23</span><span class="day-label"></span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Post Reel #1 — prop eval pass</li><li class="pending"><span class="chk">○</span> Upload YouTube video</li><li class="pending"><span class="chk">○</span> Post IG Story — Q&A sticker (⚠️ SAVE EVERY RESPONSE)</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Friday Jul 25</span><span class="day-label"></span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Post Reel #2 — YouTube clip teaser</li><li class="pending"><span class="chk">○</span> Discord #free-education post</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Sunday Jul 26</span><span class="day-label">Weekly Review</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Log metrics</li><li class="pending"><span class="chk">○</span> Review Q&A responses</li></ul></div></div></div><div class="week-card"><div class="week-head"><h3>Week 4 — Community + Live Value (Jul 27–Aug 2)</h3><span class="week-pct">0/12 · 0%</span></div><div class="bar"><div class="fill" style="width:0%"></div></div><div class="days"><div class="day"><div class="day-head"><span class="day-name">Tuesday Jul 29</span><span class="day-label">Batch Film Day</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Film YouTube — weekly market recap vlog</li><li class="pending"><span class="chk">○</span> Film YouTube Short — "2 seconds before a liquidity grab"</li><li class="pending"><span class="chk">○</span> Film Reel #1 — Discord server screen recording</li><li class="pending"><span class="chk">○</span> Film Reel #2 — trading mistake</li><li class="pending"><span class="chk">○</span> Edit all content</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Wednesday Jul 30</span><span class="day-label"></span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Post Reel #1 — Discord server tour</li><li class="pending"><span class="chk">○</span> Upload YouTube vlog + Short</li><li class="pending"><span class="chk">○</span> Post IG Story — soft tease</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Friday Aug 1</span><span class="day-label"></span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Post Reel #2 — trading mistake</li><li class="pending"><span class="chk">○</span> Discord #free-education post</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Sunday Aug 2</span><span class="day-label">Weekly Review + Pre-Week-5 Checklist</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Log metrics</li><li class="pending"><span class="chk">○</span> Pre-tease checklist</li></ul></div></div></div><div class="week-card"><div class="week-head"><h3>Week 5 — First Tease (Aug 3–9)</h3><span class="week-pct">0/12 · 0%</span></div><div class="bar"><div class="fill" style="width:0%"></div></div><div class="days"><div class="day"><div class="day-head"><span class="day-name">Monday Aug 3</span><span class="day-label">Discord Channel</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Create #indicator-preview channel</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Tuesday Aug 5</span><span class="day-label">Batch Film Day</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Film YouTube tease video</li><li class="pending"><span class="chk">○</span> Film Reel #1 — indicator mystery clip</li><li class="pending"><span class="chk">○</span> Film Reel #2 — signal + result</li><li class="pending"><span class="chk">○</span> Edit all content</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Monday Aug 3</span><span class="day-label"></span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Post Reel #1 — mystery clip</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Wednesday Aug 6</span><span class="day-label"></span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Upload YouTube tease video</li><li class="pending"><span class="chk">○</span> Post IG Story</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Friday Aug 8</span><span class="day-label"></span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Post Reel #2 — signal + result</li><li class="pending"><span class="chk">○</span> Post 3rd teaser clip in Discord #indicator-preview</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Sunday Aug 9</span><span class="day-label">Weekly Review + Pre-Announce Checklist</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Log metrics</li><li class="pending"><span class="chk">○</span> Pre-announce checklist</li></ul></div></div></div><div class="week-card"><div class="week-head"><h3>Week 6 — Announce (Aug 10–16)</h3><span class="week-pct">0/13 · 0%</span></div><div class="bar"><div class="fill" style="width:0%"></div></div><div class="days"><div class="day"><div class="day-head"><span class="day-name">Monday Aug 10</span><span class="day-label">Discord Channels</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Create #sept-1-launch channel</li><li class="pending"><span class="chk">○</span> Create #testimonials channel</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Tuesday Aug 12</span><span class="day-label">Batch Film Day</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Film YouTube — full reveal (⚠️ most important video)</li><li class="pending"><span class="chk">○</span> Write objection-flip Reel script</li><li class="pending"><span class="chk">○</span> Film Reel #1 — announcement Reel</li><li class="pending"><span class="chk">○</span> Edit all content</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Monday Aug 10</span><span class="day-label"></span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Post Reel #1 — announcement</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Wednesday Aug 12</span><span class="day-label"></span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Upload YouTube reveal video</li><li class="pending"><span class="chk">○</span> Post IG Story series (3 parts)</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Friday Aug 14</span><span class="day-label"></span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Post Reel #2 — objection flip</li><li class="pending"><span class="chk">○</span> Discord #sept-1-launch engagement post</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Sunday Aug 16</span><span class="day-label">Weekly Review</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Log metrics</li><li class="pending"><span class="chk">○</span> Week 7 prep</li></ul></div></div></div><div class="week-card"><div class="week-head"><h3>Week 7 — Build Heat (Aug 17–23)</h3><span class="week-pct">0/12 · 0%</span></div><div class="bar"><div class="fill" style="width:0%"></div></div><div class="days"><div class="day"><div class="day-head"><span class="day-name">Tuesday Aug 19</span><span class="day-label">Batch Film Day</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Record raw live trading session with the indicator</li><li class="pending"><span class="chk">○</span> Film Short — "Why I built this indicator"</li><li class="pending"><span class="chk">○</span> Prepare 5 Reel clips from week's trade footage</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Monday Aug 17</span><span class="day-label">Daily Posts</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Post one Reel per day (Monday–Friday)</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Wednesday Aug 19</span><span class="day-label"></span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Upload YouTube live session + Short</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Thursday Aug 20</span><span class="day-label"></span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Post objection Reel — "Is $39/mo worth it?"</li><li class="pending"><span class="chk">○</span> Post Instagram countdown sticker Story</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Friday Aug 21</span><span class="day-label"></span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Discord reminder post in #sept-1-launch</li><li class="pending"><span class="chk">○</span> Populate #testimonials if not already done</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Sunday Aug 23</span><span class="day-label">Weekly Review + Launch Prep</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Log metrics</li><li class="pending"><span class="chk">○</span> Launch day draft content</li><li class="pending"><span class="chk">○</span> Final tech checklist</li></ul></div></div></div><div class="week-card"><div class="week-head"><h3>Final Push (Aug 24–31)</h3><span class="week-pct">0/0 · 0%</span></div><div class="bar"><div class="fill" style="width:0%"></div></div><div class="days"></div></div><div class="week-card"><div class="week-head"><h3>Launch Day — September 1, 2026</h3><span class="week-pct">0/0 · 0%</span></div><div class="bar"><div class="fill" style="width:0%"></div></div><div class="days"></div></div><div class="week-card"><div class="week-head"><h3>Post-Launch (Sept 2+)</h3><span class="week-pct">0/0 · 0%</span></div><div class="bar"><div class="fill" style="width:0%"></div></div><div class="days"></div></div><div class="week-card"><div class="week-head"><h3>Membership Content — Private Filming (Thursdays)</h3><span class="week-pct">0/19 · 0%</span></div><div class="bar"><div class="fill" style="width:0%"></div></div><div class="days"><div class="day"><div class="day-head"><span class="day-name">Thu Jul 10</span><span class="day-label">Module 1: Why Price Does What It Does</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Film Module 1 (45–60 min of content, 2–3 videos)</li><li class="pending"><span class="chk">○</span> Note one strong concept to tease publicly</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Thu Jul 17</span><span class="day-label">Module 2: Building Your Data Collection System</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Film Module 2 (30–45 min, 2 videos)</li><li class="pending"><span class="chk">○</span> Write trade log template (PDF)</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Thu Jul 24</span><span class="day-label">Module 3: Finding Your Edge in the Data</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Film Module 3 (30–40 min, 2 videos)</li><li class="pending"><span class="chk">○</span> Write monthly data review framework (PDF)</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Thu Jul 31</span><span class="day-label">Module 4: Psychology — Understanding Yourself as the Variable</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Film Module 4 (30–40 min, 2 videos)</li><li class="pending"><span class="chk">○</span> Write psychology self-audit (PDF)</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Thu Aug 7</span><span class="day-label">Module 5: Building Discretion</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Film Module 5 (30–40 min, 2 videos)</li><li class="pending"><span class="chk">○</span> Write risk and sizing guide (PDF)</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Thu Aug 14</span><span class="day-label">Module 6: Advanced Concepts — What I've Actually Picked Up</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Plan your advanced concepts before filming</li><li class="pending"><span class="chk">○</span> Film Module 6 (45–60 min, 3–4 videos)</li><li class="pending"><span class="chk">○</span> Write pre-session framework (PDF)</li></ul></div><div class="day"><div class="day-head"><span class="day-name">Sat Aug 22</span><span class="day-label">Edit All Modules + Upload to Whop</span></div><ul class="steps"><li class="pending"><span class="chk">○</span> Edit all 6 modules</li><li class="pending"><span class="chk">○</span> Upload to Whop</li><li class="pending"><span class="chk">○</span> Create members-only Discord channels</li><li class="pending"><span class="chk">○</span> Watch every module from start to finish</li><li class="pending"><span class="chk">○</span> Test Whop member access</li><li class="pending"><span class="chk">○</span> Write the welcome message</li></ul></div></div></div>
+  // Today
+  if(todayTasks.length){
+    html+=`<div class="today-card">
+      <div class="tc-title">Today — ${today.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})}</div>
+      <ul class="tasks">`;
+    todayTasks.forEach(t=>{
+      const icon=t.done?'✓':'○', cls=t.done?'done':'open';
+      html+=`<li><span class="chk ${cls}">${icon}</span><span class="task-text${t.done?' done':''}">${t.text}</span></li>`;
+    });
+    html+=`</ul></div>`;
+  }
 
-  <footer>Source of truth: docs/superpowers/plans/2026-07-07-aw-trading-launch-execution.md — regenerate with scripts/generate_dashboard.py</footer>
-</div>
+  // Upcoming weeks
+  upcoming.forEach((tasks,section)=>{
+    const allDone=tasks.every(t=>t.done);
+    const doneCnt=tasks.filter(t=>t.done).length;
+    html+=`<div class="card">
+      <div class="week-head">
+        <h3 style="font-size:14px">${section}</h3>
+        <span class="week-pct">${doneCnt}/${tasks.length}</span>
+      </div>
+      <ul class="tasks">`;
+    tasks.forEach(t=>{
+      const icon=t.done?'✓':'○', cls=t.done?'done':'open';
+      html+=`<li><span class="chk ${cls}">${icon}</span><span class="task-text${t.done?' done':''}">${t.text}</span></li>`;
+    });
+    html+=`</ul></div>`;
+  });
+
+  html+=`<footer>Tell Claude when tasks are done — it updates the COMPLETED set in docs/dashboard.html · Auto-refreshes on open</footer>`;
+
+  document.getElementById('root').innerHTML=html;
+})();
+
+function getWeek(d){
+  const start=new Date(2026,6,6); // Jul 6
+  const diff=d-start;
+  const w=Math.floor(diff/(7*24*60*60*1000))+1;
+  return Math.max(1,Math.min(8,w));
+}
+</script>
 </body>
 </html>
