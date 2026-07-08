@@ -249,6 +249,39 @@ Trails a stop level to the swing low/high of each new CISD formation. Both the p
 
 ---
 
+### 11. Equal Highs / Equal Lows (EQH/EQL)
+**What it does:**
+Detects when price forms two swing highs or two swing lows within a configurable tolerance. These double-touch levels are liquidity pools — price tends to run them before reversing. Draws a dashed horizontal line connecting the two matching pivots and labels it "EQH" or "EQL".
+
+**Logic:**
+- Use `ta.pivothigh` and `ta.pivotlow` with configurable lookback (default 5 bars each side)
+- On each confirmed bar, compare the current confirmed pivot to the prior pivot of the same type
+- If `math.abs(current_pivot - prior_pivot) / prior_pivot <= tolerance_pct / 100` → equal level detected
+- Draw a dashed line from the first pivot to the current bar (extending right by `extend_bars`)
+- Place a label at the right end: "EQH" for equal highs, "EQL" for equal lows
+- When price closes beyond an EQH/EQL level → mark as swept (change line style to solid, dim color or add "Swept" label), then delete after `sweep_persist_bars` bars
+
+**Inputs:**
+
+*Equal Highs/Lows Settings group:*
+- Show EQH (bool, default true)
+- Show EQL (bool, default true)
+- Pivot Lookback (int, default 5, min 2, max 20) — bars each side for pivot detection
+- Tolerance % (float, default 0.02, min 0.001, max 0.5) — how close two pivots must be to qualify as "equal"
+- EQH Color (default #f23645)
+- EQL Color (default #089981)
+- Line Width (int, 1–3, default 1)
+- Extend Bars (int, default 20, min 5, max 100) — how far right the line extends from the second pivot
+- Show Sweep Label (bool, default true) — adds "Swept" text when price closes through the level
+- Max EQH Shown (int, default 3, min 1, max 10)
+- Max EQL Shown (int, default 3, min 1, max 10)
+
+**Settings group:** "EQH/EQL Settings"
+
+**Note:** Only fire on `barstate.isconfirmed`. Use a managed array to cap drawn levels at Max Shown — delete oldest when the limit is exceeded. Swept levels should persist for 3 bars then be deleted to avoid clutter.
+
+---
+
 ### Suggested Future Features (evaluate after v1 is complete)
 
 These are worth considering once features 1–9 are stable:
@@ -259,10 +292,7 @@ Shade the chart background during high-probability ICT kill zones (London Open 7
 **B. HTF Bias Label**
 A corner label (top-right) showing current HTF trend bias: "Bullish above [price]" or "Bearish below [price]" based on the most recent HTF CISD. Gives the user instant context without scrolling to a higher TF.
 
-**C. Equal Highs / Equal Lows (EQH/EQL) Detection**
-Detect when price forms two highs or lows within a small tolerance range. These are liquidity magnets. Draw a dashed line with a label. Simple to implement, highly visible on content.
-
-**D. Displacement Detection**
+**C. Displacement Detection**
 Flag when a candle (or series of candles) moves aggressively in one direction — a "displacement" away from a range. Often precedes an IFVG or OB test. Medium complexity.
 
 **E. Market Structure Shift (MSS) + Break of Structure (BOS)**
@@ -276,9 +306,10 @@ Detect when price takes out a prior swing high/low with a close (MSS) vs. a wick
 2. IFVG Settings
 3. HTF Imbalance
 4. Session Liquidity
-5. PSP Settings
-6. SMT Settings (includes multi-pair + SSMT subsection)
-7. QT Settings
+5. EQH/EQL Settings
+6. PSP Settings
+7. SMT Settings (includes multi-pair + SSMT subsection)
+8. QT Settings
 
 ---
 

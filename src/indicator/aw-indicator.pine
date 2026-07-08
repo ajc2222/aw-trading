@@ -12,6 +12,14 @@ line_width     = input.int(1,  "Line Width",      minval=1, maxval=5,  group=g1)
 remove_failed  = input.bool(true, "Remove Failed CISD/IFVG",          group=g1)
 max_cisd       = input.int(5,  "Max CISDs Shown",  minval=1, maxval=20, group=g1)
 
+g1p = "Potential CISD"
+pcisd_col        = input.color(color.new(#888888, 50), "Line Color",   group=g1p)
+pcisd_width      = input.int(1,   "Line Width", minval=1, maxval=5,    group=g1p)
+pcisd_show_label = input.bool(true, "Show Label",                      group=g1p)
+pcisd_label_txt  = input.string("Potential CISD", "Label Text",        group=g1p)
+pcisd_label_size = input.string("small", "Label Size",
+                    options=["tiny","small","normal","large"],          group=g1p)
+
 g2 = "IFVG Settings"
 show_bull_ifvg  = input.bool(true,  "Show Bullish IFVG",               group=g2)
 show_bear_ifvg  = input.bool(true,  "Show Bearish IFVG",               group=g2)
@@ -33,8 +41,6 @@ f_text_size(string s) =>
         "large"  => size.large
         => size.tiny
 
-tf_mins    = timeframe.in_seconds() / 60
-tf_allowed = tf_mins >= 1 and tf_mins <= 5
 tf_ms      = timeframe.in_seconds() * 1000
 
 lowest_10  = ta.lowest(low,  10)[1]
@@ -51,6 +57,11 @@ var int   pend_bear_bar  = 0
 var float pend_bear_cisd = na
 var int   pend_bear_leg  = 0
 var float pend_bear_high = na
+
+var line  pend_bull_line  = na
+var line  pend_bear_line  = na
+var label pend_bull_label = na
+var label pend_bear_label = na
 
 var line[]  bull_cisd_lines  = array.new_line(0)
 var label[] bull_cisd_labels = array.new_label(0)
@@ -105,7 +116,7 @@ f_trim_ifvgs() =>
         fvgArray.set(oldest_idx, fk_old)
         drawn -= 1
 
-if tf_allowed and barstate.isconfirmed
+if barstate.isconfirmed
 
     float recent_swing_low = na
     for j = 2 to 50
@@ -151,6 +162,18 @@ if tf_allowed and barstate.isconfirmed
             leg_bull_end      := bar_index - bear_start
             leg_bull_detected := bar_index
             leg_bull_low      := low[0]
+            if show_bull_cisd
+                if not na(pend_bull_line)
+                    line.delete(pend_bull_line)
+                if not na(pend_bull_label)
+                    label.delete(pend_bull_label)
+                pend_bull_line := line.new(leg_bull_start, pend_bull_cisd, bar_index + 2, pend_bull_cisd,
+                     color=pcisd_col, width=pcisd_width, style=line.style_dotted)
+                pend_bull_label := pcisd_show_label ?
+                     label.new(bar_index + 2, pend_bull_cisd, pcisd_label_txt,
+                          yloc=yloc.price, color=color.new(color.black, 100),
+                          textcolor=pcisd_col, style=label.style_label_lower_right,
+                          size=f_text_size(pcisd_label_size)) : na
 
     if is_higher_high
         int   bull_start  = -1
@@ -181,6 +204,28 @@ if tf_allowed and barstate.isconfirmed
             leg_bear_end      := bar_index - bull_start
             leg_bear_detected := bar_index
             leg_bear_high     := high[0]
+            if show_bear_cisd
+                if not na(pend_bear_line)
+                    line.delete(pend_bear_line)
+                if not na(pend_bear_label)
+                    label.delete(pend_bear_label)
+                pend_bear_line := line.new(leg_bear_start, pend_bear_cisd, bar_index + 2, pend_bear_cisd,
+                     color=pcisd_col, width=pcisd_width, style=line.style_dotted)
+                pend_bear_label := pcisd_show_label ?
+                     label.new(bar_index + 2, pend_bear_cisd, pcisd_label_txt,
+                          yloc=yloc.price, color=color.new(color.black, 100),
+                          textcolor=pcisd_col, style=label.style_label_lower_right,
+                          size=f_text_size(pcisd_label_size)) : na
+
+// ── Pending CISD dotted lines — extend 2 bars past current bar ───
+if pend_bull and not na(pend_bull_line) and show_bull_cisd
+    line.set_x2(pend_bull_line, bar_index + 2)
+    if not na(pend_bull_label)
+        label.set_x(pend_bull_label, bar_index + 2)
+if pend_bear and not na(pend_bear_line) and show_bear_cisd
+    line.set_x2(pend_bear_line, bar_index + 2)
+    if not na(pend_bear_label)
+        label.set_x(pend_bear_label, bar_index + 2)
 
 // ── FVG DETECTION — gated by window at push time ──────────────────
 bool bullFvg = low > high[2]
@@ -215,10 +260,22 @@ if bullFvg and show_bear_ifvg
 if pend_bull and remove_failed
     if low[0] < pend_bull_low
         pend_bull := false
+        if not na(pend_bull_line)
+            line.delete(pend_bull_line)
+            pend_bull_line := na
+        if not na(pend_bull_label)
+            label.delete(pend_bull_label)
+            pend_bull_label := na
 
 if pend_bear and remove_failed
     if high[0] > pend_bear_high
         pend_bear := false
+        if not na(pend_bear_line)
+            line.delete(pend_bear_line)
+            pend_bear_line := na
+        if not na(pend_bear_label)
+            label.delete(pend_bear_label)
+            pend_bear_label := na
 
 // ── Confirmed CISD failure ────────────────────────────────────────
 if remove_failed and array.size(bull_cisd_lines) > 0
@@ -260,11 +317,18 @@ if pend_bull and show_bull_cisd
     bars_since = bar_index - pend_bull_bar
     if bars_since >= 0 and bars_since <= cisd_window
         if close > pend_bull_cisd
+            if not na(pend_bull_line)
+                line.delete(pend_bull_line)
+                pend_bull_line := na
+            if not na(pend_bull_label)
+                label.delete(pend_bull_label)
+                pend_bull_label := na
             l  = line.new(pend_bull_leg, pend_bull_cisd, bar_index, pend_bull_cisd,
                  color=cisd_col, width=line_width, style=line.style_solid)
             lb = label.new(bar_index, pend_bull_cisd, cisd_label_txt,
-                 color=color.new(color.black, 100), textcolor=cisd_col,
-                 style=label.style_label_left, size=size.small)
+                 yloc=yloc.price, color=color.new(color.black, 100),
+                 textcolor=cisd_col, style=label.style_label_lower_right,
+                 size=size.small)
             array.push(bull_cisd_lines,  l)
             array.push(bull_cisd_labels, lb)
             array.push(bull_cisd_lows,   pend_bull_low)
@@ -275,16 +339,29 @@ if pend_bull and show_bull_cisd
             pend_bull := false
     else if bars_since > cisd_window
         pend_bull := false
+        if not na(pend_bull_line)
+            line.delete(pend_bull_line)
+            pend_bull_line := na
+        if not na(pend_bull_label)
+            label.delete(pend_bull_label)
+            pend_bull_label := na
 
 if pend_bear and show_bear_cisd
     bars_since = bar_index - pend_bear_bar
     if bars_since >= 0 and bars_since <= cisd_window
         if close < pend_bear_cisd
+            if not na(pend_bear_line)
+                line.delete(pend_bear_line)
+                pend_bear_line := na
+            if not na(pend_bear_label)
+                label.delete(pend_bear_label)
+                pend_bear_label := na
             l  = line.new(pend_bear_leg, pend_bear_cisd, bar_index, pend_bear_cisd,
                  color=cisd_col, width=line_width, style=line.style_solid)
             lb = label.new(bar_index, pend_bear_cisd, cisd_label_txt,
-                 color=color.new(color.black, 100), textcolor=cisd_col,
-                 style=label.style_label_left, size=size.small)
+                 yloc=yloc.price, color=color.new(color.black, 100),
+                 textcolor=cisd_col, style=label.style_label_lower_right,
+                 size=size.small)
             array.push(bear_cisd_lines,  l)
             array.push(bear_cisd_labels, lb)
             array.push(bear_cisd_highs,  pend_bear_high)
@@ -295,6 +372,12 @@ if pend_bear and show_bear_cisd
             pend_bear := false
     else if bars_since > cisd_window
         pend_bear := false
+        if not na(pend_bear_line)
+            line.delete(pend_bear_line)
+            pend_bear_line := na
+        if not na(pend_bear_label)
+            label.delete(pend_bear_label)
+            pend_bear_label := na
 
 // ── IFVG PROCESSING ───────────────────────────────────────────────
 if fvgArray.size() > 0

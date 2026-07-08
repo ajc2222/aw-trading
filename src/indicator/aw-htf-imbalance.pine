@@ -32,14 +32,18 @@ f_size(string s) =>
         => size.small
 
 f_tf_label(string tf) =>
-    switch tf
-        "D"   => "Daily"
-        "240" => "4h"
-        "60"  => "1h"
-        "30"  => "30m"
-        "15"  => "15m"
-        "5"   => "5m"
-        => tf
+    if tf == "D"
+        "Daily"
+    else if tf == "W"
+        "Weekly"
+    else if tf == "M"
+        "Monthly"
+    else
+        float mins = str.tonumber(tf)
+        if not na(mins) and mins >= 60 and int(mins) % 60 == 0
+            str.tostring(int(mins / 60)) + "h"
+        else
+            tf + "m"
 
 // ═══════════════════════════════════════════════════════════════════
 // FVG SCAN — runs in HTF context via request.security()
@@ -356,7 +360,7 @@ else if not na(tf_mt)
     tf_tm  := tf_mtm
 
 // Suppress Box 2 when current TF is the same as Box 1's resolved TF
-bool draw_tf_box = show_tf_box and not na(tf_top) and timeframe.period != act_tf
+bool draw_tf_box = show_tf_box and not na(tf_top)
 
 // ═══════════════════════════════════════════════════════════════════
 // DISPLAY — Box 1: HTF priority, Box 2: current TF
