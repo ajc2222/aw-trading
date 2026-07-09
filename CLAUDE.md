@@ -12,6 +12,15 @@
 - Keep files under 500 lines
 - Validate input at system boundaries
 
+## Codebase Knowledge Graph
+
+Before any code task (search, edit, debug, refactor):
+1. Call `list_projects` to confirm the repo is indexed
+2. Use `search_graph` or `trace_path` instead of Grep/Glob when looking up symbols, callers, or dependencies
+3. Call `detect_changes` after edits to see what's affected
+
+Re-index after significant changes: `codebase-memory-mcp cli index_repository --repo-path . --mode fast`
+
 ## Build & Test
 
 - ALWAYS run tests after code changes
