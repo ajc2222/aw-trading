@@ -32,6 +32,7 @@
   --white-glow-hard:rgba(255,255,255,.18);
   --blue:#2E6BFF;
   --blue-glow:rgba(46,107,255,.4);
+  --green:#22c55e;
   --glass-hi:rgba(255,255,255,.09);
   --glass-lo:rgba(255,255,255,.035);
   --mono:'IBM Plex Mono',monospace;
@@ -124,7 +125,7 @@ nav{position:sticky;top:0;left:0;right:0;z-index:100;background:linear-gradient(
 .nav-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;margin-left:8px}
 .nav-burger span{display:block;width:22px;height:2px;background:var(--white);border-radius:2px;transition:transform .2s,opacity .2s}
 @media(max-width:900px){.nav-burger{display:flex}}
-.mobile-nav{position:fixed;inset:0;z-index:200;background:rgba(7,7,9,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;padding:40px}
+.mobile-nav{position:fixed;inset:0;z-index:1000;background:rgba(7,7,9,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;padding:40px}
 .mobile-nav[hidden]{display:none}
 .mobile-nav-close{position:absolute;top:20px;right:20px;background:none;border:none;color:var(--white);font-size:1.8rem;cursor:pointer;line-height:1;padding:8px}
 .mobile-nav-links{display:flex;flex-direction:column;align-items:center;gap:28px}
@@ -132,28 +133,30 @@ nav{position:sticky;top:0;left:0;right:0;z-index:100;background:linear-gradient(
 .mobile-nav-cta{margin-top:8px}
 
 /* ---------- HERO ---------- */
-.hero{position:relative;padding:80px 0 100px;overflow:hidden}
+.hero{position:relative;overflow:hidden}
 .hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(900px 600px at 30% 10%,#000 15%,transparent 75%);opacity:.22;pointer-events:none}
-.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr 1fr;gap:72px;align-items:stretch}
-.hero-copy{display:flex;flex-direction:column;justify-content:space-between}
-@media(max-width:980px){.hero-grid{grid-template-columns:1fr}}
-
-.welcome{display:inline-flex;align-items:center;gap:10px;font-style:italic;color:var(--muted);font-size:1.05rem;margin-bottom:14px}
-.welcome::before{content:"";width:30px;height:2px;background:var(--blue);box-shadow:0 0 12px var(--blue-glow);border-radius:2px}
-h1.brand{font-size:clamp(3rem,7vw,5rem);font-weight:900;line-height:1.02;letter-spacing:-.03em;margin:0 0 28px;text-shadow:0 0 40px var(--white-glow)}
-h1.brand em{font-style:normal;position:relative;color:var(--white)}
-h1.brand em::after{content:"";position:absolute;left:0;right:0;bottom:.06em;height:.1em;background:var(--blue);border-radius:2px;z-index:-1;transform:scaleX(0);transform-origin:left;animation:underline .9s .4s cubic-bezier(.2,.8,.2,1) forwards;box-shadow:0 0 24px var(--blue-glow)}
-@keyframes underline{to{transform:scaleX(1)}}
-.hero p.lead{color:var(--muted);font-size:1.05rem;max-width:480px;margin-bottom:30px}
-.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px}
-.hero-note{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
-
-/* mini feature tabs under CTAs */
-.mini-tabs{display:flex;gap:14px;flex-wrap:wrap}
-.mini-tab{flex:1;min-width:150px;border-radius:16px;padding:20px 22px;position:relative;overflow:hidden;transition:transform .25s,box-shadow .3s,border-color .3s}
-.mini-tab:hover{transform:translateY(-4px);box-shadow:0 1px 0 rgba(255,255,255,.15) inset,0 20px 48px -20px var(--blue-glow);border-color:var(--line-strong)}
-.mini-tab b{display:block;font-size:1rem;font-weight:800;margin-bottom:4px}
-.mini-tab span{font-size:.82rem;color:var(--muted)}
+.hero-n-grid{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;column-gap:60px;row-gap:0;padding:60px 0 80px;align-items:start}
+.hero-n-copy{grid-column:1;grid-row:1;padding-bottom:40px}
+.hero-n-widget{grid-column:2;grid-row:1/span 2;display:flex;flex-direction:column}
+.hero-n-stats{grid-column:1;grid-row:2}
+@media(max-width:980px){
+  .hero-n-grid{grid-template-columns:1fr;grid-template-rows:auto auto auto;row-gap:40px;padding:48px 0 64px}
+  .hero-n-copy{grid-column:1;grid-row:1;padding-bottom:0}
+  .hero-n-widget{grid-column:1;grid-row:2}
+  .hero-n-stats{grid-column:1;grid-row:3}
+}
+.hero-n-grid h1{font-size:clamp(2.4rem,6vw,4.8rem);font-weight:900;line-height:.97;letter-spacing:-.04em;margin-bottom:24px;text-shadow:0 0 80px var(--white-glow)}
+.hero-n-grid h1 .welcome-to{display:block;color:var(--white);font-weight:900}
+.hero-n-grid h1 .brand-name{display:block;color:var(--blue);text-shadow:0 0 40px var(--blue-glow)}
+.hero-n-sub{font-size:clamp(1rem,2vw,1.18rem);color:var(--muted);line-height:1.55;max-width:480px;margin-bottom:36px}
+.hero-n-cta{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.cta-aside{font-family:var(--mono);font-size:.65rem;color:var(--dim)}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.sg-card{border-radius:16px;padding:20px 18px}
+.sg-card b{display:block;font-size:2rem;font-weight:900;line-height:1;letter-spacing:-.03em;margin-bottom:4px}
+.sg-card span{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.sg-green b{color:var(--green)}
+.sg-blue b{color:var(--blue)}
 
 /* ---------- DISCORD WIDGET (hero) ---------- */
 .discord-card{border-radius:22px;overflow:hidden;position:relative}
@@ -163,11 +166,11 @@ h1.brand em::after{content:"";position:absolute;left:0;right:0;bottom:.06em;heig
 .discord-topbar p{font-size:.78rem;color:var(--muted)}
 .discord-topbar p b{color:var(--white)}
 .discord-topbar .members-count{margin-left:auto;font-family:var(--mono);font-size:.62rem;color:var(--muted);border:1px solid var(--line);padding:3px 9px;border-radius:99px}
-.discord-app{display:grid;grid-template-columns:56px 150px 1fr;height:460px}
+.discord-app{display:grid;grid-template-columns:56px 175px 1fr;height:500px}
 @media(max-width:560px){.discord-app{grid-template-columns:48px 1fr}.d-channels{display:none}}
 
 .d-rail{background:rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:10px;border-right:1px solid var(--line)}
-.d-rail-icon{width:36px;height:36px;border-radius:13px;background:linear-gradient(180deg,#FFFFFF,#DCE2F0);color:#0A0A0B;display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:.64rem;position:relative;box-shadow:0 0 0 2px var(--blue),0 0 16px var(--blue-glow)}
+.d-rail-icon{width:36px;height:36px;border-radius:13px;background:linear-gradient(180deg,#FFFFFF,#DCE2F0);color:#0A0A0B;display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:.64rem;position:relative;box-shadow:0 0 0 2px var(--blue),0 0 16px var(--blue-glow);overflow:hidden}
 .d-rail-sep{width:22px;height:2px;background:var(--line);border-radius:2px}
 .d-rail-add{width:36px;height:36px;border-radius:50%;border:1px dashed var(--line-strong);color:var(--muted);display:grid;place-items:center;font-size:1.05rem}
 
@@ -258,11 +261,7 @@ section.panel{background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,
 .indicator-visual h3{font-size:1.6rem;font-weight:900;margin-bottom:10px}
 .indicator-visual h3 em{font-style:normal;color:var(--blue)}
 .indicator-visual p{color:var(--muted);font-size:.88rem;margin-bottom:20px}
-.indicator-chart{display:flex;align-items:flex-end;gap:8px;height:130px;margin-top:28px}
-.candle{position:relative;width:14px;border-radius:3px 3px 2px 2px}
-.candle::before{content:"";position:absolute;left:50%;top:-22%;bottom:-22%;width:2px;background:currentColor;transform:translateX(-50%);opacity:.55}
-.candle.up{background:linear-gradient(180deg,#fff,var(--blue));color:var(--blue)}
-.candle.dn{background:rgba(255,255,255,.16);color:var(--muted)}
+.indicator-chart{height:130px;margin-top:28px;overflow:hidden}
 .indicator-features{padding:30px 32px;display:flex;flex-direction:column;gap:18px;justify-content:center}
 .feat{display:flex;align-items:center;gap:14px}
 .f-ic{flex:none;width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid var(--line);display:grid;place-items:center;color:var(--blue)}
@@ -373,55 +372,59 @@ footer{border-top:1px solid var(--line);padding:44px 0}
 
 <main id="main-content">
 <header class="hero">
-  <div class="wrap hero-grid">
-    <div class="hero-copy">
-      <div class="welcome">Welcome to</div>
-      <h1 class="brand">AW <em>Trading</em></h1>
-      <p class="lead">Learn ICT methodology live with experienced mentors. Access the AW+ Indicator, join weekly sessions, and trade alongside a community that actually shows you how.</p>
-      <div class="hero-ctas">
-        <div class="glow-ring"><a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="btn btn-white">Start Trading Right <span class="arrow">→</span></a></div>
-        <a href="#indicator" class="btn btn-ghost">See the Indicator</a>
-      </div>
-      <div class="hero-note">// No signals to blindly copy. A skill you keep forever.</div>
-
-      <div class="mini-tabs">
-        <div class="mini-tab glass"><b>80+</b><span>Members in Discord</span></div>
-        <div class="mini-tab glass"><b>5×</b><span>Live sessions weekly</span></div>
-        <div class="mini-tab glass"><b>Free</b><span>To join, always</span></div>
-      </div>
-    </div>
-
-    <div class="discord-card glass" id="join">
-      <div class="discord-topbar">
-        <span class="dot-live"></span>
-        <p><b>AW Trading</b> is live in Discord</p>
-        <span class="members-count">80+</span>
-      </div>
-      <div class="discord-app">
-        <div class="d-rail">
-          <div class="d-rail-icon">AW</div>
-          <div class="d-rail-sep"></div>
-          <div class="d-rail-add">+</div>
+  <div class="wrap">
+    <div class="hero-n-grid">
+      <div class="hero-n-copy">
+        <h1>
+          <span class="welcome-to">Welcome To</span>
+          <span class="brand-name">AW Trading</span>
+        </h1>
+        <p class="hero-n-sub">Learn ICT. Keep the edge. Join traders who call the move before it happens — live, every session, right inside Discord.</p>
+        <div class="hero-n-cta">
+          <div class="glow-ring"><a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="btn btn-white">Join Free Discord <span class="arrow">→</span></a></div>
+          <span class="cta-aside">// Free to join</span>
         </div>
-        <div class="d-channels" id="dChannels"></div>
-        <div class="d-chat">
-          <div class="d-chat-head"><span class="hash">#</span><h4 id="dChanName">start-here</h4></div>
-          <div class="d-chat-body" id="dChatBody"></div>
-          <div class="d-composer">
-            <div class="d-composer-in"><span class="plus">+</span> Join to send a message</div>
+      </div>
+
+      <div class="hero-n-widget">
+        <div class="discord-card glass" id="join">
+          <div class="discord-topbar">
+            <span class="dot-live"></span>
+            <p><b>AW Trading</b> is live in Discord</p>
+            <span class="members-count">80+</span>
+          </div>
+          <div class="discord-app">
+            <div class="d-rail">
+              <div class="d-rail-icon"><img src="assets/aw logo.png" alt="AW" style="width:36px;height:36px;object-fit:cover;display:block"></div>
+              <div class="d-rail-sep"></div>
+              <div class="d-rail-add">+</div>
+            </div>
+            <div class="d-channels" id="dChannels"></div>
+            <div class="d-chat">
+              <div class="d-chat-head"><span class="hash">#</span><h4 id="dChanName">start-here</h4></div>
+              <div class="d-chat-body" id="dChatBody"></div>
+              <div class="d-composer">
+                <div class="d-composer-in"><span class="plus">+</span> Join to send a message</div>
+              </div>
+            </div>
+          </div>
+          <div class="discord-footer">
+            <span>// Real chat. Real traders. Zero signals.</span>
+            <a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="btn btn-white btn-small">Join Free
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369A19.8 19.8 0 0 0 15.99 3c-.211.375-.457.879-.626 1.278a18.3 18.3 0 0 0-5.487 0A12.7 12.7 0 0 0 9.25 3a19.7 19.7 0 0 0-4.327 1.37C1.87 8.6 1.13 12.72 1.5 16.78a19.9 19.9 0 0 0 5.993 3.03c.483-.66.913-1.36 1.284-2.1a12.8 12.8 0 0 1-2.023-.98c.17-.124.336-.253.497-.386 3.9 1.8 8.13 1.8 11.99 0 .163.133.328.262.497.386-.642.383-1.323.71-2.027.982.372.74.8 1.44 1.284 2.098a19.86 19.86 0 0 0 6.002-3.03c.428-4.71-.734-8.8-3.68-12.41ZM8.68 14.4c-1.18 0-2.14-1.086-2.14-2.42 0-1.335.94-2.42 2.14-2.42 1.21 0 2.16 1.095 2.14 2.42 0 1.334-.93 2.42-2.14 2.42Zm6.64 0c-1.18 0-2.14-1.086-2.14-2.42 0-1.335.95-2.42 2.14-2.42 1.21 0 2.16 1.095 2.14 2.42 0 1.334-.92 2.42-2.14 2.42Z"/></svg>
+            </a>
           </div>
         </div>
       </div>
-      <div class="discord-footer">
-        <span>// Real chat. Real traders. Zero signals.</span>
-        <a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="btn btn-white btn-small">Join Free
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369A19.8 19.8 0 0 0 15.99 3c-.211.375-.457.879-.626 1.278a18.3 18.3 0 0 0-5.487 0A12.7 12.7 0 0 0 9.25 3a19.7 19.7 0 0 0-4.327 1.37C1.87 8.6 1.13 12.72 1.5 16.78a19.9 19.9 0 0 0 5.993 3.03c.483-.66.913-1.36 1.284-2.1a12.8 12.8 0 0 1-2.023-.98c.17-.124.336-.253.497-.386 3.9 1.8 8.13 1.8 11.99 0 .163.133.328.262.497.386-.642.383-1.323.71-2.027.982.372.74.8 1.44 1.284 2.098a19.86 19.86 0 0 0 6.002-3.03c.428-4.71-.734-8.8-3.68-12.41ZM8.68 14.4c-1.18 0-2.14-1.086-2.14-2.42 0-1.335.94-2.42 2.14-2.42 1.21 0 2.16 1.095 2.14 2.42 0 1.334-.93 2.42-2.14 2.42Zm6.64 0c-1.18 0-2.14-1.086-2.14-2.42 0-1.335.95-2.42 2.14-2.42 1.21 0 2.16 1.095 2.14 2.42 0 1.334-.92 2.42-2.14 2.42Z"/></svg>
-        </a>
+
+      <div class="hero-n-stats">
+        <div class="stats-grid">
+          <div class="sg-card glass sg-green"><b>80+</b><span>Active Members</span></div>
+          <div class="sg-card glass sg-blue"><b>5×</b><span>Live Weekly</span></div>
+          <div class="sg-card glass"><b>Free</b><span>To Join Discord</span></div>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="hero-join">
-    <div class="glow-ring"><a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="btn btn-white">Join Free Discord <span class="arrow">→</span></a></div>
   </div>
 </header>
 
@@ -517,14 +520,25 @@ footer{border-top:1px solid var(--line);padding:44px 0}
         <p>The ultimate ICT indicator you've been waiting for.</p>
         <a href="/indicator" class="btn btn-ghost btn-small">Unlock Automated Charting</a>
         <div class="indicator-chart" aria-hidden="true">
-          <span class="candle up" style="height:38%"></span>
-          <span class="candle dn" style="height:58%"></span>
-          <span class="candle up" style="height:50%"></span>
-          <span class="candle up" style="height:74%"></span>
-          <span class="candle dn" style="height:66%"></span>
-          <span class="candle up" style="height:92%"></span>
-          <span class="candle up" style="height:80%"></span>
-          <span class="candle dn" style="height:44%"></span>
+          <svg width="100%" height="100%" viewBox="0 0 280 110" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="aw-area-fill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2E6BFF" stop-opacity=".5"/>
+                <stop offset="100%" stop-color="#2E6BFF" stop-opacity=".02"/>
+              </linearGradient>
+              <filter id="aw-glow" x="-20%" y="-80%" width="140%" height="260%">
+                <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <path d="M0,96 C18,88 30,82 48,74 C62,68 72,76 90,70 C108,64 118,52 138,44 C154,38 164,46 182,36 C198,28 212,24 232,18 C248,14 262,12 280,8 L280,110 L0,110 Z" fill="url(#aw-area-fill)"/>
+            <path d="M0,96 C18,88 30,82 48,74 C62,68 72,76 90,70 C108,64 118,52 138,44 C154,38 164,46 182,36 C198,28 212,24 232,18 C248,14 262,12 280,8" fill="none" stroke="#2E6BFF" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" filter="url(#aw-glow)"/>
+            <circle cx="280" cy="8" r="3.5" fill="#2E6BFF"/>
+            <circle cx="280" cy="8" r="3.5" fill="none" stroke="#2E6BFF" stroke-width="1.5" opacity=".5">
+              <animate attributeName="r" values="3.5;9;3.5" dur="2.4s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values=".5;0;.5" dur="2.4s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
         </div>
       </div>
       <div class="indicator-features">
@@ -650,10 +664,10 @@ footer{border-top:1px solid var(--line);padding:44px 0}
 <script>
 const DATA = [
   { cat:"AW", channels:[
-    { id:"announcements", messages:[
+    { id:"announcements", emoji:"📣", messages:[
       { who:"Will", role:"mentor", time:"Today", text:"Server news, partner discounts, and important updates land here." }
     ]},
-    { id:"certificates-payouts", messages:[
+    { id:"certificates-payouts", emoji:"📋", messages:[
       { who:"AW", role:"mentor", time:"Mon", text:"", image:"assets/proofs/aw%20cert.jpg" },
       { who:"AJ", role:"mentor", time:"Mon", text:"", image:"assets/proofs/aj%20cert.png" },
       { who:"bryydon", time:"5:57 PM", text:"", image:"assets/proofs/bryydon-payout-1.jpg" },
@@ -668,7 +682,7 @@ const DATA = [
       { who:"Fatal", time:"Mon", text:"", image:"assets/proofs/fatal%20payout.png" },
       { who:"Fatal", time:"Mon", text:"another one", image:"assets/proofs/fatal%20payout%202.png" }
     ]},
-    { id:"profits", messages:[
+    { id:"profits", emoji:"💰", messages:[
       { who:"AJ", role:"mentor", time:"Wed", text:"", image:"assets/proofs/profits/aj%20profits%201.png" },
       { who:"AJ", role:"mentor", time:"Wed", text:"", image:"assets/proofs/profits/aj%20profits%202.png" },
       { who:"Will", role:"mentor", time:"Wed", text:"", image:"assets/proofs/profits/will%20profits%201.png" },
@@ -678,7 +692,7 @@ const DATA = [
       { who:"Fatal", time:"Fri", text:"", image:"assets/proofs/profits/fatal%20profits%202.png" },
       { who:"Fatal", time:"Fri", text:"another one", image:"assets/proofs/profits/fatal%20profits%203.png" }
     ]},
-    { id:"testimonials", messages:[
+    { id:"testimonials", emoji:"🏆", messages:[
       { who:"Roasti", time:"Mon", text:"Best community I've been part of." },
       { who:"agustintrades10", time:"Jun 27", text:"Very helpful community, teaches you a lot." },
       { who:"mleko", time:"Jun 27", text:"huge help from AJ and Will, W server" },
@@ -689,24 +703,24 @@ const DATA = [
     ]}
   ]},
   { cat:"WILL'S LAB", channels:[
-    { id:"pre-market", messages:[
+    { id:"pre-market", emoji:"📒", messages:[
       { who:"Will", role:"mentor", time:"8:15 AM", text:"Daily bias and key levels before the open. Key levels pinned above." }
     ]},
-    { id:"intraday-calls", messages:[
+    { id:"intraday-calls", emoji:"📒", messages:[
       { who:"Will", role:"mentor", time:"10:02 AM", text:"Live commentary as setups develop through the session. Watching the reclaim." }
     ]},
-    { id:"executions", messages:[
+    { id:"executions", emoji:"📒", messages:[
       { who:"Will", role:"mentor", time:"10:20 AM", text:"Real entries and exits, posted as they happen. In long, risk defined." }
     ]}
   ]},
   { cat:"AJ'S LAB", channels:[
-    { id:"pre-market-aj", label:"pre-market", messages:[
+    { id:"pre-market-aj", emoji:"🌹", label:"pre-market", messages:[
       { who:"AJ", role:"mentor", time:"8:10 AM", text:"Daily bias and key levels before the open. Plan the trade, trade the plan." }
     ]},
-    { id:"intraday-calls-aj", label:"intraday-calls", messages:[
+    { id:"intraday-calls-aj", emoji:"🌹", label:"intraday-calls", messages:[
       { who:"AJ", role:"mentor", time:"10:05 AM", text:"Live commentary as setups develop through the session. Waiting on confirmation." }
     ]},
-    { id:"executions-aj", label:"executions", messages:[
+    { id:"executions-aj", emoji:"🌹", label:"executions", messages:[
       { who:"AJ", role:"mentor", time:"10:22 AM", text:"Real entries and exits, posted as they happen. Scaled in." }
     ]}
   ]}
@@ -729,7 +743,7 @@ function renderChannels(){
       const el = document.createElement('div');
       el.className = 'd-chan' + (ch.id === 'certificates-payouts' ? ' active' : '');
       el.dataset.id = ch.id;
-      el.innerHTML = `<span class="hash">#</span> ${ch.label || ch.id}${ch.locked ? '<span class="lock">🔒</span>' : ''}`;
+      el.innerHTML = `<span class="hash">#</span>${ch.emoji ? ' ' + ch.emoji + ' |' : ''} ${ch.label || ch.id}${ch.locked ? '<span class="lock">🔒</span>' : ''}`;
       el.addEventListener('click', ()=> selectChannel(ch.id));
       dChannels.appendChild(el);
     });

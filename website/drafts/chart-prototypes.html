@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AW Trading — Chart Prototypes</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070709;
+  --panel:#0c0c10;
+  --panel-2:#111116;
+  --white:#F5F6F8;
+  --muted:#A8ADB8;
+  --dim:#6A6F7C;
+  --line:rgba(255,255,255,.12);
+  --line-strong:rgba(255,255,255,.26);
+  --blue:#2E6BFF;
+  --blue-glow:rgba(46,107,255,.4);
+  --glass-hi:rgba(255,255,255,.09);
+  --glass-lo:rgba(255,255,255,.035);
+  --mono:'IBM Plex Mono',monospace;
+  --disp:'Archivo',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--disp);background:var(--bg);color:var(--white);-webkit-font-smoothing:antialiased;padding:40px 24px}
+
+/* liquid bg */
+.liquid{position:fixed;inset:0;z-index:0;pointer-events:none;filter:blur(80px) saturate(1.1);opacity:.36}
+.blob{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(46,107,255,.5),rgba(46,107,255,.04) 70%);mix-blend-mode:screen}
+.b1{width:55vmax;height:55vmax;top:-24vmax;left:-18vmax;animation:drift1 28s ease-in-out infinite alternate}
+.b2{width:44vmax;height:44vmax;top:34%;right:-20vmax;animation:drift2 34s ease-in-out infinite alternate}
+@keyframes drift1{from{transform:translate(0,0) scale(1)}to{transform:translate(10vmax,8vmax) scale(1.1)}}
+@keyframes drift2{from{transform:translate(0,0) scale(1.05)}to{transform:translate(-9vmax,-7vmax) scale(.9)}}
+
+main{position:relative;z-index:2;max-width:1200px;margin:0 auto}
+
+.page-header{margin-bottom:48px}
+.page-header h1{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+.page-header p{color:var(--muted);font-size:.9rem;font-family:var(--mono)}
+
+.badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin-bottom:20px}
+.badge::before{content:"";width:20px;height:2px;background:var(--blue);box-shadow:0 0 12px var(--blue-glow)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:24px}
+
+/* card = same glass recipe as site */
+.card{
+  border-radius:20px;
+  background:linear-gradient(160deg,var(--glass-hi),var(--glass-lo) 50%);
+  backdrop-filter:blur(18px) saturate(1.3);
+  border:1px solid var(--line);
+  box-shadow:0 1px 0 rgba(255,255,255,.15) inset,0 16px 44px -26px rgba(0,0,0,.9);
+  overflow:hidden;
+  transition:border-color .25s;
+}
+.card:hover{border-color:rgba(46,107,255,.4)}
+
+.card-visual{
+  padding:36px 36px 28px;
+  background:linear-gradient(160deg,rgba(46,107,255,.22),rgba(46,107,255,.02) 60%);
+  border-bottom:1px solid var(--line);
+}
+.card-label{
+  font-family:var(--mono);
+  font-size:.7rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--blue);
+  margin-bottom:8px;
+  opacity:.8;
+}
+.card-title{font-size:1.1rem;font-weight:800;margin-bottom:4px}
+.card-sub{font-size:.8rem;color:var(--muted);margin-bottom:24px}
+.chart-wrap{height:110px;width:100%}
+
+.card-info{padding:20px 24px}
+.card-info p{font-size:.82rem;color:var(--muted);line-height:1.55}
+.card-info strong{color:var(--white)}
+
+/* =============================================
+   PROTO A — Current (reference)
+   ============================================= */
+.candle-row{display:flex;align-items:flex-end;gap:7px;height:100%}
+.c{position:relative;width:13px;border-radius:3px 3px 2px 2px;flex-shrink:0}
+.c::before{content:"";position:absolute;left:50%;top:-22%;bottom:-22%;width:2px;background:currentColor;transform:translateX(-50%);opacity:.55}
+.c.u{background:linear-gradient(180deg,#fff,var(--blue));color:var(--blue)}
+.c.d{background:rgba(255,255,255,.16);color:var(--muted)}
+
+/* =============================================
+   PROTO B — Glowing Area Chart (SVG)
+   ============================================= */
+#area-chart{width:100%;height:100%}
+
+/* =============================================
+   PROTO C — Clean Candles (green/red trading)
+   ============================================= */
+.c2{position:relative;flex-shrink:0;border-radius:2px}
+.wick2{position:absolute;left:50%;transform:translateX(-50%);width:1.5px;border-radius:1px}
+.c2.u2{background:linear-gradient(180deg,rgba(52,211,153,.9),rgba(16,185,129,.6))}
+.wick2.u2{background:rgba(52,211,153,.5)}
+.c2.d2{background:linear-gradient(180deg,rgba(239,68,68,.7),rgba(185,28,28,.5))}
+.wick2.d2{background:rgba(239,68,68,.4)}
+
+/* =============================================
+   PROTO D — Momentum Bars (no wicks)
+   ============================================= */
+.bar-row{display:flex;align-items:flex-end;gap:5px;height:100%}
+.bar{border-radius:4px 4px 2px 2px;flex-shrink:0;transition:filter .2s}
+.bar-u{background:linear-gradient(180deg,rgba(46,107,255,.95),rgba(46,107,255,.3))}
+.bar-d{background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.06))}
+.bar-row:hover .bar{filter:brightness(1.2)}
+
+/* =============================================
+   PROTO E — Sparkline + Pulse
+   ============================================= */
+#spark-chart{width:100%;height:100%;overflow:visible}
+.pulse-dot{animation:pulse-ring 2.2s ease-out infinite}
+@keyframes pulse-ring{
+  0%{r:3;opacity:1}
+  60%{r:7;opacity:0}
+  100%{r:3;opacity:0}
+}
+
+/* =============================================
+   CURRENT label
+   ============================================= */
+.current-tag{
+  display:inline-block;
+  font-family:var(--mono);
+  font-size:.62rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  background:rgba(255,255,255,.08);
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:3px 9px;
+  color:var(--dim);
+  margin-left:10px;
+  vertical-align:middle;
+}
+.pick-tag{
+  display:inline-block;
+  font-family:var(--mono);
+  font-size:.62rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  background:rgba(46,107,255,.18);
+  border:1px solid rgba(46,107,255,.35);
+  border-radius:6px;
+  padding:3px 9px;
+  color:var(--blue);
+  margin-left:10px;
+  vertical-align:middle;
+}
+</style>
+</head>
+<body>
+
+<div class="liquid"><div class="blob b1"></div><div class="blob b2"></div></div>
+
+<main>
+  <div class="page-header">
+    <div class="badge">AW Trading · Design Lab</div>
+    <h1>Chart Visual Prototypes</h1>
+    <p>5 alternatives to replace the indicator card chart — all use existing CSS variables and no external dependencies.</p>
+  </div>
+
+  <div class="grid">
+
+    <!-- ── A: CURRENT ──────────────────────── -->
+    <div class="card">
+      <div class="card-visual">
+        <div class="card-label">Option A <span class="current-tag">Current</span></div>
+        <div class="card-title">Original Candles</div>
+        <div class="card-sub">White-to-blue gradient · grey down candles</div>
+        <div class="chart-wrap">
+          <div class="candle-row">
+            <div class="c u" style="height:38%"></div>
+            <div class="c d" style="height:58%"></div>
+            <div class="c u" style="height:50%"></div>
+            <div class="c u" style="height:74%"></div>
+            <div class="c d" style="height:66%"></div>
+            <div class="c u" style="height:92%"></div>
+            <div class="c u" style="height:80%"></div>
+            <div class="c d" style="height:44%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-info">
+        <p>The existing implementation. <strong>Issues:</strong> wicks appear disconnected, white-top looks washed out, down candles are nearly invisible against the dark card.</p>
+      </div>
+    </div>
+
+    <!-- ── B: GLOWING AREA CHART ───────────── -->
+    <div class="card">
+      <div class="card-visual">
+        <div class="card-label">Option B <span class="pick-tag">Recommended</span></div>
+        <div class="card-title">Glowing Area Chart</div>
+        <div class="card-sub">SVG path · gradient fill · subtle glow stroke</div>
+        <div class="chart-wrap">
+          <svg id="area-chart" viewBox="0 0 280 110" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2E6BFF" stop-opacity=".55"/>
+                <stop offset="100%" stop-color="#2E6BFF" stop-opacity=".03"/>
+              </linearGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <!-- filled area -->
+            <path d="M0,88 L32,70 L64,78 L96,52 L128,62 L160,34 L192,44 L224,24 L256,32 L280,18 L280,110 L0,110 Z"
+                  fill="url(#areaFill)"/>
+            <!-- glowing line -->
+            <path d="M0,88 L32,70 L64,78 L96,52 L128,62 L160,34 L192,44 L224,24 L256,32 L280,18"
+                  fill="none" stroke="#2E6BFF" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" filter="url(#glow)"/>
+            <!-- last price dot -->
+            <circle cx="280" cy="18" r="4" fill="#2E6BFF"/>
+            <circle cx="280" cy="18" r="4" fill="none" stroke="#2E6BFF" stroke-width="1.5" opacity=".4">
+              <animate attributeName="r" values="4;10;4" dur="2.5s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values=".4;0;.4" dur="2.5s" repeatCount="indefinite"/>
+            </circle>
+            <!-- baseline ticks -->
+            <line x1="0" y1="108" x2="280" y2="108" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+          </svg>
+        </div>
+      </div>
+      <div class="card-info">
+        <p><strong>Best for visual impact.</strong> Smooth uptrend conveys growth at a glance. The glow stroke and pulsing dot on the current price feel alive without being noisy. Scales well on mobile.</p>
+      </div>
+    </div>
+
+    <!-- ── C: CLEAN CANDLES ────────────────── -->
+    <div class="card">
+      <div class="card-visual">
+        <div class="card-label">Option C</div>
+        <div class="card-title">Trading Candles</div>
+        <div class="card-sub">Green / red · proportional wicks · professional</div>
+        <div class="chart-wrap" id="clean-candles"></div>
+      </div>
+      <div class="card-info">
+        <p><strong>Most recognisable to traders.</strong> Classic green/red palette traders know immediately. Wicks are properly positioned relative to body height. Down candles are clearly readable.</p>
+      </div>
+    </div>
+
+    <!-- ── D: MOMENTUM BARS ────────────────── -->
+    <div class="card">
+      <div class="card-visual">
+        <div class="card-label">Option D</div>
+        <div class="card-title">Momentum Bars</div>
+        <div class="card-sub">No wicks · wide bars · minimal clutter</div>
+        <div class="chart-wrap">
+          <div class="bar-row">
+            <div class="bar bar-u" style="width:18px;height:42%"></div>
+            <div class="bar bar-d" style="width:18px;height:34%"></div>
+            <div class="bar bar-u" style="width:18px;height:55%"></div>
+            <div class="bar bar-u" style="width:18px;height:68%"></div>
+            <div class="bar bar-d" style="width:18px;height:58%"></div>
+            <div class="bar bar-u" style="width:18px;height:82%"></div>
+            <div class="bar bar-u" style="width:18px;height:76%"></div>
+            <div class="bar bar-d" style="width:18px;height:50%"></div>
+            <div class="bar bar-u" style="width:18px;height:92%"></div>
+            <div class="bar bar-u" style="width:18px;height:88%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-info">
+        <p><strong>Cleanest read at small size.</strong> Removing wicks eliminates the visual noise. Blue gradient up-bars are bold and brand-consistent. Hover brightens all bars for interactivity.</p>
+      </div>
+    </div>
+
+    <!-- ── E: SPARKLINE ────────────────────── -->
+    <div class="card">
+      <div class="card-visual">
+        <div class="card-label">Option E</div>
+        <div class="card-title">Sparkline</div>
+        <div class="card-sub">Smooth SVG curve · trade signal dots</div>
+        <div class="chart-wrap">
+          <svg id="spark-chart" viewBox="0 0 280 110" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2E6BFF" stop-opacity=".3"/>
+                <stop offset="100%" stop-color="#2E6BFF" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- fill -->
+            <path d="M0,90 C30,88 40,72 70,68 C100,64 110,76 140,58 C170,40 185,48 210,28 C235,12 255,20 280,14 L280,110 L0,110 Z"
+                  fill="url(#sparkFill)"/>
+            <!-- line -->
+            <path d="M0,90 C30,88 40,72 70,68 C100,64 110,76 140,58 C170,40 185,48 210,28 C235,12 255,20 280,14"
+                  fill="none" stroke="#2E6BFF" stroke-width="2" stroke-linejoin="round"/>
+            <!-- signal dots (long entries) -->
+            <circle cx="70" cy="68" r="3.5" fill="#34D399"/>
+            <circle cx="140" cy="58" r="3.5" fill="#34D399"/>
+            <circle cx="210" cy="28" r="3.5" fill="#34D399"/>
+            <!-- current price pulse -->
+            <circle cx="280" cy="14" r="3.5" fill="#2E6BFF"/>
+            <circle cx="280" cy="14" r="3.5" fill="none" stroke="#2E6BFF" stroke-width="1.5" opacity=".5">
+              <animate attributeName="r" values="3.5;9;3.5" dur="2s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values=".5;0;.5" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <!-- baseline -->
+            <line x1="0" y1="108" x2="280" y2="108" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+          </svg>
+        </div>
+      </div>
+      <div class="card-info">
+        <p><strong>Tells a story.</strong> Smooth curve shows the trend clearly. Green dots represent trade entries — directly communicates the indicator's purpose. Most unique visual vs competitor sites.</p>
+      </div>
+    </div>
+
+  </div><!-- /grid -->
+</main>
+
+<script>
+// Build Option C: Clean Trading Candles
+// Data: [bodyHeightPct, wickTopPct, wickBotPct, isUp]
+const candleData = [
+  [30, 12, 10, true],
+  [40, 14, 18, false],
+  [38, 10, 12, true],
+  [55, 18, 14, true],
+  [44, 16, 20, false],
+  [68, 22, 12, true],
+  [60, 16, 10, true],
+  [36, 12, 16, false],
+];
+
+const wrap = document.getElementById('clean-candles');
+wrap.style.display = 'flex';
+wrap.style.alignItems = 'flex-end';
+wrap.style.gap = '9px';
+wrap.style.height = '100%';
+
+candleData.forEach(([bodyH, wickT, wickB, isUp]) => {
+  const col = document.createElement('div');
+  col.style.cssText = 'position:relative;display:flex;flex-direction:column;align-items:center;flex:1;height:100%;justify-content:flex-end';
+
+  const totalH = bodyH + wickT + wickB;
+
+  // top wick
+  const wt = document.createElement('div');
+  wt.style.cssText = `
+    width:2px;
+    height:${(wickT / 110) * 100}%;
+    border-radius:1px;
+    background:${isUp ? 'rgba(52,211,153,.5)' : 'rgba(239,68,68,.4)'};
+    flex-shrink:0;
+  `;
+
+  // body
+  const body = document.createElement('div');
+  body.style.cssText = `
+    width:13px;
+    height:${(bodyH / 110) * 100}%;
+    border-radius:2px;
+    background:${isUp
+      ? 'linear-gradient(180deg,rgba(52,211,153,.9),rgba(16,185,129,.55))'
+      : 'linear-gradient(180deg,rgba(239,68,68,.75),rgba(185,28,28,.45))'};
+    flex-shrink:0;
+  `;
+
+  // bottom wick
+  const wb = document.createElement('div');
+  wb.style.cssText = `
+    width:2px;
+    height:${(wickB / 110) * 100}%;
+    border-radius:1px;
+    background:${isUp ? 'rgba(52,211,153,.5)' : 'rgba(239,68,68,.4)'};
+    flex-shrink:0;
+  `;
+
+  // center-align the group
+  const inner = document.createElement('div');
+  inner.style.cssText = `
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    height:${(totalH / 110) * 100}%;
+  `;
+  inner.appendChild(wt);
+  inner.appendChild(body);
+  inner.appendChild(wb);
+
+  col.appendChild(inner);
+  wrap.appendChild(col);
+});
+</script>
+
+</body>
+</html>
