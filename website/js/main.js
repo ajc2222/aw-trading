@@ -76,7 +76,16 @@ const GIVEAWAY_END = new Date('2026-07-31T20:00:00');
     const backdrop = document.querySelector('.mobile-nav-backdrop');
     if (!burger || !overlay) return;
 
+    function syncTop() {
+      const nav = document.querySelector('nav');
+      if (!nav) return;
+      const t = nav.getBoundingClientRect().bottom + 'px';
+      overlay.style.top = t;
+      if (backdrop) backdrop.style.top = t;
+    }
+
     function openNav() {
+      syncTop();
       overlay.classList.add('open');
       if (backdrop) backdrop.classList.add('open');
       burger.setAttribute('aria-expanded', 'true');
@@ -103,6 +112,9 @@ const GIVEAWAY_END = new Date('2026-07-31T20:00:00');
     overlay.querySelectorAll('.mobile-nav-links a').forEach((a) => {
       a.addEventListener('click', closeNav);
     });
+    window.addEventListener('scroll', () => {
+      if (overlay.classList.contains('open')) syncTop();
+    }, { passive: true });
   })();
 
   /* ---------- Stripe CTA wiring ---------- */
