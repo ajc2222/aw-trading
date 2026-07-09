@@ -27,6 +27,10 @@ This is the CISD trigger candle — the body that price needs to close over/unde
 ### Right Border
 The CISD confirmation candle — the bar that closes beyond the trigger.
 
+### Manipulation Leg
+- **Bull**: from the left border to the absolute lowest wick in the scan range — this is the sweep/manipulation down before the CISD confirmation.
+- **Bear**: from the left border to the absolute highest wick in the scan range — the sweep up before confirmation.
+
 ### Protected Low (bull)
 The absolute lowest wick across ALL bars between left border and right border (inclusive).
 Candle type does not matter — wicks and bodies both count.
@@ -34,6 +38,35 @@ Line drawn from that bar's bar_index to the confirmation bar.
 
 ### Protected High (bear, mirror)
 The absolute highest wick between left and right borders.
+
+---
+
+## Swing Divergence — `aw-swing-divergence.pine`
+
+### What it detects
+On each bar, compares ES / NQ / YM lows (bullish) or highs (bearish). If at least one index breaks below its prior low while at least one doesn't — that's a bullish swing divergence, and vice versa for bearish. All six combinations of 1-of-3 and 2-of-3 divergence are covered.
+
+### Failure invalidation
+Every drawn divergence line is stored in an array alongside its failure level:
+- **Bull**: `math.min(low[1], low)` at draw time — line deleted when `low` crosses below it.
+- **Bear**: `math.max(high[1], high)` at draw time — line deleted when `high` crosses above it.
+
+### CISD Filter toggle ("Divergence Filter" settings group)
+When ON, divergences only draw during an active CISD window:
+- Bullish divergence → only fires while a **bullish** CISD is pending (bearish leg detected, waiting for close above trigger)
+- Bearish divergence → only fires while a **bearish** CISD is pending
+
+CISD detection is duplicated from `aw-indicator.pine` (no cross-script state sharing in Pine Script).
+
+### Inclusive border logic
+`pend_bull` is captured into `cisd_bull_prev` **before** the `barstate.isconfirmed` block runs.
+The gate is `cisd_bull_prev or pend_bull` — this makes both borders inclusive:
+- **Right border (confirmation bar):** `cisd_bull_prev = true`, `pend_bull = false` (just confirmed) → still allowed
+- **Left border (lower-low bar):** `cisd_bull_prev = false`, `pend_bull = true` (just armed) → still allowed
+- **After window:** both false → blocked
+
+### CISD settings to match `aw-indicator.pine`
+`Trigger Window` and `Max Leg Length` in the divergence script must be kept in sync with the same settings in the main indicator so both scripts agree on when a CISD is pending.
 
 ---
 

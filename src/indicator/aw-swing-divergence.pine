@@ -1,0 +1,219 @@
+// This Pine Script® code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © AW Trading
+
+//@version=6
+indicator("Swing Divergence - ES, NQ, YM", overlay=true, max_lines_count=500, max_bars_back=500)
+
+// ─── INPUTS ───────────────────────────────────────────────────────────────────
+esSymbol    = input.symbol("CME_MINI:ES1!",  title="ES Symbol")
+nqSymbol    = input.symbol("CME_MINI:NQ1!",  title="NQ Symbol")
+ymSymbol    = input.symbol("CBOT_MINI:YM1!", title="YM Symbol")
+
+showBullDiv = input.bool(true, title="Show Bullish Divergence (Low)")
+showBearDiv = input.bool(true, title="Show Bearish Divergence (High)")
+
+bullColor   = input.color(color.new(color.green, 0), title="Bullish Line Color")
+bearColor   = input.color(color.new(color.red,   0), title="Bearish Line Color")
+lineWidth   = input.int(2, title="Line Width", minval=1, maxval=4)
+
+// ─── DIVERGENCE FILTER ────────────────────────────────────────────────────────
+gf = "Divergence Filter"
+filterByCisd   = input.bool(false, "Filter to CISD Window", group=gf,
+     tooltip="When ON: bullish divergences only fire during an active bullish CISD (pending dotted line), bearish divergences only fire during an active bearish CISD.")
+cisd_div_color = input.color(color.new(color.gray, 0), "Color", group=gf)
+cisd_div_width = input.int(1, "Line Width", minval=1, maxval=4, group=gf)
+
+// ─── CISD SETTINGS ────────────────────────────────────────────────────────────
+gc = "CISD Settings"
+cisd_window   = input.int(4,  "Trigger Window",  minval=1, maxval=20, group=gc)
+max_leg       = input.int(10, "Max Leg Length",  minval=1, maxval=30, group=gc)
+remove_failed = input.bool(true, "Remove Failed CISD", group=gc)
+
+// ─── FETCH DATA ───────────────────────────────────────────────────────────────
+[esHigh, esLow] = request.security(esSymbol, timeframe.period, [high, low])
+[nqHigh, nqLow] = request.security(nqSymbol, timeframe.period, [high, low])
+[ymHigh, ymLow] = request.security(ymSymbol, timeframe.period, [high, low])
+
+// ─── DIVERGENCE LINE TRACKING ─────────────────────────────────────────────────
+var line[]  bull_div_lines  = array.new_line()
+var float[] bull_div_levels = array.new_float()   // low to protect per line
+var line[]  bear_div_lines  = array.new_line()
+var float[] bear_div_levels = array.new_float()   // high to protect per line
+
+// ─── CISD STATE ───────────────────────────────────────────────────────────────
+lowest_10  = ta.lowest(low,  10)[1]
+highest_10 = ta.highest(high, 10)[1]
+
+var bool  pend_bull      = false
+var int   pend_bull_bar  = 0
+var float pend_bull_cisd = na
+var int   pend_bull_leg  = 0
+var float pend_bull_low  = na
+
+var bool  pend_bear      = false
+var int   pend_bear_bar  = 0
+var float pend_bear_cisd = na
+var int   pend_bear_leg  = 0
+var float pend_bear_high = na
+
+// ─── CISD DETECTION ───────────────────────────────────────────────────────────
+// Capture active state before isconfirmed block can modify pend_bull/pend_bear.
+// Used to make BOTH borders inclusive:
+//   - right border: cisd_bull_prev is true on the confirmation bar (pend_bull not yet cleared)
+//   - left border:  pend_bull is true on the lower-low bar (just set by isconfirmed)
+bool cisd_bull_prev = pend_bull
+bool cisd_bear_prev = pend_bear
+
+if barstate.isconfirmed
+
+    float recent_swing_low = na
+    for j = 2 to 50
+        if close[j] < open[j] and close[j-1] > open[j-1]
+            recent_swing_low := math.min(low[j], low[j-1])
+            break
+
+    float recent_swing_high = na
+    for j = 2 to 50
+        if close[j] > open[j] and close[j-1] < open[j-1]
+            recent_swing_high := math.max(high[j], high[j-1])
+            break
+
+    is_lower_low   = low  < lowest_10  or (not na(recent_swing_low)  and low  < recent_swing_low)
+    is_higher_high = high > highest_10 or (not na(recent_swing_high) and high > recent_swing_high)
+
+    // ── Bullish CISD setup (bearish leg → lower low) ──
+    if is_lower_low
+        int   bear_start   = -1
+        float highest_open = na
+        int   first_bar    = -1
+        for j = 1 to 50
+            if close[j] < open[j]
+                bear_start := j
+                break
+        if bear_start >= 0
+            for j = bear_start to bear_start + max_leg - 1
+                if close[j] < open[j]
+                    if na(highest_open) or open[j] > highest_open
+                        highest_open := open[j]
+                    first_bar := j
+                else
+                    break
+        if not na(highest_open) and first_bar >= 0
+            pend_bull      := true
+            pend_bull_bar  := bar_index
+            pend_bull_leg  := bar_index - first_bar
+            pend_bull_cisd := highest_open
+            pend_bull_low  := low
+
+    // ── Bearish CISD setup (bullish leg → higher high) ──
+    if is_higher_high
+        int   bull_start  = -1
+        float lowest_open = na
+        int   first_bar_b = -1
+        for j = 1 to 50
+            if close[j] > open[j]
+                bull_start := j
+                break
+        if bull_start >= 0
+            for j = bull_start to bull_start + max_leg - 1
+                if close[j] > open[j]
+                    if na(lowest_open) or open[j] < lowest_open
+                        lowest_open := open[j]
+                    first_bar_b := j
+                else
+                    break
+        if not na(lowest_open) and first_bar_b >= 0
+            pend_bear      := true
+            pend_bear_bar  := bar_index
+            pend_bear_leg  := bar_index - first_bar_b
+            pend_bear_cisd := lowest_open
+            pend_bear_high := high
+
+    // ── CISD trigger: confirm or expire ──
+    if pend_bull
+        bs = bar_index - pend_bull_bar
+        if bs >= 0 and bs <= cisd_window
+            if close > pend_bull_cisd
+                pend_bull := false
+        else if bs > cisd_window
+            pend_bull := false
+
+    if pend_bear
+        bs = bar_index - pend_bear_bar
+        if bs >= 0 and bs <= cisd_window
+            if close < pend_bear_cisd
+                pend_bear := false
+        else if bs > cisd_window
+            pend_bear := false
+
+    // ── Failed CISD cleanup ──
+    if pend_bull and remove_failed and low < pend_bull_low
+        pend_bull := false
+
+    if pend_bear and remove_failed and high > pend_bear_high
+        pend_bear := false
+
+// ─── DIVERGENCE LOGIC ─────────────────────────────────────────────────────────
+esBrokeBelow = esLow < esLow[1]
+nqBrokeBelow = nqLow < nqLow[1]
+ymBrokeBelow = ymLow < ymLow[1]
+
+anyBullDiv = (esBrokeBelow and not nqBrokeBelow and not ymBrokeBelow) or
+             (nqBrokeBelow and not esBrokeBelow and not ymBrokeBelow) or
+             (ymBrokeBelow and not esBrokeBelow and not nqBrokeBelow) or
+             (esBrokeBelow and nqBrokeBelow     and not ymBrokeBelow) or
+             (esBrokeBelow and ymBrokeBelow     and not nqBrokeBelow) or
+             (nqBrokeBelow and ymBrokeBelow     and not esBrokeBelow)
+
+esBrokeAbove = esHigh > esHigh[1]
+nqBrokeAbove = nqHigh > nqHigh[1]
+ymBrokeAbove = ymHigh > ymHigh[1]
+
+anyBearDiv = (esBrokeAbove and not nqBrokeAbove and not ymBrokeAbove) or
+             (nqBrokeAbove and not esBrokeAbove and not ymBrokeAbove) or
+             (ymBrokeAbove and not esBrokeAbove and not nqBrokeAbove) or
+             (esBrokeAbove and nqBrokeAbove     and not ymBrokeAbove) or
+             (esBrokeAbove and ymBrokeAbove     and not nqBrokeAbove) or
+             (nqBrokeAbove and ymBrokeAbove     and not esBrokeAbove)
+
+// ─── FILTER GATE ──────────────────────────────────────────────────────────────
+bool bullAllowed = not filterByCisd or cisd_bull_prev or pend_bull
+bool bearAllowed = not filterByCisd or cisd_bear_prev or pend_bear
+
+color drawBullColor = filterByCisd ? cisd_div_color : bullColor
+color drawBearColor = filterByCisd ? cisd_div_color : bearColor
+int   drawBullWidth = filterByCisd ? cisd_div_width : lineWidth
+int   drawBearWidth = filterByCisd ? cisd_div_width : lineWidth
+
+// ─── INVALIDATE FAILED DIVERGENCES ───────────────────────────────────────────
+if bull_div_lines.size() > 0
+    for i = bull_div_lines.size() - 1 to 0
+        if low < bull_div_levels.get(i)
+            line.delete(bull_div_lines.get(i))
+            bull_div_lines.remove(i)
+            bull_div_levels.remove(i)
+
+if bear_div_lines.size() > 0
+    for i = bear_div_lines.size() - 1 to 0
+        if high > bear_div_levels.get(i)
+            line.delete(bear_div_lines.get(i))
+            bear_div_lines.remove(i)
+            bear_div_levels.remove(i)
+
+// ─── DRAW LINES ───────────────────────────────────────────────────────────────
+if showBullDiv and anyBullDiv and bullAllowed
+    l = line.new(bar_index[1], low[1], bar_index, low,
+                 color=drawBullColor, width=drawBullWidth, style=line.style_solid)
+    bull_div_lines.push(l)
+    bull_div_levels.push(math.min(low[1], low))
+
+if showBearDiv and anyBearDiv and bearAllowed
+    l = line.new(bar_index[1], high[1], bar_index, high,
+                 color=drawBearColor, width=drawBearWidth, style=line.style_solid)
+    bear_div_lines.push(l)
+    bear_div_levels.push(math.max(high[1], high))
+
+// ─── ALERTS ───────────────────────────────────────────────────────────────────
+alertcondition(anyBullDiv,               title="Bullish Swing Divergence", message="Bullish Swing Divergence detected across ES/NQ/YM")
+alertcondition(anyBearDiv,               title="Bearish Swing Divergence", message="Bearish Swing Divergence detected across ES/NQ/YM")
+alertcondition(anyBullDiv or anyBearDiv, title="Any Swing Divergence",     message="Swing Divergence detected across ES/NQ/YM")
