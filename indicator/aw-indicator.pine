@@ -256,62 +256,6 @@ if bullFvg and show_bear_ifvg
                  sweepLevel  = leg_bear_high,
                  isBullCisd  = false))
 
-// ── Pending CISD failure ──────────────────────────────────────────
-if pend_bull and remove_failed
-    if low[0] < pend_bull_low
-        pend_bull := false
-        if not na(pend_bull_line)
-            line.delete(pend_bull_line)
-            pend_bull_line := na
-        if not na(pend_bull_label)
-            label.delete(pend_bull_label)
-            pend_bull_label := na
-
-if pend_bear and remove_failed
-    if high[0] > pend_bear_high
-        pend_bear := false
-        if not na(pend_bear_line)
-            line.delete(pend_bear_line)
-            pend_bear_line := na
-        if not na(pend_bear_label)
-            label.delete(pend_bear_label)
-            pend_bear_label := na
-
-// ── Confirmed CISD failure ────────────────────────────────────────
-if remove_failed and array.size(bull_cisd_lines) > 0
-    for i = array.size(bull_cisd_lines) - 1 to 0
-        sweep = array.get(bull_cisd_lows, i)
-        if low[0] < sweep
-            line.delete(array.get(bull_cisd_lines,  i))
-            label.delete(array.get(bull_cisd_labels, i))
-            array.remove(bull_cisd_lines,  i)
-            array.remove(bull_cisd_labels, i)
-            array.remove(bull_cisd_lows,   i)
-            if array.size(fvgArray) > 0
-                for k = array.size(fvgArray) - 1 to 0
-                    f = fvgArray.get(k)
-                    if f.isBullCisd and f.sweepLevel == sweep
-                        if not na(f.drawnBox)
-                            box.delete(f.drawnBox)
-                        fvgArray.remove(k)
-
-if remove_failed and array.size(bear_cisd_lines) > 0
-    for i = array.size(bear_cisd_lines) - 1 to 0
-        sweep = array.get(bear_cisd_highs, i)
-        if high[0] > sweep
-            line.delete(array.get(bear_cisd_lines,  i))
-            label.delete(array.get(bear_cisd_labels, i))
-            array.remove(bear_cisd_lines,  i)
-            array.remove(bear_cisd_labels, i)
-            array.remove(bear_cisd_highs,  i)
-            if array.size(fvgArray) > 0
-                for k = array.size(fvgArray) - 1 to 0
-                    f = fvgArray.get(k)
-                    if not f.isBullCisd and f.sweepLevel == sweep
-                        if not na(f.drawnBox)
-                            box.delete(f.drawnBox)
-                        fvgArray.remove(k)
-
 // ── CISD TRIGGER ─────────────────────────────────────────────────
 if pend_bull and show_bull_cisd
     bars_since = bar_index - pend_bull_bar
@@ -378,6 +322,62 @@ if pend_bear and show_bear_cisd
         if not na(pend_bear_label)
             label.delete(pend_bear_label)
             pend_bear_label := na
+
+// ── Pending CISD failure ──────────────────────────────────────────
+if pend_bull and remove_failed
+    if low[0] < pend_bull_low
+        pend_bull := false
+        if not na(pend_bull_line)
+            line.delete(pend_bull_line)
+            pend_bull_line := na
+        if not na(pend_bull_label)
+            label.delete(pend_bull_label)
+            pend_bull_label := na
+
+if pend_bear and remove_failed
+    if high[0] > pend_bear_high
+        pend_bear := false
+        if not na(pend_bear_line)
+            line.delete(pend_bear_line)
+            pend_bear_line := na
+        if not na(pend_bear_label)
+            label.delete(pend_bear_label)
+            pend_bear_label := na
+
+// ── Confirmed CISD failure ────────────────────────────────────────
+if remove_failed and array.size(bull_cisd_lines) > 0
+    for i = array.size(bull_cisd_lines) - 1 to 0
+        sweep = array.get(bull_cisd_lows, i)
+        if low[0] < sweep
+            line.delete(array.get(bull_cisd_lines,  i))
+            label.delete(array.get(bull_cisd_labels, i))
+            array.remove(bull_cisd_lines,  i)
+            array.remove(bull_cisd_labels, i)
+            array.remove(bull_cisd_lows,   i)
+            if array.size(fvgArray) > 0
+                for k = array.size(fvgArray) - 1 to 0
+                    f = fvgArray.get(k)
+                    if f.isBullCisd and f.sweepLevel == sweep
+                        if not na(f.drawnBox)
+                            box.delete(f.drawnBox)
+                        fvgArray.remove(k)
+
+if remove_failed and array.size(bear_cisd_lines) > 0
+    for i = array.size(bear_cisd_lines) - 1 to 0
+        sweep = array.get(bear_cisd_highs, i)
+        if high[0] > sweep
+            line.delete(array.get(bear_cisd_lines,  i))
+            label.delete(array.get(bear_cisd_labels, i))
+            array.remove(bear_cisd_lines,  i)
+            array.remove(bear_cisd_labels, i)
+            array.remove(bear_cisd_highs,  i)
+            if array.size(fvgArray) > 0
+                for k = array.size(fvgArray) - 1 to 0
+                    f = fvgArray.get(k)
+                    if not f.isBullCisd and f.sweepLevel == sweep
+                        if not na(f.drawnBox)
+                            box.delete(f.drawnBox)
+                        fvgArray.remove(k)
 
 // ── IFVG PROCESSING ───────────────────────────────────────────────
 if fvgArray.size() > 0

@@ -1,0 +1,310 @@
+<style>
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .tier-card { border-radius: 14px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; }
+  .tier-card.gold { border-color: rgba(255,180,50,0.4); }
+  .tier-header { padding: 12px 16px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .tier-card.gold .tier-header { background: rgba(255,180,50,0.07); border-bottom-color: rgba(255,180,50,0.2); }
+  .tier-price { font-family: var(--mono); font-size: 1.1rem; font-weight: 800; color: #fff; }
+  .tier-card.gold .tier-price { color: #ffcc55; }
+  .tier-name { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #555; margin-top: 2px; }
+  .tier-card.gold .tier-name { color: #aa8833; }
+  .tier-body { padding: 12px 16px; }
+  .tier-item { font-size: 0.78rem; color: #aaa; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: flex-start; gap: 7px; }
+  .tier-item:last-child { border-bottom: none; }
+  .tier-item .dot { width: 5px; height: 5px; border-radius: 50%; background: #444; flex: none; margin-top: 6px; }
+  .tier-card.gold .tier-item .dot { background: #aa8833; }
+
+  .prereq { padding: 10px 14px; border-radius: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 12px; font-size: 0.75rem; color: #888; line-height: 1.6; }
+  .prereq strong { color: #ccc; }
+
+  .mod-grid { display: flex; flex-direction: column; gap: 8px; }
+  .mod-card { border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; }
+  .mod-card.gold { border-color: rgba(255,180,50,0.25); }
+  .mod-header { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .mod-card.gold .mod-header { background: rgba(255,180,50,0.04); border-bottom-color: rgba(255,180,50,0.1); }
+  .mod-num { font-size: 0.58rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #555; white-space: nowrap; }
+  .mod-card.gold .mod-num { color: #aa8833; }
+  .mod-title { font-size: 0.9rem; font-weight: 800; color: #ddd; }
+  .mod-card.gold .mod-title { color: #ffdd88; }
+  .mod-tag { font-size: 0.58rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: rgba(255,255,255,0.06); color: #666; margin-left: auto; white-space: nowrap; }
+  .mod-card.gold .mod-tag { background: rgba(255,180,50,0.12); color: #aa8833; }
+  .mod-body { display: grid; grid-template-columns: 1fr 1fr; padding: 10px 14px; gap: 12px; }
+  .mod-section-label { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #555; margin-bottom: 5px; }
+  .mod-topics { font-size: 0.73rem; color: #888; line-height: 1.6; }
+  .mod-topics li { margin-bottom: 2px; }
+  .mod-why { font-size: 0.73rem; color: #777; line-height: 1.55; font-style: italic; }
+  .mod-card.gold .mod-why { color: #998866; }
+
+  .guide-list { display: flex; flex-direction: column; gap: 6px; }
+  .guide-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); }
+  .guide-icon { font-size: 0.9rem; flex: none; }
+  .guide-title { font-size: 0.78rem; font-weight: 700; color: #ccc; }
+  .guide-desc { font-size: 0.68rem; color: #666; margin-top: 1px; }
+  .guide-week { font-size: 0.58rem; font-family: var(--mono); color: #444; margin-left: auto; flex: none; }
+
+  .sched-grid { display: flex; flex-direction: column; gap: 7px; }
+  .sched-week { display: grid; grid-template-columns: 90px 1fr 1fr; border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.07); }
+  .sched-week.hot { border-color: rgba(255,180,50,0.2); }
+  .sw-label { padding: 10px 12px; background: rgba(255,255,255,0.02); border-right: 1px solid rgba(255,255,255,0.06); }
+  .sw-label .wk { font-size: 0.68rem; font-weight: 800; color: #888; }
+  .sw-label .dates { font-size: 0.58rem; color: #444; margin-top: 2px; font-family: var(--mono); }
+  .sw-col { padding: 10px 12px; border-right: 1px solid rgba(255,255,255,0.04); }
+  .sw-col:last-child { border-right: none; }
+  .sw-col-head { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 5px; }
+  .sw-col-head.pub { color: #4477dd; }
+  .sw-col-head.priv { color: #aa8833; }
+  .sw-task { font-size: 0.72rem; color: #999; line-height: 1.45; }
+  .sw-task b { color: #ddb84a; }
+</style>
+
+<h2>Live Trader membership — private content plan</h2>
+<p class="subtitle">Built for traders who already know the basics. The focus is on <em>why</em> the market does what it does, data-driven edge development, and building real discretion — not pattern checklists.</p>
+
+<div class="section">
+  <div class="prereq">
+    <strong>Who this is for:</strong> Traders who already understand market structure, FVGs, BOS, and basic ICT concepts. This curriculum picks up where that knowledge ends — developing judgment, not just pattern recognition.
+  </div>
+
+  <div class="two-col">
+    <div class="tier-card">
+      <div class="tier-header">
+        <div class="tier-price">$39/mo</div>
+        <div class="tier-name">AW Indicator</div>
+      </div>
+      <div class="tier-body">
+        <div class="tier-item"><div class="dot"></div>Full access to the AW Indicator on TradingView</div>
+        <div class="tier-item"><div class="dot"></div>Members-only #indicator-users Discord channel</div>
+        <div class="tier-item"><div class="dot"></div>Indicator setup + usage guide (PDF)</div>
+        <div class="tier-item"><div class="dot"></div>Updates as the indicator improves</div>
+      </div>
+    </div>
+    <div class="tier-card gold">
+      <div class="tier-header">
+        <div class="tier-price">$129/mo</div>
+        <div class="tier-name">Live Trader Mentorship</div>
+      </div>
+      <div class="tier-body">
+        <div class="tier-item"><div class="dot"></div>Everything in $39 tier</div>
+        <div class="tier-item"><div class="dot"></div>6-module advanced curriculum (self-paced)</div>
+        <div class="tier-item"><div class="dot"></div>New concept or breakdown released each week post-launch</div>
+        <div class="tier-item"><div class="dot"></div>Weekly live session — real sessions + Q&A</div>
+        <div class="tier-item"><div class="dot"></div>Playbooks: data collection system, psychology, edge building</div>
+        <div class="tier-item"><div class="dot"></div>Live trade alerts + real-time breakdowns in Discord</div>
+        <div class="tier-item"><div class="dot"></div>#trade-journal channel — post your trades, get feedback</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label" style="margin-bottom:10px;">6-module curriculum — one filmed per week</div>
+  <div class="mod-grid">
+
+    <div class="mod-card gold">
+      <div class="mod-header">
+        <div class="mod-num">Module 1 · Week 1</div>
+        <div class="mod-title">Why Price Does What It Does</div>
+        <div class="mod-tag">Film Thu Jul 10</div>
+      </div>
+      <div class="mod-body">
+        <div>
+          <div class="mod-section-label">Topics</div>
+          <div class="mod-topics">
+            <li>Institutional order flow — the actual driver of price</li>
+            <li>Why retail setups fail (and what's really happening)</li>
+            <li>How to read a move: delivery, expansion, retracement</li>
+            <li>The difference between reacting and anticipating</li>
+            <li>Reading context — what came before matters more than the pattern</li>
+          </div>
+        </div>
+        <div>
+          <div class="mod-section-label">Why it's first</div>
+          <div class="mod-why">Most traders memorize setups without understanding the force behind them. This module reframes how students see the chart — they stop looking for patterns and start reading intent. Everything else in the curriculum builds on this mental model.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mod-card gold">
+      <div class="mod-header">
+        <div class="mod-num">Module 2 · Week 2</div>
+        <div class="mod-title">Building Your Data Collection System</div>
+        <div class="mod-tag">Film Thu Jul 17</div>
+      </div>
+      <div class="mod-body">
+        <div>
+          <div class="mod-section-label">Topics</div>
+          <div class="mod-topics">
+            <li>What data actually matters (and what's noise)</li>
+            <li>How to log a trade: not just entry/exit but the read</li>
+            <li>Tracking setups by session, instrument, time of day</li>
+            <li>Weekly review ritual — what to look for in your own data</li>
+            <li>How to turn a loss into useful information</li>
+          </div>
+        </div>
+        <div>
+          <div class="mod-section-label">Why it's second</div>
+          <div class="mod-why">You can't build an edge you haven't measured. This module gives students the system to start collecting their own data immediately — so by month 3, they have real information about how they specifically perform in the market.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mod-card gold">
+      <div class="mod-header">
+        <div class="mod-num">Module 3 · Week 3</div>
+        <div class="mod-title">Finding Your Edge in the Data</div>
+        <div class="mod-tag">Film Thu Jul 24</div>
+      </div>
+      <div class="mod-body">
+        <div>
+          <div class="mod-section-label">Topics</div>
+          <div class="mod-topics">
+            <li>How to review a month of trades and find your real patterns</li>
+            <li>When to stop trading a setup that isn't working for you</li>
+            <li>Identifying your highest-probability conditions</li>
+            <li>The difference between a market edge and a personal edge</li>
+            <li>How to narrow your playbook based on what your data says</li>
+          </div>
+        </div>
+        <div>
+          <div class="mod-section-label">Why it's third</div>
+          <div class="mod-why">Most traders try to copy someone else's edge. This module teaches students to extract their own from their own data — so the edge is theirs, not borrowed. This is what turns someone from a student into a trader.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mod-card gold">
+      <div class="mod-header">
+        <div class="mod-num">Module 4 · Week 4</div>
+        <div class="mod-title">Psychology — Understanding Yourself as the Variable</div>
+        <div class="mod-tag">Film Thu Jul 31</div>
+      </div>
+      <div class="mod-body">
+        <div>
+          <div class="mod-section-label">Topics</div>
+          <div class="mod-topics">
+            <li>Why you deviate from your plan — and what that reveals</li>
+            <li>Recognizing your personal tilt triggers</li>
+            <li>The pre-trade mental checklist (not rules — awareness)</li>
+            <li>How to process a losing streak without destroying your edge</li>
+            <li>Self-honesty: the gap between what you think you do and what you actually do</li>
+          </div>
+        </div>
+        <div>
+          <div class="mod-section-label">Why it's fourth</div>
+          <div class="mod-why">By module 4, students have data on their own behavior. This module helps them interpret it honestly. The goal isn't a rigid rule set — it's self-awareness so they can catch themselves before the damage happens.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mod-card gold">
+      <div class="mod-header">
+        <div class="mod-num">Module 5 · Week 5</div>
+        <div class="mod-title">Building Discretion — Reading What the Market Is Telling You</div>
+        <div class="mod-tag">Film Thu Aug 7</div>
+      </div>
+      <div class="mod-body">
+        <div>
+          <div class="mod-section-label">Topics</div>
+          <div class="mod-topics">
+            <li>What discretion actually means (it's not guessing)</li>
+            <li>How to read confluence without a checklist</li>
+            <li>When the setup is valid but the read says no</li>
+            <li>Developing conviction — how to know when you actually have edge</li>
+            <li>The role of patience in discretionary trading</li>
+          </div>
+        </div>
+        <div>
+          <div class="mod-section-label">Why it's fifth</div>
+          <div class="mod-why">After 4 modules of self-study and data collection, students are ready to move beyond rules. This is the hardest module to teach — it's about judgment, not knowledge. Delivered through chart walkthroughs and real examples, not definitions.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mod-card gold">
+      <div class="mod-header">
+        <div class="mod-num">Module 6 · Week 6</div>
+        <div class="mod-title">Advanced Concepts — What I've Actually Picked Up</div>
+        <div class="mod-tag">Film Thu Aug 14</div>
+      </div>
+      <div class="mod-body">
+        <div>
+          <div class="mod-section-label">Topics</div>
+          <div class="mod-topics">
+            <li>Advanced concepts beyond standard ICT (your own observations)</li>
+            <li>What you've learned from losing trades specifically</li>
+            <li>How you read sessions differently now vs. when you started</li>
+            <li>Market behaviors that aren't widely talked about</li>
+            <li>How to keep evolving — your learning process post-mentorship</li>
+          </div>
+        </div>
+        <div>
+          <div class="mod-section-label">Why it's last</div>
+          <div class="mod-why">This is the "here's what I've actually figured out" module — your real edge shared directly. It lands best last because students have the context to understand it. It's also the most unique content you can offer — nobody else has this.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <div class="label" style="margin-bottom:10px;">Written resources — produce during runway</div>
+  <div class="guide-list">
+    <div class="guide-item">
+      <div class="guide-icon">📓</div>
+      <div>
+        <div class="guide-title">Trade log template</div>
+        <div class="guide-desc">Not just entry/exit/P&L — logs the read, the context, the emotion, the deviation. Pairs with Module 2.</div>
+      </div>
+      <div class="guide-week">Write Wk 2</div>
+    </div>
+    <div class="guide-item">
+      <div class="guide-icon">📊</div>
+      <div>
+        <div class="guide-title">Monthly data review framework</div>
+        <div class="guide-desc">The exact questions to ask when reviewing a month of trades — what patterns to look for, what to cut, what to press.</div>
+      </div>
+      <div class="guide-week">Write Wk 3</div>
+    </div>
+    <div class="guide-item">
+      <div class="guide-icon">🧠</div>
+      <div>
+        <div class="guide-title">Psychology self-audit</div>
+        <div class="guide-desc">A structured self-assessment: tilt triggers, deviation patterns, emotional responses to losses. Run it monthly.</div>
+      </div>
+      <div class="guide-week">Write Wk 4</div>
+    </div>
+    <div class="guide-item">
+      <div class="guide-icon">⚖️</div>
+      <div>
+        <div class="guide-title">Risk and sizing guide</div>
+        <div class="guide-desc">How to size based on conviction level, not a fixed rule. When to scale up and down based on your recent data.</div>
+      </div>
+      <div class="guide-week">Write Wk 5</div>
+    </div>
+    <div class="guide-item">
+      <div class="guide-icon">📋</div>
+      <div>
+        <div class="guide-title">Pre-session framework</div>
+        <div class="guide-desc">Not a checklist — a thinking process. How to frame the day before the open so you're reading, not reacting.</div>
+      </div>
+      <div class="guide-week">Write Wk 6</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label" style="margin-bottom:10px;">Week-by-week filming schedule (Thursday = private content day)</div>
+  <div class="sched-grid">
+    <div class="sched-week"><div class="sw-label"><div class="wk">Week 1</div><div class="dates">Jul 6–12</div></div><div class="sw-col"><div class="sw-col-head pub">Public (Tue)</div><div class="sw-task">YouTube: ICT overview · 2 IG Reels</div></div><div class="sw-col"><div class="sw-col-head priv">Private (Thu 1hr)</div><div class="sw-task"><b>Module 1</b> — Why price does what it does</div></div></div>
+    <div class="sched-week"><div class="sw-label"><div class="wk">Week 2</div><div class="dates">Jul 13–19</div></div><div class="sw-col"><div class="sw-col-head pub">Public (Tue)</div><div class="sw-task">YouTube: trade breakdown · 2 IG Reels</div></div><div class="sw-col"><div class="sw-col-head priv">Private (Thu 1hr)</div><div class="sw-task"><b>Module 2</b> — Data collection system · Write trade log template</div></div></div>
+    <div class="sched-week"><div class="sw-label"><div class="wk">Week 3</div><div class="dates">Jul 20–26</div></div><div class="sw-col"><div class="sw-col-head pub">Public (Tue)</div><div class="sw-task">YouTube: liquidity grabs · 2 IG Reels + Q&A Story</div></div><div class="sw-col"><div class="sw-col-head priv">Private (Thu 1hr)</div><div class="sw-task"><b>Module 3</b> — Finding your edge · Write monthly review framework</div></div></div>
+    <div class="sched-week"><div class="sw-label"><div class="wk">Week 4</div><div class="dates">Jul 27–Aug 2</div></div><div class="sw-col"><div class="sw-col-head pub">Public (Tue)</div><div class="sw-task">YouTube: weekly recap · 2 IG Reels</div></div><div class="sw-col"><div class="sw-col-head priv">Private (Thu 1hr)</div><div class="sw-task"><b>Module 4</b> — Psychology · Write self-audit PDF</div></div></div>
+    <div class="sched-week hot"><div class="sw-label"><div class="wk">Week 5</div><div class="dates">Aug 3–9</div></div><div class="sw-col"><div class="sw-col-head pub">Public (Tue)</div><div class="sw-task">YouTube: tease · 2 IG Reels</div></div><div class="sw-col"><div class="sw-col-head priv">Private (Thu 1hr)</div><div class="sw-task"><b>Module 5</b> — Building discretion · Write risk + sizing guide</div></div></div>
+    <div class="sched-week hot"><div class="sw-label"><div class="wk">Week 6</div><div class="dates">Aug 10–16</div></div><div class="sw-col"><div class="sw-col-head pub">Public (Tue)</div><div class="sw-task">YouTube: full reveal · 2 IG Reels</div></div><div class="sw-col"><div class="sw-col-head priv">Private (Thu 1hr)</div><div class="sw-task"><b>Module 6</b> — Advanced concepts · Write pre-session framework</div></div></div>
+    <div class="sched-week hot"><div class="sw-label"><div class="wk">Week 7</div><div class="dates">Aug 17–23</div></div><div class="sw-col"><div class="sw-col-head pub">Public (Tue)</div><div class="sw-task">YouTube: live session · Daily IG Reels</div></div><div class="sw-col"><div class="sw-col-head priv">Private (Sat 2hr)</div><div class="sw-task">Edit all modules · Upload to Whop · Set up members Discord channels</div></div></div>
+    <div class="sched-week hot"><div class="sw-label"><div class="wk">Week 8</div><div class="dates">Aug 24–31</div></div><div class="sw-col"><div class="sw-col-head pub">Public</div><div class="sw-task">Daily momentum posts · Draft launch content</div></div><div class="sw-col"><div class="sw-col-head priv">Private</div><div class="sw-task">QA all modules · Test Whop access · Pin PDFs in #resources</div></div></div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:8px;">Does this feel like the right curriculum? Module 6 is intentionally open — those are your advanced concepts, your observations. That's the most valuable thing in the membership.</p>

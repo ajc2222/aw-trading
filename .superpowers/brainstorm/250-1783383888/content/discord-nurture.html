@@ -1,0 +1,138 @@
+<style>
+  .flow { display: flex; flex-direction: column; gap: 0; position: relative; }
+  .flow::before { content: ""; position: absolute; left: 19px; top: 40px; bottom: 40px; width: 2px; background: linear-gradient(180deg, rgba(46,107,255,0.6), rgba(46,107,255,0.1)); }
+
+  .flow-step { display: flex; gap: 16px; align-items: flex-start; padding: 12px 0; position: relative; }
+  .step-dot { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(46,107,255,0.5); background: rgba(46,107,255,0.1); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75rem; color: #6699ff; flex: none; z-index: 1; }
+  .step-dot.hot { background: rgba(46,107,255,0.3); border-color: #2E6BFF; color: #fff; }
+  .step-dot.launch { background: #2E6BFF; border-color: #2E6BFF; color: #fff; font-size: 1rem; }
+  .step-body { flex: 1; padding: 14px 16px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); }
+  .step-body.hot { border-color: rgba(46,107,255,0.3); background: rgba(46,107,255,0.06); }
+  .step-body.launch { border-color: rgba(46,107,255,0.6); background: rgba(46,107,255,0.12); }
+  .step-tag { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #555; margin-bottom: 4px; }
+  .step-tag.blue { color: #4477dd; }
+  .step-title { font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
+  .step-desc { font-size: 0.78rem; color: #aaa; line-height: 1.55; }
+  .step-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .action-pill { font-size: 0.68rem; padding: 3px 10px; border-radius: 99px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #ccc; }
+  .action-pill.blue { background: rgba(46,107,255,0.12); border-color: rgba(46,107,255,0.35); color: #99bbff; }
+
+  .channel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+  .channel { padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
+  .channel .ch-name { font-family: monospace; font-size: 0.78rem; color: #99bbff; margin-bottom: 3px; }
+  .channel .ch-desc { font-size: 0.7rem; color: #777; }
+  .channel.new { border-color: rgba(46,107,255,0.3); background: rgba(46,107,255,0.06); }
+  .channel.new .ch-name { color: #4ecca3; }
+</style>
+
+<h2>Discord nurture flow — free to paying in 8 weeks</h2>
+<p class="subtitle">The server already has the bones. These touchpoints warm every free member toward a Sept 1 purchase decision.</p>
+
+<div class="section">
+  <div class="label" style="margin-bottom: 14px;">Recommended channel additions</div>
+  <div class="channel-grid">
+    <div class="channel"><div class="ch-name"># start-here</div><div class="ch-desc">Already exists — pin the product launch date here</div></div>
+    <div class="channel"><div class="ch-name"># free-education</div><div class="ch-desc">Already exists — this is the main value delivery engine</div></div>
+    <div class="channel"><div class="ch-name"># trade-breakdowns</div><div class="ch-desc">Already exists — real setups, real context</div></div>
+    <div class="channel new"><div class="ch-name"># indicator-preview ✦ new</div><div class="ch-desc">Teaser screenshots & clips of the indicator in action (add Week 5)</div></div>
+    <div class="channel new"><div class="ch-name"># sept-1-launch ✦ new</div><div class="ch-desc">Countdown, announcements, founding member info (add Week 6)</div></div>
+    <div class="channel new"><div class="ch-name"># testimonials ✦ new</div><div class="ch-desc">Pin your P&L screenshots, certs, student wins here permanently</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label" style="margin-bottom: 14px;">The 8-week member journey</div>
+  <div class="flow">
+
+    <div class="flow-step">
+      <div class="step-dot">1</div>
+      <div class="step-body">
+        <div class="step-tag">Day 0 — Join</div>
+        <div class="step-title">Welcome + immediate free value</div>
+        <div class="step-desc">Member joins through Whop. Auto-welcome message in #start-here points them to free-education and trade-breakdowns. First impression is pure value — no pitch.</div>
+        <div class="step-actions">
+          <span class="action-pill blue">Pin: "Start here" message</span>
+          <span class="action-pill blue">Point to free-edu</span>
+          <span class="action-pill">No pitch yet</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-dot">2</div>
+      <div class="step-body">
+        <div class="step-tag">Weeks 1–4 — Educate</div>
+        <div class="step-title">Consistent free drops build trust</div>
+        <div class="step-desc">Post in free-education 3–5× per week. Concept breakdowns, session recaps, annotated charts. Members see real value — this is what they'd get in a paid course, but shorter. Cross-post your YouTube content here so Discord and YouTube audiences reinforce each other.</div>
+        <div class="step-actions">
+          <span class="action-pill blue">3–5× weekly posts in #free-education</span>
+          <span class="action-pill blue">Cross-post YouTube links</span>
+          <span class="action-pill">Live session recaps</span>
+          <span class="action-pill">ICT concept of the week</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-dot hot">3</div>
+      <div class="step-body hot">
+        <div class="step-tag blue">Week 5 — Tease</div>
+        <div class="step-title">Open #indicator-preview, drop the first teaser</div>
+        <div class="step-desc">First screenshot of the indicator live on a chart. No price mention yet — just "here's what I've been building." Let curiosity do the work. Post 2–3 clips over the week showing session levels auto-drawing, liquidity zones appearing, A+ signal firing.</div>
+        <div class="step-actions">
+          <span class="action-pill blue">Create #indicator-preview</span>
+          <span class="action-pill blue">3 teaser clips this week</span>
+          <span class="action-pill">Caption: "Almost ready"</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-dot hot">4</div>
+      <div class="step-body hot">
+        <div class="step-tag blue">Week 6 — Announce</div>
+        <div class="step-title">Open #sept-1-launch, reveal pricing + date</div>
+        <div class="step-desc">Formal announcement post: Sept 1 launch date, $39/mo indicator, $129/mo Live Trader. Link to the indicator page. Create urgency with "Discord members get early access the moment it goes live." Pin the Whop link. This is the first hard CTA in 6 weeks — it lands well because you've earned it.</div>
+        <div class="step-actions">
+          <span class="action-pill blue">Pin launch announcement</span>
+          <span class="action-pill blue">Reveal pricing</span>
+          <span class="action-pill blue">Discord early-access framing</span>
+          <span class="action-pill">Link to /indicator page</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-dot hot">5</div>
+      <div class="step-body hot">
+        <div class="step-tag blue">Week 7 — Build heat</div>
+        <div class="step-title">Daily drops in #indicator-preview + #sept-1-launch</div>
+        <div class="step-desc">One clip per day showing the indicator on a live trade. Post your P&L screenshots and certs in #testimonials this week — new members joining from social media need to see proof. Ask existing members "who's planning to grab it on Sept 1?" — engagement in the launch channel creates social proof.</div>
+        <div class="step-actions">
+          <span class="action-pill blue">Daily indicator clip</span>
+          <span class="action-pill blue">Populate #testimonials</span>
+          <span class="action-pill">Member engagement post</span>
+          <span class="action-pill">Reminder of Whop link</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-dot launch">🚀</div>
+      <div class="step-body launch">
+        <div class="step-tag blue">Sept 1 — Launch day</div>
+        <div class="step-title">All-hands announcement across every channel</div>
+        <div class="step-desc">Launch post in #general, #sept-1-launch, and #start-here simultaneously. "It's live — grab it now." Post on Instagram and YouTube same day. Go live on YouTube/Discord for at least 30 minutes showing the indicator working on the open. Every member who's been warmed for 8 weeks gets a final nudge with a direct Whop link.</div>
+        <div class="step-actions">
+          <span class="action-pill blue">Multi-channel announcement</span>
+          <span class="action-pill blue">YouTube/Discord live session</span>
+          <span class="action-pill blue">Instagram launch post</span>
+          <span class="action-pill">Direct Whop link everywhere</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top: 8px;">Does this nurture flow look right? Next I'll design the content calendar — what to post on YouTube and Instagram each week.</p>

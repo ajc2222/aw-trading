@@ -1,0 +1,58 @@
+//@version=6
+indicator("Equal Highs / Equal Lows", shorttitle="AW EQH/EQL", overlay=true, max_bars_back=500, max_lines_count=500)
+
+g1 = "Settings"
+lookback_len = input.int(500, "Lookback Length", minval=50, maxval=5000, step=50, group=g1)
+min_dist     = input.int(3,   "Min Bar Distance", minval=1, maxval=50, group=g1)
+
+g2 = "Appearance"
+eqh_col        = input.color(#f23645, "EQH Color", group=g2)
+eql_col        = input.color(#089981, "EQL Color", group=g2)
+line_wid       = input.int(1, "Line Width", minval=1, maxval=4, group=g2)
+line_style_str = input.string("Dashed", "Line Style", options=["Solid", "Dashed", "Dotted"], group=g2)
+
+line_sty = line_style_str == "Solid" ? line.style_solid : line_style_str == "Dotted" ? line.style_dotted : line.style_dashed
+
+type BarLevel
+    float price
+    int   idx
+
+var BarLevel[] hs = array.new<BarLevel>()
+var BarLevel[] ls = array.new<BarLevel>()
+var line[] h_lines = array.new<line>()
+var line[] l_lines = array.new<line>()
+
+int min_bar = last_bar_index - lookback_len
+
+if min_bar <= bar_index
+    if hs.size() > 0 and high >= high[1]
+        while hs.size() > 0 and hs.last().price < high
+            hs.pop()
+    hs.push(BarLevel.new(high, bar_index))
+
+    if ls.size() > 0 and low <= low[1]
+        while ls.size() > 0 and ls.last().price > low
+            ls.pop()
+    ls.push(BarLevel.new(low, bar_index))
+
+draw_eq_lines(BarLevel[] items, line[] drawn, color col) =>
+    for ln in drawn
+        line.delete(ln)
+    drawn.clear()
+    n = items.size() - 1
+    while n > 0
+        cur = items.get(n)
+        for m = n - 1 to 0
+            prev = items.get(m)
+            if cur.price == prev.price
+                if cur.idx - prev.idx >= min_dist
+                    drawn.push(line.new(prev.idx, cur.price, cur.idx, cur.price,
+                                        color=col, width=line_wid, style=line_sty))
+                    break
+            else
+                break
+        n -= 1
+
+if barstate.islast
+    draw_eq_lines(hs, h_lines, eqh_col)
+    draw_eq_lines(ls, l_lines, eql_col)

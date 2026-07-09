@@ -1,0 +1,118 @@
+<style>
+  .approach { border-radius: 14px; padding: 24px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); margin-bottom: 0; }
+  .approach-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .approach-num { width: 32px; height: 32px; border-radius: 50%; background: rgba(46,107,255,0.2); border: 1px solid rgba(46,107,255,0.5); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; color: #6699ff; flex: none; }
+  .approach-title { font-size: 1.1rem; font-weight: 800; color: #fff; }
+  .approach-sub { font-size: 0.78rem; color: #888; margin-top: 1px; }
+  .week-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; margin: 14px 0 10px; }
+  .week { height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 700; color: rgba(255,255,255,0.5); }
+  .week.build { background: rgba(46,107,255,0.25); color: #6699ff; }
+  .week.heat { background: rgba(46,107,255,0.45); color: #99bbff; }
+  .week.launch { background: #2E6BFF; color: #fff; }
+  .week.cold { background: rgba(255,255,255,0.06); }
+  .pillars { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .pill { font-size: 0.7rem; padding: 4px 10px; border-radius: 99px; border: 1px solid rgba(255,255,255,0.15); color: #ccc; background: rgba(255,255,255,0.05); }
+  .pill.on { border-color: rgba(46,107,255,0.5); color: #99bbff; background: rgba(46,107,255,0.1); }
+  .rec-tag { display: inline-block; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: #2E6BFF; color: #fff; padding: 2px 8px; border-radius: 99px; margin-left: 8px; vertical-align: middle; }
+</style>
+
+<h2>Three approaches to the Sept 1 launch</h2>
+<p class="subtitle">Each uses the same 8 weeks differently. Click the one that fits your energy and resources.</p>
+
+<div class="options">
+
+  <div class="option" data-choice="content-first" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <div class="approach-header">
+        <div>
+          <div class="approach-title">Content-First Authority</div>
+          <div class="approach-sub">YouTube + Instagram → site → Discord → launch</div>
+        </div>
+      </div>
+      <div class="week-grid">
+        <div class="week build">W1</div>
+        <div class="week build">W2</div>
+        <div class="week build">W3</div>
+        <div class="week build">W4</div>
+        <div class="week heat">W5</div>
+        <div class="week heat">W6</div>
+        <div class="week heat">W7</div>
+        <div class="week launch">🚀</div>
+      </div>
+      <div style="font-size:0.75rem;color:#888;margin-bottom:10px;">Wks 1–4: post consistently · Wks 5–7: tease the product · Wk 8: launch day drop</div>
+      <div class="pillars">
+        <div class="pill on">YouTube breakdowns</div>
+        <div class="pill on">Instagram reels</div>
+        <div class="pill on">SEO homepage</div>
+        <div class="pill on">Discord nurture</div>
+        <div class="pill">countdown page</div>
+      </div>
+      <div style="font-size:0.8rem;color:#aaa;margin-top:12px;"><b style="color:#fff">Best if:</b> you can commit to 3–5 posts/week across both platforms. Builds the largest cold audience before launch.</div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="community-first" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <div class="approach-header">
+        <div>
+          <div class="approach-title">Community Heatup</div>
+          <div class="approach-sub">Discord warm-up → site fixes → social amplification</div>
+        </div>
+      </div>
+      <div class="week-grid">
+        <div class="week build">W1</div>
+        <div class="week build">W2</div>
+        <div class="week heat">W3</div>
+        <div class="week heat">W4</div>
+        <div class="week heat">W5</div>
+        <div class="week heat">W6</div>
+        <div class="week heat">W7</div>
+        <div class="week launch">🚀</div>
+      </div>
+      <div style="font-size:0.75rem;color:#888;margin-bottom:10px;">Wks 1–2: fix site + nurture path · Wks 3–7: drive existing members to convert first · Wk 8: open to public</div>
+      <div class="pillars">
+        <div class="pill on">Discord nurture flow</div>
+        <div class="pill on">Site CRO fixes</div>
+        <div class="pill on">Social links added</div>
+        <div class="pill">light social posting</div>
+        <div class="pill">SEO homepage</div>
+      </div>
+      <div style="font-size:0.8rem;color:#aaa;margin-top:12px;"><b style="color:#fff">Best if:</b> your current Discord has active members you haven't fully monetized yet. Converts warm traffic first, then opens the floodgates.</div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="full-system" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <div class="approach-header">
+        <div>
+          <div class="approach-title">Full Launch System <span class="rec-tag">Recommended</span></div>
+          <div class="approach-sub">Fix everything in parallel, launch with momentum on all fronts</div>
+        </div>
+      </div>
+      <div class="week-grid">
+        <div class="week build">W1</div>
+        <div class="week build">W2</div>
+        <div class="week heat">W3</div>
+        <div class="week heat">W4</div>
+        <div class="week heat">W5</div>
+        <div class="week heat">W6</div>
+        <div class="week heat">W7</div>
+        <div class="week launch">🚀</div>
+      </div>
+      <div style="font-size:0.75rem;color:#888;margin-bottom:10px;">Wks 1–2: site fixes + social setup · Wks 3–6: content engine + Discord nurture · Wks 7–8: launch push</div>
+      <div class="pillars">
+        <div class="pill on">SEO homepage</div>
+        <div class="pill on">Social links + profiles</div>
+        <div class="pill on">Discord nurture path</div>
+        <div class="pill on">YouTube + Instagram plan</div>
+        <div class="pill on">Site social proof</div>
+        <div class="pill on">Sept 1 countdown</div>
+      </div>
+      <div style="font-size:0.8rem;color:#aaa;margin-top:12px;"><b style="color:#fff">Best if:</b> you want to hit Sept 1 with cold <em>and</em> warm audiences both primed. More upfront effort, highest ceiling. This is the playbook.</div>
+    </div>
+  </div>
+
+</div>

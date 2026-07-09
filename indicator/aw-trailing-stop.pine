@@ -85,48 +85,7 @@ if barstate.isconfirmed
         array.push(bear_fvg_vbot, high)
         array.push(bear_fvg_bar,  bar_index)
 
-    // 2. Purge inverted/expired FVGs; update partial mitigation
-    int nb = array.size(bull_fvg_bot)
-    if nb > 0
-        for i = nb - 1 to 0
-            float bot_i  = array.get(bull_fvg_bot,  i)
-            float vtop_i = array.get(bull_fvg_vtop, i)
-            if close < bot_i or bar_index - array.get(bull_fvg_bar, i) > fvg_lookback
-                array.remove(bull_fvg_bot,  i)
-                array.remove(bull_fvg_top,  i)
-                array.remove(bull_fvg_vtop, i)
-                array.remove(bull_fvg_bar,  i)
-            else if low <= vtop_i
-                float new_vtop = math.min(vtop_i, low)
-                if new_vtop <= bot_i
-                    array.remove(bull_fvg_bot,  i)
-                    array.remove(bull_fvg_top,  i)
-                    array.remove(bull_fvg_vtop, i)
-                    array.remove(bull_fvg_bar,  i)
-                else
-                    array.set(bull_fvg_vtop, i, new_vtop)
-
-    int nbr = array.size(bear_fvg_bot)
-    if nbr > 0
-        for i = nbr - 1 to 0
-            float top_i  = array.get(bear_fvg_top,  i)
-            float vbot_i = array.get(bear_fvg_vbot, i)
-            if close > top_i or bar_index - array.get(bear_fvg_bar, i) > fvg_lookback
-                array.remove(bear_fvg_bot,  i)
-                array.remove(bear_fvg_top,  i)
-                array.remove(bear_fvg_vbot, i)
-                array.remove(bear_fvg_bar,  i)
-            else if high >= vbot_i
-                float new_vbot = math.max(vbot_i, high)
-                if new_vbot >= top_i
-                    array.remove(bear_fvg_bot,  i)
-                    array.remove(bear_fvg_top,  i)
-                    array.remove(bear_fvg_vbot, i)
-                    array.remove(bear_fvg_bar,  i)
-                else
-                    array.set(bear_fvg_vbot, i, new_vbot)
-
-    // 3. CISD swing detection
+    // 2. CISD swing detection (runs before FVG purge so just_set flags are ready)
     float recent_swing_low = na
     for j = 2 to 50
         if close[j] < open[j] and close[j-1] > open[j-1]
@@ -187,6 +146,49 @@ if barstate.isconfirmed
             pend_bear_bar      := bar_index
             pend_bear_cisd     := lowest_open
             pend_bear_cisd_src := bar_index - lowest_open_bar_j
+
+    // 3. Purge inverted/expired FVGs; update partial mitigation
+    // While pend_bull/pend_bear is active, freeze vtop/vbot — only a close
+    // through the FVG invalidates it during the manipulation leg.
+    int nb = array.size(bull_fvg_bot)
+    if nb > 0
+        for i = nb - 1 to 0
+            float bot_i  = array.get(bull_fvg_bot,  i)
+            float vtop_i = array.get(bull_fvg_vtop, i)
+            if close < bot_i or bar_index - array.get(bull_fvg_bar, i) > fvg_lookback
+                array.remove(bull_fvg_bot,  i)
+                array.remove(bull_fvg_top,  i)
+                array.remove(bull_fvg_vtop, i)
+                array.remove(bull_fvg_bar,  i)
+            else if not pend_bull and low <= vtop_i
+                float new_vtop = math.min(vtop_i, low)
+                if new_vtop <= bot_i
+                    array.remove(bull_fvg_bot,  i)
+                    array.remove(bull_fvg_top,  i)
+                    array.remove(bull_fvg_vtop, i)
+                    array.remove(bull_fvg_bar,  i)
+                else
+                    array.set(bull_fvg_vtop, i, new_vtop)
+
+    int nbr = array.size(bear_fvg_bot)
+    if nbr > 0
+        for i = nbr - 1 to 0
+            float top_i  = array.get(bear_fvg_top,  i)
+            float vbot_i = array.get(bear_fvg_vbot, i)
+            if close > top_i or bar_index - array.get(bear_fvg_bar, i) > fvg_lookback
+                array.remove(bear_fvg_bot,  i)
+                array.remove(bear_fvg_top,  i)
+                array.remove(bear_fvg_vbot, i)
+                array.remove(bear_fvg_bar,  i)
+            else if not pend_bear and high >= vbot_i
+                float new_vbot = math.max(vbot_i, high)
+                if new_vbot >= top_i
+                    array.remove(bear_fvg_bot,  i)
+                    array.remove(bear_fvg_top,  i)
+                    array.remove(bear_fvg_vbot, i)
+                    array.remove(bear_fvg_bar,  i)
+                else
+                    array.set(bear_fvg_vbot, i, new_vbot)
 
 // ─── Drawing logic (every tick — real-time extension + mitigation) ─────────
 if enable
@@ -256,17 +258,14 @@ if enable
                         if na(d_low) or low[j] < d_low
                             d_low     := low[j]
                             d_low_bar := bar_index - j
-                    // FVG tap check: price in range must enter unmitigated bull FVG
+                    // FVG tap check: manipulation extreme (d_low) must enter unmitigated bull FVG
                     bool fvg_ok = not require_fvg
                     if require_fvg
                         int n_bfvg = array.size(bull_fvg_bot)
                         if n_bfvg > 0
-                            for j = 0 to scan_range
-                                for fi = 0 to n_bfvg - 1
-                                    if low[j] <= array.get(bull_fvg_vtop, fi) and high[j] >= array.get(bull_fvg_bot, fi)
-                                        fvg_ok := true
-                                        break
-                                if fvg_ok
+                            for fi = 0 to n_bfvg - 1
+                                if d_low <= array.get(bull_fvg_vtop, fi)
+                                    fvg_ok := true
                                     break
                     pend_bull := false
                     if fvg_ok
@@ -329,17 +328,14 @@ if enable
                         if na(d_high) or high[j] > d_high
                             d_high     := high[j]
                             d_high_bar := bar_index - j
-                    // FVG tap check: price in range must enter unmitigated bear FVG
+                    // FVG tap check: manipulation extreme (d_high) must enter unmitigated bear FVG
                     bool fvg_ok = not require_fvg
                     if require_fvg
                         int n_bfvg = array.size(bear_fvg_bot)
                         if n_bfvg > 0
-                            for j = 0 to scan_range
-                                for fi = 0 to n_bfvg - 1
-                                    if high[j] >= array.get(bear_fvg_vbot, fi) and low[j] <= array.get(bear_fvg_top, fi)
-                                        fvg_ok := true
-                                        break
-                                if fvg_ok
+                            for fi = 0 to n_bfvg - 1
+                                if d_high >= array.get(bear_fvg_vbot, fi)
+                                    fvg_ok := true
                                     break
                     pend_bear := false
                     if fvg_ok

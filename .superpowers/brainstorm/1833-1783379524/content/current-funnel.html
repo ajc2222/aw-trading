@@ -1,0 +1,120 @@
+<style>
+  .funnel-wrap { display: flex; flex-direction: column; gap: 32px; }
+  .funnel-row { display: flex; align-items: center; gap: 0; }
+  .funnel-node {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 16px 18px;
+    text-align: center;
+  }
+  .funnel-node .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: #888; margin-bottom: 6px; }
+  .funnel-node .name { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .funnel-node .detail { font-size: 0.75rem; color: #aaa; }
+  .funnel-node.highlight { border-color: #2E6BFF; background: rgba(46,107,255,0.1); }
+  .funnel-node.gap { border-color: #ff6b2e; background: rgba(255,107,46,0.08); }
+  .arrow-h { width: 32px; flex: none; text-align: center; color: #555; font-size: 1.2rem; }
+  .pct { font-size: 0.7rem; color: #555; font-style: italic; margin-top: 2px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 8px; }
+  .gap-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: rgba(255,107,46,0.07); border: 1px solid rgba(255,107,46,0.25); border-radius: 10px; }
+  .gap-icon { font-size: 1.1rem; flex: none; }
+  .gap-text { font-size: 0.82rem; color: #ccc; }
+  .gap-text b { color: #ff9f6b; display: block; margin-bottom: 2px; font-size: 0.8rem; }
+
+  .options { margin-top: 8px; }
+</style>
+
+<h2>Where do you want to focus first?</h2>
+<p class="subtitle">Here's the current funnel — and the gaps I found. Pick the area that matters most to you right now.</p>
+
+<div class="section">
+  <div class="label" style="margin-bottom: 12px;">Current funnel (as-built)</div>
+  <div class="funnel-row">
+    <div class="funnel-node">
+      <div class="label">Top of funnel</div>
+      <div class="name">Social / Word of mouth</div>
+      <div class="detail">No tracked channels yet</div>
+    </div>
+    <div class="arrow-h">→</div>
+    <div class="funnel-node highlight">
+      <div class="label">Landing</div>
+      <div class="name">awtrading.com</div>
+      <div class="detail">Homepage + indicator page</div>
+    </div>
+    <div class="arrow-h">→</div>
+    <div class="funnel-node highlight">
+      <div class="label">Community (free)</div>
+      <div class="name">Discord</div>
+      <div class="detail">80+ members</div>
+    </div>
+    <div class="arrow-h">→</div>
+    <div class="funnel-node highlight">
+      <div class="label">Paid</div>
+      <div class="name">Whop</div>
+      <div class="detail">$39/mo · $129/mo</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label" style="margin-bottom: 12px;">Critical gaps found</div>
+  <div class="two-col">
+    <div class="gap-item">
+      <div class="gap-icon">⚠️</div>
+      <div class="gap-text"><b>Empty hero value prop</b>The homepage hero paragraph is blank — visitors see no reason to stay.</div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-icon">📧</div>
+      <div class="gap-text"><b>No email capture</b>100% of leads go to Discord or Whop. If either goes down, the list is gone.</div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-icon">🔍</div>
+      <div class="gap-text"><b>No homepage SEO</b>Indicator page has meta tags; homepage has none. Google can't rank it.</div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-icon">📱</div>
+      <div class="gap-text"><b>No social links</b>Site has no TikTok / YouTube / Twitter links. Social traffic has nowhere to go.</div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-icon">💬</div>
+      <div class="gap-text"><b>Weak social proof</b>"80+ members" undersells. No video testimonials, no P&L screenshots, no case studies.</div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-icon">🎯</div>
+      <div class="gap-text"><b>No nurture path</b>Discord → Whop is a cold ask. No free content, no drip, no warm-up sequence.</div>
+    </div>
+  </div>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="website" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Fix the website first</h3>
+      <p>Hero copy, SEO, social proof, email capture — make the site convert better before driving more traffic to it.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="funnel" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Redesign the funnel</h3>
+      <p>Add email capture, a nurture sequence, and a clearer journey from free Discord member → paying customer.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="social" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Build the social engine</h3>
+      <p>Define which platforms, what content types, and what posting cadence will drive traders from TikTok/YouTube to the site.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="all" onclick="toggleSelect(this)">
+    <div class="letter">D</div>
+    <div class="content">
+      <h3>Show me the full picture</h3>
+      <p>Walk through all three together — design the whole system, then we'll prioritize what to build first.</p>
+    </div>
+  </div>
+</div>

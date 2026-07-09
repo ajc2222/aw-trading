@@ -1,0 +1,167 @@
+<style>
+  .change-block { margin-bottom: 28px; }
+  .change-tag { display: inline-block; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 99px; margin-bottom: 10px; }
+  .change-tag.fast { background: rgba(46,200,100,0.15); color: #4ecca3; border: 1px solid rgba(46,200,100,0.3); }
+  .change-tag.medium { background: rgba(46,107,255,0.15); color: #6699ff; border: 1px solid rgba(46,107,255,0.3); }
+  .change-tag.big { background: rgba(255,160,46,0.15); color: #ffb366; border: 1px solid rgba(255,160,46,0.3); }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .mock-before, .mock-after { border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+  .mock-before { opacity: 0.5; }
+  .mock-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 8px 14px; background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .mock-label.after { color: #4ecca3; }
+  .mock-label.before { color: #666; }
+  .mock-body { padding: 14px; font-size: 0.78rem; }
+
+  /* Nav mockup */
+  .m-nav { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.08); border-radius: 10px; }
+  .m-logo { font-weight: 900; font-size: 0.8rem; color: #fff; }
+  .m-links { display: flex; gap: 16px; font-size: 0.7rem; color: #888; }
+  .m-links a { color: #888; }
+  .m-social { display: flex; gap: 8px; align-items: center; }
+  .m-social-ic { width: 26px; height: 26px; border-radius: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: #aaa; }
+  .m-btn { background: #fff; color: #000; font-size: 0.65rem; font-weight: 700; padding: 5px 12px; border-radius: 99px; }
+
+  /* Hero mockup */
+  .m-hero { padding: 20px 16px; }
+  .m-eyebrow { font-size: 0.6rem; color: #2E6BFF; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 6px; }
+  .m-h1 { font-size: 1.4rem; font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 8px; }
+  .m-lead { font-size: 0.75rem; color: #888; line-height: 1.5; margin-bottom: 12px; max-width: 280px; }
+  .m-lead.filled { color: #bbb; }
+  .m-lead.empty { color: #444; font-style: italic; }
+  .m-cta { display: inline-block; background: #fff; color: #000; font-size: 0.7rem; font-weight: 700; padding: 7px 14px; border-radius: 99px; }
+  .m-stats { display: flex; gap: 8px; margin-top: 10px; }
+  .m-stat { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 7px 10px; font-size: 0.65rem; color: #aaa; }
+  .m-stat b { display: block; color: #fff; font-size: 0.8rem; }
+
+  /* Countdown banner */
+  .m-banner { background: linear-gradient(90deg, rgba(46,107,255,0.2), rgba(46,107,255,0.1)); border: 1px solid rgba(46,107,255,0.4); border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .m-banner-text { font-size: 0.75rem; color: #fff; font-weight: 600; }
+  .m-banner-text span { color: #99bbff; }
+  .m-countdown { display: flex; gap: 8px; }
+  .m-cd-cell { background: rgba(0,0,0,0.3); border-radius: 6px; padding: 4px 8px; text-align: center; }
+  .m-cd-cell b { display: block; font-size: 0.85rem; font-weight: 900; color: #fff; }
+  .m-cd-cell small { font-size: 0.55rem; color: #666; text-transform: uppercase; }
+
+  /* Footer */
+  .m-footer { padding: 14px 16px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .m-foot-links { display: flex; gap: 12px; font-size: 0.65rem; color: #555; }
+  .m-foot-social { display: flex; gap: 6px; }
+
+  .change-desc { font-size: 0.8rem; color: #aaa; margin-bottom: 12px; line-height: 1.5; }
+  .change-desc b { color: #fff; }
+</style>
+
+<h2>Site changes — what gets built in Week 1</h2>
+<p class="subtitle">Four updates to the site. Fast to ship, high impact on both SEO and conversion.</p>
+
+<!-- CHANGE 1: NAV + FOOTER SOCIAL LINKS -->
+<div class="change-block">
+  <div class="change-tag fast">30 min · Week 1</div>
+  <h3 style="margin-bottom: 6px;">1 — Social links in nav + footer</h3>
+  <div class="change-desc">Add YouTube and Instagram icons to the top nav and footer. Anyone who lands from a video or reel can immediately follow back to the platform they came from — and anyone discovering you via search can find your content.</div>
+  <div class="split">
+    <div class="mock-before">
+      <div class="mock-label before">Before</div>
+      <div class="mock-body">
+        <div class="m-nav">
+          <div class="m-logo">AW Trading</div>
+          <div class="m-links"><a>Indicator</a><a>Mentorship</a><a>Prop Firms</a></div>
+          <div class="m-btn">Join AW Trading</div>
+        </div>
+      </div>
+    </div>
+    <div class="mock-after">
+      <div class="mock-label after">After</div>
+      <div class="mock-body">
+        <div class="m-nav">
+          <div class="m-logo">AW Trading</div>
+          <div class="m-links"><a>Indicator</a><a>Mentorship</a><a>Prop Firms</a></div>
+          <div class="m-social">
+            <div class="m-social-ic">▶</div>
+            <div class="m-social-ic">◻</div>
+          </div>
+          <div class="m-btn">Join Free</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE 2: HERO COPY -->
+<div class="change-block">
+  <div class="change-tag fast">15 min · Week 1</div>
+  <h3 style="margin-bottom: 6px;">2 — Fix the empty hero paragraph</h3>
+  <div class="change-desc">The homepage hero has a blank <code style="color:#6699ff;font-size:0.75rem">&lt;p class="lead"&gt;</code> — visitors see nothing where the value prop should be. One sentence that makes a trader immediately understand what AW Trading is.</div>
+  <div class="split">
+    <div class="mock-before">
+      <div class="mock-label before">Before (blank)</div>
+      <div class="mock-body">
+        <div class="m-hero">
+          <div class="m-eyebrow">Welcome to</div>
+          <div class="m-h1">AW Trading</div>
+          <div class="m-lead empty">[empty — nothing here]</div>
+          <div class="m-cta">Start Trading Right →</div>
+        </div>
+      </div>
+    </div>
+    <div class="mock-after">
+      <div class="mock-label after">After</div>
+      <div class="mock-body">
+        <div class="m-hero">
+          <div class="m-eyebrow">Welcome to</div>
+          <div class="m-h1">AW Trading</div>
+          <div class="m-lead filled">Learn the ICT playbook the right way — live sessions, real setups, and a community of serious traders. Free to join, forever.</div>
+          <div class="m-cta">Start Trading Right →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE 3: SEO META TAGS -->
+<div class="change-block">
+  <div class="change-tag fast">20 min · Week 1</div>
+  <h3 style="margin-bottom: 6px;">3 — Homepage SEO meta tags</h3>
+  <div class="change-desc">The homepage has <b>no title tag, no description, no OG image, no Twitter card</b>. The indicator page has all of these — it just needs copying and adapting to the homepage. This is what shows in Google results and Discord/Twitter link previews.</div>
+  <div class="split">
+    <div class="mock-before">
+      <div class="mock-label before">Google result today</div>
+      <div class="mock-body" style="padding: 16px;">
+        <div style="font-size:0.7rem;color:#4ecca3;margin-bottom:3px;">awtrading.com</div>
+        <div style="font-size:0.85rem;color:#8ab4f8;margin-bottom:3px;">AW Trading</div>
+        <div style="font-size:0.72rem;color:#555;">No description — Google will pull random text from the page.</div>
+      </div>
+    </div>
+    <div class="mock-after">
+      <div class="mock-label after">After SEO fix</div>
+      <div class="mock-body" style="padding: 16px;">
+        <div style="font-size:0.7rem;color:#4ecca3;margin-bottom:3px;">awtrading.com</div>
+        <div style="font-size:0.85rem;color:#8ab4f8;margin-bottom:3px;">AW Trading — ICT Trading Education & Community</div>
+        <div style="font-size:0.72rem;color:#aaa;">Learn ICT concepts with live sessions, real trade breakdowns, and a free Discord community. Indicator launching Sept 2026.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE 4: COUNTDOWN BANNER -->
+<div class="change-block">
+  <div class="change-tag medium">2–3 hrs · Week 6</div>
+  <h3 style="margin-bottom: 6px;">4 — Sept 1 countdown banner</h3>
+  <div class="change-desc">Add a sticky announcement bar at the top of every page from Week 6 onward. Creates urgency for both cold visitors and returning Discord members. Links directly to the indicator/Live Trader pages.</div>
+  <div class="mock-after" style="max-width: 600px;">
+    <div class="mock-label after">Preview — appears site-wide from ~Aug 18</div>
+    <div class="mock-body">
+      <div class="m-banner">
+        <div class="m-banner-text">🚀 AW Indicator + Live Trader launch <span>Sept 1</span> — join the waitlist now</div>
+        <div class="m-countdown">
+          <div class="m-cd-cell"><b>42</b><small>Days</small></div>
+          <div class="m-cd-cell"><b>06</b><small>Hrs</small></div>
+          <div class="m-cd-cell"><b>14</b><small>Min</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top: 8px;">All four look good? Next I'll show the Discord nurture flow — how someone goes from joining free to becoming a paying member on Sept 1.</p>

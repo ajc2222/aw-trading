@@ -1,0 +1,326 @@
+<style>
+  .cal-grid { display: flex; flex-direction: column; gap: 10px; }
+
+  .cal-week { border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
+  .cal-week.hot { border-color: rgba(46,107,255,0.3); }
+  .cal-week.launch { border-color: rgba(46,107,255,0.6); }
+
+  .week-header { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .cal-week.hot .week-header { background: rgba(46,107,255,0.06); border-bottom-color: rgba(46,107,255,0.15); }
+  .cal-week.launch .week-header { background: rgba(46,107,255,0.12); border-bottom-color: rgba(46,107,255,0.3); }
+
+  .wk-badge { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; background: rgba(255,255,255,0.06); color: #777; }
+  .wk-badge.blue { background: rgba(46,107,255,0.2); color: #6699ff; }
+  .wk-badge.green { background: rgba(78,204,163,0.2); color: #4ecca3; }
+  .wk-dates { font-size: 0.72rem; color: #555; font-family: var(--mono, monospace); }
+  .wk-theme { font-size: 0.88rem; font-weight: 700; color: #ddd; margin-left: auto; }
+  .cal-week.hot .wk-theme, .cal-week.launch .wk-theme { color: #fff; }
+
+  .week-body { display: grid; grid-template-columns: 1fr 1fr; }
+  .platform-col { padding: 12px 14px; }
+  .platform-col:first-child { border-right: 1px solid rgba(255,255,255,0.06); }
+  .cal-week.hot .platform-col:first-child { border-right-color: rgba(46,107,255,0.12); }
+
+  .plat-label { display: flex; align-items: center; gap: 6px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #555; margin-bottom: 8px; }
+  .plat-icon { width: 16px; height: 16px; }
+
+  .post-list { display: flex; flex-direction: column; gap: 5px; }
+  .post-item { font-size: 0.74rem; color: #999; line-height: 1.45; padding: 6px 8px; border-radius: 7px; background: rgba(255,255,255,0.02); border-left: 2px solid rgba(255,255,255,0.06); }
+  .post-item .post-type { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+  .post-item .post-type.yt { color: #ff4444; }
+  .post-item .post-type.ig { color: #cc66ff; }
+  .post-item b { color: #ccc; }
+  .cal-week.hot .post-item { border-left-color: rgba(46,107,255,0.3); background: rgba(46,107,255,0.04); }
+  .cal-week.launch .post-item { border-left-color: rgba(46,107,255,0.5); background: rgba(46,107,255,0.08); }
+
+  .freq-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .freq-pill { font-size: 0.62rem; padding: 2px 7px; border-radius: 99px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #666; }
+  .freq-pill.blue { background: rgba(46,107,255,0.1); border-color: rgba(46,107,255,0.25); color: #8899ff; }
+
+  .legend { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.68rem; color: #666; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+</style>
+
+<h2>8-week content calendar — YouTube & Instagram</h2>
+<p class="subtitle">Every post serves the same funnel: free value → Discord → Sept 1 purchase. Each platform plays a different role.</p>
+
+<div class="section">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#ff4444"></div> YouTube (1–2× per week, longer form)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#cc66ff"></div> Instagram (4–5× per week, Reels + Stories)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#4477dd"></div> Launch-aware content (tease/announce/heat)</div>
+  </div>
+
+  <div class="cal-grid">
+
+    <!-- WEEK 1 -->
+    <div class="cal-week">
+      <div class="week-header">
+        <span class="wk-badge">Week 1</span>
+        <span class="wk-dates">Jul 6 – Jul 12</span>
+        <span class="wk-theme">Establish authority</span>
+      </div>
+      <div class="week-body">
+        <div class="platform-col">
+          <div class="plat-label">
+            <svg class="plat-icon" viewBox="0 0 24 24" fill="#ff4444"><path d="M23.5 6.19a3.02 3.02 0 00-2.13-2.14C19.46 3.5 12 3.5 12 3.5s-7.46 0-9.37.55A3.02 3.02 0 00.5 6.19 31.6 31.6 0 000 12a31.6 31.6 0 00.5 5.81 3.02 3.02 0 002.13 2.14C4.54 20.5 12 20.5 12 20.5s7.46 0 9.37-.55a3.02 3.02 0 002.13-2.14A31.6 31.6 0 0024 12a31.6 31.6 0 00-.5-5.81zM9.75 15.52V8.48L15.86 12l-6.11 3.52z"/></svg>
+            YouTube
+          </div>
+          <div class="post-list">
+            <div class="post-item"><div class="post-type yt">Full breakdown</div><b>"What is ICT and why does it actually work?"</b> — 12–15 min. Core concept breakdown with annotated chart examples. End CTA: Discord link.</div>
+          </div>
+          <div class="freq-row"><span class="freq-pill">1 video</span><span class="freq-pill">12–15 min</span></div>
+        </div>
+        <div class="platform-col">
+          <div class="plat-label">
+            <svg class="plat-icon" viewBox="0 0 24 24" fill="#cc66ff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            Instagram
+          </div>
+          <div class="post-list">
+            <div class="post-item"><div class="post-type ig">Reel</div><b>60-sec: "3 ICT terms every trader needs to know"</b> — fast cuts, text overlays. Hook in first 2 sec.</div>
+            <div class="post-item"><div class="post-type ig">Reel</div><b>P&L screenshot Reel</b> — show a recent win with trade annotated on chart. No cap, just context.</div>
+            <div class="post-item"><div class="post-type ig">Story</div><b>Poll: "Do you trade sessions or all day?"</b> — engagement + data about your audience.</div>
+          </div>
+          <div class="freq-row"><span class="freq-pill">2 Reels</span><span class="freq-pill">1+ Stories</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 2 -->
+    <div class="cal-week">
+      <div class="week-header">
+        <span class="wk-badge">Week 2</span>
+        <span class="wk-dates">Jul 13 – Jul 19</span>
+        <span class="wk-theme">Teach a system</span>
+      </div>
+      <div class="week-body">
+        <div class="platform-col">
+          <div class="plat-label">
+            <svg class="plat-icon" viewBox="0 0 24 24" fill="#ff4444"><path d="M23.5 6.19a3.02 3.02 0 00-2.13-2.14C19.46 3.5 12 3.5 12 3.5s-7.46 0-9.37.55A3.02 3.02 0 00.5 6.19 31.6 31.6 0 000 12a31.6 31.6 0 00.5 5.81 3.02 3.02 0 002.13 2.14C4.54 20.5 12 20.5 12 20.5s7.46 0 9.37-.55a3.02 3.02 0 002.13-2.14A31.6 31.6 0 0024 12a31.6 31.6 0 00-.5-5.81zM9.75 15.52V8.48L15.86 12l-6.11 3.52z"/></svg>
+            YouTube
+          </div>
+          <div class="post-list">
+            <div class="post-item"><div class="post-type yt">Session recap</div><b>"Full NY open trade breakdown — entry to exit"</b> — walk through a real trade live, show thought process. Builds trust fast.</div>
+            <div class="post-item"><div class="post-type yt">Short</div><b>YouTube Short: "Why most traders enter too early"</b> — 45 sec, clipped from the long video.</div>
+          </div>
+          <div class="freq-row"><span class="freq-pill">1 long video</span><span class="freq-pill">1 Short</span></div>
+        </div>
+        <div class="platform-col">
+          <div class="plat-label">
+            <svg class="plat-icon" viewBox="0 0 24 24" fill="#cc66ff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            Instagram
+          </div>
+          <div class="post-list">
+            <div class="post-item"><div class="post-type ig">Reel</div><b>"This is what an A+ ICT setup looks like"</b> — annotated chart clip, 30–45 sec.</div>
+            <div class="post-item"><div class="post-type ig">Reel</div><b>Certification or prop firm pass screen recording</b> — show the win, brief explanation.</div>
+            <div class="post-item"><div class="post-type ig">Story</div><b>"Watch my full breakdown on YouTube →"</b> — drive traffic with swipe-up or link in bio.</div>
+          </div>
+          <div class="freq-row"><span class="freq-pill">2 Reels</span><span class="freq-pill">2 Stories</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 3 -->
+    <div class="cal-week">
+      <div class="week-header">
+        <span class="wk-badge">Week 3</span>
+        <span class="wk-dates">Jul 20 – Jul 26</span>
+        <span class="wk-theme">Social proof + education</span>
+      </div>
+      <div class="week-body">
+        <div class="platform-col">
+          <div class="plat-label">
+            <svg class="plat-icon" viewBox="0 0 24 24" fill="#ff4444"><path d="M23.5 6.19a3.02 3.02 0 00-2.13-2.14C19.46 3.5 12 3.5 12 3.5s-7.46 0-9.37.55A3.02 3.02 0 00.5 6.19 31.6 31.6 0 000 12a31.6 31.6 0 00.5 5.81 3.02 3.02 0 002.13 2.14C4.54 20.5 12 20.5 12 20.5s7.46 0 9.37-.55a3.02 3.02 0 002.13-2.14A31.6 31.6 0 0024 12a31.6 31.6 0 00-.5-5.81zM9.75 15.52V8.48L15.86 12l-6.11 3.52z"/></svg>
+            YouTube
+          </div>
+          <div class="post-list">
+            <div class="post-item"><div class="post-type yt">Concept deep dive</div><b>"How I find liquidity grabs before they happen"</b> — educational, framework-style. Your edge without giving away the tool.</div>
+          </div>
+          <div class="freq-row"><span class="freq-pill">1 video</span><span class="freq-pill">10–18 min</span></div>
+        </div>
+        <div class="platform-col">
+          <div class="plat-label">
+            <svg class="plat-icon" viewBox="0 0 24 24" fill="#cc66ff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            Instagram
+          </div>
+          <div class="post-list">
+            <div class="post-item"><div class="post-type ig">Reel</div><b>"I passed a $50K prop eval using this one concept"</b> — your cert as proof, 30-sec explanation.</div>
+            <div class="post-item"><div class="post-type ig">Reel</div><b>Clip from YouTube video — hook the concept in 30 sec, CTA: "Full breakdown in my bio link"</b></div>
+            <div class="post-item"><div class="post-type ig">Story</div><b>Q&A sticker: "Drop your biggest trading struggle"</b> — collect objections you can address in Week 6.</div>
+          </div>
+          <div class="freq-row"><span class="freq-pill">2 Reels</span><span class="freq-pill">2 Stories</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 4 -->
+    <div class="cal-week">
+      <div class="week-header">
+        <span class="wk-badge">Week 4</span>
+        <span class="wk-dates">Jul 27 – Aug 2</span>
+        <span class="wk-theme">Community + live value</span>
+      </div>
+      <div class="week-body">
+        <div class="platform-col">
+          <div class="plat-label">
+            <svg class="plat-icon" viewBox="0 0 24 24" fill="#ff4444"><path d="M23.5 6.19a3.02 3.02 0 00-2.13-2.14C19.46 3.5 12 3.5 12 3.5s-7.46 0-9.37.55A3.02 3.02 0 00.5 6.19 31.6 31.6 0 000 12a31.6 31.6 0 00.5 5.81 3.02 3.02 0 002.13 2.14C4.54 20.5 12 20.5 12 20.5s7.46 0 9.37-.55a3.02 3.02 0 002.13-2.14A31.6 31.6 0 0024 12a31.6 31.6 0 00-.5-5.81zM9.75 15.52V8.48L15.86 12l-6.11 3.52z"/></svg>
+            YouTube
+          </div>
+          <div class="post-list">
+            <div class="post-item"><div class="post-type yt">Weekly recap / vlog</div><b>"Week in the market — what I saw, what I traded"</b> — lower production, high authenticity. Shows your real process.</div>
+            <div class="post-item"><div class="post-type yt">Short</div><b>Short from a live trade clip: "2 seconds before a liquidity grab"</b></div>
+          </div>
+          <div class="freq-row"><span class="freq-pill">1 video + 1 Short</span></div>
+        </div>
+        <div class="platform-col">
+          <div class="plat-label">
+            <svg class="plat-icon" viewBox="0 0 24 24" fill="#cc66ff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            Instagram
+          </div>
+          <div class="post-list">
+            <div class="post-item"><div class="post-type ig">Reel</div><b>"Inside the free AW Trading Discord"</b> — 30-sec screen recording tour of the server. Direct join CTA.</div>
+            <div class="post-item"><div class="post-type ig">Reel</div><b>Trading mistake Reel: "I used to do this and it killed my edge"</b> — self-aware, relatable.</div>
+            <div class="post-item"><div class="post-type ig">Story</div><b>"We're 4 weeks from something big… 👀" — soft seed, no details yet.</b></div>
+          </div>
+          <div class="freq-row"><span class="freq-pill">2 Reels</span><span class="freq-pill">2 Stories</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 5 — HOT -->
+    <div class="cal-week hot">
+      <div class="week-header">
+        <span class="wk-badge blue">Week 5</span>
+        <span class="wk-dates">Aug 3 – Aug 9</span>
+        <span class="wk-theme">First tease — indicator</span>
+      </div>
+      <div class="week-body">
+        <div class="platform-col">
+          <div class="plat-label">
+            <svg class="plat-icon" viewBox="0 0 24 24" fill="#ff4444"><path d="M23.5 6.19a3.02 3.02 0 00-2.13-2.14C19.46 3.5 12 3.5 12 3.5s-7.46 0-9.37.55A3.02 3.02 0 00.5 6.19 31.6 31.6 0 000 12a31.6 31.6 0 00.5 5.81 3.02 3.02 0 002.13 2.14C4.54 20.5 12 20.5 12 20.5s7.46 0 9.37-.55a3.02 3.02 0 002.13-2.14A31.6 31.6 0 0024 12a31.6 31.6 0 00-.5-5.81zM9.75 15.52V8.48L15.86 12l-6.11 3.52z"/></svg>
+            YouTube
+          </div>
+          <div class="post-list">
+            <div class="post-item"><div class="post-type yt">Tease video</div><b>"I've been building something for the past few months…"</b> — show 10–15 sec of the indicator drawing levels on a live chart, then cut. No name, no price. Let chat speculate.</div>
+          </div>
+          <div class="freq-row"><span class="freq-pill blue">No price yet</span><span class="freq-pill">8–10 min</span></div>
+        </div>
+        <div class="platform-col">
+          <div class="plat-label">
+            <svg class="plat-icon" viewBox="0 0 24 24" fill="#cc66ff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            Instagram
+          </div>
+          <div class="post-list">
+            <div class="post-item"><div class="post-type ig">Reel</div><b>Screen recording: "What is this thing auto-drawing my levels?"</b> — 20 sec, no explanation. Comment bait.</div>
+            <div class="post-item"><div class="post-type ig">Reel</div><b>"Signal fired at 9:34am. Here's what happened next."</b> — show entry, P&L result. Let it breathe.</div>
+            <div class="post-item"><div class="post-type ig">Story</div><b>"Discord members will find out first 👀" — CTA to join link.</b></div>
+          </div>
+          <div class="freq-row"><span class="freq-pill blue">Pure curiosity play</span><span class="freq-pill">3 posts</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 6 — HOT -->
+    <div class="cal-week hot">
+      <div class="week-header">
+        <span class="wk-badge blue">Week 6</span>
+        <span class="wk-dates">Aug 10 – Aug 16</span>
+        <span class="wk-theme">Announce price + date</span>
+      </div>
+      <div class="week-body">
+        <div class="platform-col">
+          <div class="plat-label">
+            <svg class="plat-icon" viewBox="0 0 24 24" fill="#ff4444"><path d="M23.5 6.19a3.02 3.02 0 00-2.13-2.14C19.46 3.5 12 3.5 12 3.5s-7.46 0-9.37.55A3.02 3.02 0 00.5 6.19 31.6 31.6 0 000 12a31.6 31.6 0 00.5 5.81 3.02 3.02 0 002.13 2.14C4.54 20.5 12 20.5 12 20.5s7.46 0 9.37-.55a3.02 3.02 0 002.13-2.14A31.6 31.6 0 0024 12a31.6 31.6 0 00-.5-5.81zM9.75 15.52V8.48L15.86 12l-6.11 3.52z"/></svg>
+            YouTube
+          </div>
+          <div class="post-list">
+            <div class="post-item"><div class="post-type yt">Full reveal</div><b>"The AW Indicator — what it is, what it does, and when it launches"</b> — show every feature live, reveal Sept 1 date, $39/$129 pricing, link to /indicator page. This is the most important video of the 8 weeks.</div>
+          </div>
+          <div class="freq-row"><span class="freq-pill blue">First hard CTA</span><span class="freq-pill">15–20 min</span></div>
+        </div>
+        <div class="platform-col">
+          <div class="plat-label">
+            <svg class="plat-icon" viewBox="0 0 24 24" fill="#cc66ff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            Instagram
+          </div>
+          <div class="post-list">
+            <div class="post-item"><div class="post-type ig">Reel</div><b>"AW Indicator — dropping Sept 1."</b> 30-sec clip showing best features. Text overlay: $39/mo. Link in bio → /indicator.</div>
+            <div class="post-item"><div class="post-type ig">Reel</div><b>"Here's what the Q&A said you struggled with — and how this fixes it"</b> — use Week 3 Story responses. Addresses real objections.</div>
+            <div class="post-item"><div class="post-type ig">Story series</div><b>3-part Story: feature 1 → feature 2 → "Sept 1 — join Discord for early access"</b></div>
+          </div>
+          <div class="freq-row"><span class="freq-pill blue">Link in bio live</span><span class="freq-pill">3+ posts</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 7 — HOT -->
+    <div class="cal-week hot">
+      <div class="week-header">
+        <span class="wk-badge blue">Week 7</span>
+        <span class="wk-dates">Aug 17 – Aug 23</span>
+        <span class="wk-theme">Build heat + objection handling</span>
+      </div>
+      <div class="week-body">
+        <div class="platform-col">
+          <div class="plat-label">
+            <svg class="plat-icon" viewBox="0 0 24 24" fill="#ff4444"><path d="M23.5 6.19a3.02 3.02 0 00-2.13-2.14C19.46 3.5 12 3.5 12 3.5s-7.46 0-9.37.55A3.02 3.02 0 00.5 6.19 31.6 31.6 0 000 12a31.6 31.6 0 00.5 5.81 3.02 3.02 0 002.13 2.14C4.54 20.5 12 20.5 12 20.5s7.46 0 9.37-.55a3.02 3.02 0 002.13-2.14A31.6 31.6 0 0024 12a31.6 31.6 0 00-.5-5.81zM9.75 15.52V8.48L15.86 12l-6.11 3.52z"/></svg>
+            YouTube
+          </div>
+          <div class="post-list">
+            <div class="post-item"><div class="post-type yt">Live trade / demo</div><b>"Trading live with the AW Indicator — raw session footage"</b> — uncut, real market. This is the hardest-hitting proof you can show.</div>
+            <div class="post-item"><div class="post-type yt">Short</div><b>"Why I built this indicator" — 60 sec, personal story angle.</b></div>
+          </div>
+          <div class="freq-row"><span class="freq-pill blue">High conviction content</span></div>
+        </div>
+        <div class="platform-col">
+          <div class="plat-label">
+            <svg class="plat-icon" viewBox="0 0 24 24" fill="#cc66ff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            Instagram
+          </div>
+          <div class="post-list">
+            <div class="post-item"><div class="post-type ig">Reel (daily)</div><b>One clip per day</b> — indicator firing a signal, daily result, 15–30 sec each. Volume > polish this week.</div>
+            <div class="post-item"><div class="post-type ig">Reel</div><b>"Is $39/mo worth it? Here's what it does in a single session"</b> — direct objection flip.</div>
+            <div class="post-item"><div class="post-type ig">Story countdown</div><b>Instagram countdown sticker to Sept 1</b> — followers can subscribe to get notified at launch.</div>
+          </div>
+          <div class="freq-row"><span class="freq-pill blue">Daily clips</span><span class="freq-pill blue">Countdown sticker</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAUNCH DAY -->
+    <div class="cal-week launch">
+      <div class="week-header">
+        <span class="wk-badge green">Sept 1</span>
+        <span class="wk-dates">Launch day</span>
+        <span class="wk-theme">All platforms, all at once</span>
+      </div>
+      <div class="week-body">
+        <div class="platform-col">
+          <div class="plat-label">
+            <svg class="plat-icon" viewBox="0 0 24 24" fill="#ff4444"><path d="M23.5 6.19a3.02 3.02 0 00-2.13-2.14C19.46 3.5 12 3.5 12 3.5s-7.46 0-9.37.55A3.02 3.02 0 00.5 6.19 31.6 31.6 0 000 12a31.6 31.6 0 00.5 5.81 3.02 3.02 0 002.13 2.14C4.54 20.5 12 20.5 12 20.5s7.46 0 9.37-.55a3.02 3.02 0 002.13-2.14A31.6 31.6 0 0024 12a31.6 31.6 0 00-.5-5.81zM9.75 15.52V8.48L15.86 12l-6.11 3.52z"/></svg>
+            YouTube — go live
+          </div>
+          <div class="post-list">
+            <div class="post-item"><div class="post-type yt">Live stream</div><b>"AW Indicator is LIVE — trading the open with it right now"</b> — 30–60 min stream. Show the product live on launch morning. Drop Whop link in chat every 10 min. Clip the best 2-min segment for a Short immediately after.</div>
+          </div>
+        </div>
+        <div class="platform-col">
+          <div class="plat-label">
+            <svg class="plat-icon" viewBox="0 0 24 24" fill="#cc66ff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            Instagram — all day
+          </div>
+          <div class="post-list">
+            <div class="post-item"><div class="post-type ig">Morning Reel</div><b>"It's live. AW Indicator — link in bio."</b> Post at 8:30am before market open.</div>
+            <div class="post-item"><div class="post-type ig">Live trade clip</div><b>Clip from the YouTube stream — best signal of the session. Post by noon.</b></div>
+            <div class="post-item"><div class="post-type ig">Story series</div><b>Story every 2 hours throughout the day: "X people joined in the first hour", live trade clips, Whop link.</b></div>
+          </div>
+          <div class="freq-row"><span class="freq-pill green">Coordinate all platforms same morning</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top: 8px;">Does this calendar work for your posting capacity? The minimum viable version is: 1 YouTube video + 2 Instagram Reels per week. Weeks 5–7 you push harder. Everything else is upside.</p>

@@ -1,0 +1,247 @@
+//@version=6
+// AW FVG Prototype — Unmitigated Zone Tracking (CISD-gated mitigation)
+// vtop/vbot are frozen while a CISD is pending (price is doing the manipulation sweep).
+// Mitigation only records after the CISD confirms or the window expires.
+// Bullish FVG: bot = high[2] (fixed), vtop shrinks down — frozen while pend_bull.
+// Bearish FVG: top = low[2] (fixed), vbot rises up — frozen while pend_bear.
+indicator("AW FVG — Unmitigated Zones", overlay=true, max_boxes_count=500)
+
+// ─── Settings ──────────────────────────────────────────────────────────────
+var string G = "FVG Settings"
+show_bull    = input.bool(true,  "Show Bullish FVGs",   group=G)
+show_bear    = input.bool(true,  "Show Bearish FVGs",   group=G)
+fvg_lookback = input.int(100,    "FVG Lookback (bars)", group=G, minval=10, maxval=500)
+max_bull     = input.int(5,      "Max Bull FVGs Shown", group=G, minval=1, maxval=20)
+max_bear     = input.int(5,      "Max Bear FVGs Shown", group=G, minval=1, maxval=20)
+
+var string GS = "CISD Detection"
+cisd_window  = input.int(4,  "Trigger Window",  group=GS, minval=1, maxval=20)
+max_leg      = input.int(10, "Max Leg Length",  group=GS, minval=1, maxval=30)
+
+var string GC = "Colors"
+bull_col    = input.color(color.new(#089981, 70), "Bullish FVG Color",  group=GC)
+bear_col    = input.color(color.new(#f23645, 70), "Bearish FVG Color",  group=GC)
+bull_border = input.color(color.new(#089981, 20), "Bull Border Color",  group=GC)
+bear_border = input.color(color.new(#f23645, 20), "Bear Border Color",  group=GC)
+
+// ─── CISD state ────────────────────────────────────────────────────────────
+lowest_10  = ta.lowest(low,  10)[1]
+highest_10 = ta.highest(high, 10)[1]
+
+var bool  pend_bull          = false
+var int   pend_bull_bar      = 0
+var float pend_bull_cisd     = na
+
+var bool  pend_bear          = false
+var int   pend_bear_bar      = 0
+var float pend_bear_cisd     = na
+
+// ─── Bull FVG state ────────────────────────────────────────────────────────
+var float[] bull_bot   = array.new_float()
+var float[] bull_vtop  = array.new_float()
+var int[]   bull_bar   = array.new_int()
+var box[]   bull_boxes = array.new_box()
+
+// ─── Bear FVG state ────────────────────────────────────────────────────────
+var float[] bear_top   = array.new_float()
+var float[] bear_vbot  = array.new_float()
+var int[]   bear_bar   = array.new_int()
+var box[]   bear_boxes = array.new_box()
+
+// ─── Confirmed-bar logic ───────────────────────────────────────────────────
+if barstate.isconfirmed
+
+    // ── 1. Detect new FVGs ──────────────────────────────────────────────────
+    if low > high[2] and show_bull
+        if array.size(bull_bot) >= max_bull
+            box.delete(array.shift(bull_boxes))
+            array.shift(bull_bot)
+            array.shift(bull_vtop)
+            array.shift(bull_bar)
+        b = box.new(bar_index - 2, low, bar_index, high[2],
+                    bgcolor=bull_col, border_color=bull_border, border_width=1)
+        array.push(bull_bot,   high[2])
+        array.push(bull_vtop,  low)
+        array.push(bull_bar,   bar_index)
+        array.push(bull_boxes, b)
+
+    if high < low[2] and show_bear
+        if array.size(bear_top) >= max_bear
+            box.delete(array.shift(bear_boxes))
+            array.shift(bear_top)
+            array.shift(bear_vbot)
+            array.shift(bear_bar)
+        b = box.new(bar_index - 2, low[2], bar_index, high,
+                    bgcolor=bear_col, border_color=bear_border, border_width=1)
+        array.push(bear_top,   low[2])
+        array.push(bear_vbot,  high)
+        array.push(bear_bar,   bar_index)
+        array.push(bear_boxes, b)
+
+    // ── 2. CISD setup detection ─────────────────────────────────────────────
+    float recent_swing_low = na
+    for j = 2 to 50
+        if close[j] < open[j] and close[j-1] > open[j-1]
+            recent_swing_low := math.min(low[j], low[j-1])
+            break
+
+    float recent_swing_high = na
+    for j = 2 to 50
+        if close[j] > open[j] and close[j-1] < open[j-1]
+            recent_swing_high := math.max(high[j], high[j-1])
+            break
+
+    is_lower_low   = low  < lowest_10  or (not na(recent_swing_low)  and low  < recent_swing_low)
+    is_higher_high = high > highest_10 or (not na(recent_swing_high) and high > recent_swing_high)
+
+    // Bullish CISD setup: lower low → find bearish leg → arm pending state
+    if is_lower_low
+        int   bear_start         = -1
+        float highest_open       = na
+        int   highest_open_bar_j = -1
+        for j = 1 to 50
+            if close[j] < open[j]
+                bear_start := j
+                break
+        if bear_start >= 0
+            for j = bear_start to bear_start + max_leg - 1
+                if close[j] < open[j]
+                    if na(highest_open) or open[j] > highest_open
+                        highest_open       := open[j]
+                        highest_open_bar_j := j
+                else
+                    break
+        if not na(highest_open)
+            pend_bull      := true
+            pend_bull_bar  := bar_index
+            pend_bull_cisd := highest_open
+
+    // Bearish CISD setup: higher high → find bullish leg → arm pending state
+    if is_higher_high
+        int   bull_start        = -1
+        float lowest_open       = na
+        int   lowest_open_bar_j = -1
+        for j = 1 to 50
+            if close[j] > open[j]
+                bull_start := j
+                break
+        if bull_start >= 0
+            for j = bull_start to bull_start + max_leg - 1
+                if close[j] > open[j]
+                    if na(lowest_open) or open[j] < lowest_open
+                        lowest_open       := open[j]
+                        lowest_open_bar_j := j
+                else
+                    break
+        if not na(lowest_open)
+            pend_bear      := true
+            pend_bear_bar  := bar_index
+            pend_bear_cisd := lowest_open
+
+    // ── 3. CISD confirmation / expiry ───────────────────────────────────────
+    if pend_bull
+        bars_since = bar_index - pend_bull_bar
+        if bars_since >= 0 and bars_since <= cisd_window
+            if close > pend_bull_cisd
+                pend_bull := false
+        else if bars_since > cisd_window
+            pend_bull := false
+
+    if pend_bear
+        bars_since = bar_index - pend_bear_bar
+        if bars_since >= 0 and bars_since <= cisd_window
+            if close < pend_bear_cisd
+                pend_bear := false
+        else if bars_since > cisd_window
+            pend_bear := false
+
+// ─── Every bar: update mitigation and extend boxes ─────────────────────────
+// vtop frozen while pend_bull — price sweeping into bull FVG is the manipulation leg.
+// vbot frozen while pend_bear — same logic for bear side.
+// Two-condition overlap: low <= vtop AND high >= bot confirms candle is inside the zone.
+
+// Bull FVGs
+int nb = array.size(bull_bot)
+if nb > 0
+    for i = nb - 1 to 0
+        float bot_i  = array.get(bull_bot,   i)
+        float vtop_i = array.get(bull_vtop,  i)
+        int   bar_i  = array.get(bull_bar,   i)
+        box   box_i  = array.get(bull_boxes, i)
+
+        // Expired
+        if bar_index - bar_i > fvg_lookback
+            box.delete(box_i)
+            array.remove(bull_bot,   i)
+            array.remove(bull_vtop,  i)
+            array.remove(bull_bar,   i)
+            array.remove(bull_boxes, i)
+            continue
+
+        // Inverted: close below bottom — zone fully violated regardless of CISD state
+        if close < bot_i
+            box.delete(box_i)
+            array.remove(bull_bot,   i)
+            array.remove(bull_vtop,  i)
+            array.remove(bull_bar,   i)
+            array.remove(bull_boxes, i)
+            continue
+
+        // Partial mitigation — only when no bullish CISD is pending
+        if not pend_bull and low <= vtop_i and high >= bot_i
+            float new_vtop = math.min(vtop_i, low)
+            if new_vtop <= bot_i
+                box.delete(box_i)
+                array.remove(bull_bot,   i)
+                array.remove(bull_vtop,  i)
+                array.remove(bull_bar,   i)
+                array.remove(bull_boxes, i)
+            else
+                array.set(bull_vtop, i, new_vtop)
+                box.set_top(box_i,   new_vtop)
+                box.set_right(box_i, bar_index)
+        else
+            box.set_right(box_i, bar_index)
+
+// Bear FVGs
+int nbr = array.size(bear_top)
+if nbr > 0
+    for i = nbr - 1 to 0
+        float top_i  = array.get(bear_top,   i)
+        float vbot_i = array.get(bear_vbot,  i)
+        int   bar_i  = array.get(bear_bar,   i)
+        box   box_i  = array.get(bear_boxes, i)
+
+        // Expired
+        if bar_index - bar_i > fvg_lookback
+            box.delete(box_i)
+            array.remove(bear_top,   i)
+            array.remove(bear_vbot,  i)
+            array.remove(bear_bar,   i)
+            array.remove(bear_boxes, i)
+            continue
+
+        // Inverted: close above top — zone fully violated regardless of CISD state
+        if close > top_i
+            box.delete(box_i)
+            array.remove(bear_top,   i)
+            array.remove(bear_vbot,  i)
+            array.remove(bear_bar,   i)
+            array.remove(bear_boxes, i)
+            continue
+
+        // Partial mitigation — only when no bearish CISD is pending
+        if not pend_bear and high >= vbot_i and low <= top_i
+            float new_vbot = math.max(vbot_i, high)
+            if new_vbot >= top_i
+                box.delete(box_i)
+                array.remove(bear_top,   i)
+                array.remove(bear_vbot,  i)
+                array.remove(bear_bar,   i)
+                array.remove(bear_boxes, i)
+            else
+                array.set(bear_vbot, i, new_vbot)
+                box.set_bottom(box_i, new_vbot)
+                box.set_right(box_i,  bar_index)
+        else
+            box.set_right(box_i, bar_index)

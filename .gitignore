@@ -1,6 +1,7 @@
 server.log
 .claude/
 .claude-flow/
+ruvector.db
 
 .vercel
 .env*

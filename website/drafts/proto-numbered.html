@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prototype A — Numbered Clean</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070709;--panel:#0c0c10;--panel-2:#111116;--white:#F5F6F8;--muted:#A8ADB8;--dim:#6A6F7C;--line:rgba(255,255,255,.12);--line-strong:rgba(255,255,255,.26);--blue:#2E6BFF;--blue-glow:rgba(46,107,255,.4);--glass-hi:rgba(255,255,255,.09);--glass-lo:rgba(255,255,255,.035);--mono:'IBM Plex Mono',monospace;--disp:'Archivo',sans-serif;--max:1180px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--disp);background:var(--bg);color:var(--white);line-height:1.55;font-size:16px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--white);font-weight:600;display:inline-flex;align-items:center;gap:10px;opacity:.9;margin-bottom:18px}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--blue);box-shadow:0 0 12px var(--blue-glow)}
+.label{font-family:var(--mono);font-size:.66rem;background:rgba(7,7,9,.8);padding:6px 12px;border-radius:8px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line)}
+
+/* section */
+section{padding:100px 0}
+.sec-head{max-width:640px;margin-bottom:72px}
+.sec-head h2{font-size:clamp(1.7rem,3.4vw,2.5rem);font-weight:800;margin-bottom:14px;letter-spacing:-.02em}
+.sec-head h2 em{font-style:normal;color:var(--blue);text-shadow:0 0 30px var(--blue-glow)}
+.sec-head p{color:var(--muted);font-size:1rem}
+
+/* VARIANT A — Numbered Clean */
+.feat-rows{display:flex;flex-direction:column;gap:100px}
+.feat-row{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;position:relative}
+.feat-row.flip{direction:rtl}
+.feat-row.flip>*{direction:ltr}
+
+/* image card — no window chrome, just a clean glowing card */
+.img-card{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:16/9;background:linear-gradient(135deg,#0e0e14,#0a0a10)}
+
+/* blue accent stripe on the leading edge */
+.feat-row:not(.flip) .img-card::before{content:"";position:absolute;left:0;top:12%;bottom:12%;width:3px;background:linear-gradient(180deg,transparent,var(--blue),transparent);border-radius:99px;z-index:2}
+.feat-row.flip .img-card::before{content:"";position:absolute;right:0;top:12%;bottom:12%;width:3px;background:linear-gradient(180deg,transparent,var(--blue),transparent);border-radius:99px;z-index:2}
+
+.img-card-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.img-card img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* bottom label bar */
+.img-label{position:absolute;bottom:12px;right:12px;z-index:3}
+
+/* big transparent number behind text col */
+.feat-body{display:flex;flex-direction:column;gap:14px;position:relative}
+.feat-num{font-family:var(--mono);font-size:6rem;font-weight:900;color:rgba(255,255,255,.04);line-height:1;letter-spacing:-.05em;position:absolute;top:-32px;left:-8px;pointer-events:none;user-select:none}
+.feat-body h3{font-size:clamp(1.5rem,2.8vw,2.1rem);font-weight:900;line-height:1.1;letter-spacing:-.025em;position:relative;z-index:1}
+.feat-body h3 em{font-style:normal;color:var(--blue);text-shadow:0 0 30px var(--blue-glow)}
+.feat-body p{color:var(--muted);font-size:.95rem;line-height:1.65;position:relative;z-index:1}
+.feat-list{display:flex;flex-direction:column;gap:8px;margin-top:4px;position:relative;z-index:1}
+.feat-list li{list-style:none;display:flex;align-items:center;gap:10px;font-size:.88rem;color:var(--muted)}
+.feat-list li::before{content:"";width:18px;height:2px;background:var(--blue);flex-shrink:0;box-shadow:0 0 8px var(--blue-glow)}
+
+/* placeholder */
+.placeholder{opacity:.3;display:flex;flex-direction:column;align-items:center;gap:8px}
+.placeholder svg{width:32px;height:32px}
+.placeholder span{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase}
+
+@media(max-width:860px){.feat-row,.feat-row.flip{grid-template-columns:1fr;direction:ltr;gap:28px}.feat-num{font-size:4rem}}
+</style>
+</head>
+<body>
+<div style="padding:16px 24px;border-bottom:1px solid rgba(255,255,255,.08);font-family:var(--mono);font-size:.7rem;color:#6A6F7C;letter-spacing:.1em">PROTOTYPE A — NUMBERED CLEAN &nbsp;·&nbsp; No window chrome, number accent, dash list</div>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Everything You Need</div>
+      <h2>Done for you, <em>automatically.</em></h2>
+      <p>No more cluttered charts or hours of manual markup. AW Indicator handles everything so you can focus on executing the trade.</p>
+    </div>
+    <div class="feat-rows">
+
+      <div class="feat-row">
+        <div class="img-card">
+          <div class="img-card-inner">
+            <!-- <img src="../assets/feature-cisd-ifvg.png" alt="CISD + IFVG"> -->
+            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>Image here</span></div>
+          </div>
+          <div class="img-label"><span class="label">CISD + IFVG</span></div>
+        </div>
+        <div class="feat-body">
+          <div class="feat-num">01</div>
+          <div class="eyebrow">Precision Entry Tools</div>
+          <h3>Live <em>CISD + IFVG</em> Detection</h3>
+          <p>The moment a Change in State of Delivery forms or an Inversion Fair Value Gap appears, AW Indicator marks it in real time — so you never miss the signal that changes direction.</p>
+          <ul class="feat-list">
+            <li>Auto-drawn FVG boxes</li>
+            <li>Inversion tracking</li>
+            <li>CISD shift markers</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="feat-row flip">
+        <div class="img-card">
+          <div class="img-card-inner">
+            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>Image here</span></div>
+          </div>
+          <div class="img-label"><span class="label">AUTO LEVELS</span></div>
+        </div>
+        <div class="feat-body">
+          <div class="feat-num">02</div>
+          <div class="eyebrow">Levels On Autopilot</div>
+          <h3><em>Sessions,</em> PDH/PDL & PD Arrays</h3>
+          <p>Session highs and lows, previous day high and low, and PD Arrays are plotted automatically — the full context map ready the second you open your chart.</p>
+          <ul class="feat-list">
+            <li>Asia / London / NY levels</li>
+            <li>PDH / PDL auto-drawn</li>
+            <li>PD Array zones</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="feat-row">
+        <div class="img-card">
+          <div class="img-card-inner">
+            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>Image here</span></div>
+          </div>
+          <div class="img-label"><span class="label">PROTECTED LEVELS</span></div>
+        </div>
+        <div class="feat-body">
+          <div class="feat-num">03</div>
+          <div class="eyebrow">Smart Money Structure</div>
+          <h3>Live <em>Protected</em> H/L Detection</h3>
+          <p>AW Indicator identifies and tracks protected highs and lows as they form — the structural levels institutional traders are defending and the ones they'll eventually take out.</p>
+          <ul class="feat-list">
+            <li>Real-time level tracking</li>
+            <li>Dynamic label updates</li>
+            <li>Structure context</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="feat-row flip">
+        <div class="img-card">
+          <div class="img-card-inner">
+            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>Image here</span></div>
+          </div>
+          <div class="img-label"><span class="label">EQH / EQL</span></div>
+        </div>
+        <div class="feat-body">
+          <div class="feat-num">04</div>
+          <div class="eyebrow">Liquidity Mapping</div>
+          <h3>Live <em>Equal High</em> / Low Detection</h3>
+          <p>Double tops and double bottoms mark resting liquidity the market is drawn to. AW Indicator flags equal highs and lows the moment they form so you know exactly where the hunt is.</p>
+          <ul class="feat-list">
+            <li>EQH / EQL marking</li>
+            <li>Liquidity sweep alerts</li>
+            <li>Auto-detection</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="feat-row">
+        <div class="img-card">
+          <div class="img-card-inner">
+            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>Image here</span></div>
+          </div>
+          <div class="img-label"><span class="label">SWING DIVERGENCE</span></div>
+        </div>
+        <div class="feat-body">
+          <div class="feat-num">05</div>
+          <div class="eyebrow">Quarterly Theory</div>
+          <h3><em>High Probability</em> Swing Divergence</h3>
+          <p>Built on quarterly theory, AW Indicator detects swing divergence setups that align with the highest-probability reversal windows — signaling when a shift in direction is statistically loaded.</p>
+          <ul class="feat-list">
+            <li>Quarterly theory alignment</li>
+            <li>Divergence signals</li>
+            <li>Reversal confirmation</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+</body>
+</html>

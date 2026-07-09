@@ -1,0 +1,144 @@
+<style>
+  .sys { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0; position: relative; }
+  .stage { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .stage-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.14em; color: #555; margin-bottom: 10px; font-weight: 700; }
+  .stage-arrow { position: absolute; top: 50%; font-size: 1.4rem; color: #2E6BFF; opacity: 0.5; }
+
+  .node { width: 100%; border-radius: 12px; padding: 14px 12px; text-align: center; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); margin-bottom: 8px; }
+  .node b { display: block; font-size: 0.85rem; color: #fff; margin-bottom: 3px; }
+  .node span { font-size: 0.7rem; color: #888; }
+  .node.blue { border-color: rgba(46,107,255,0.5); background: rgba(46,107,255,0.1); }
+  .node.blue b { color: #99bbff; }
+  .node.hot { border-color: rgba(46,107,255,0.8); background: rgba(46,107,255,0.2); box-shadow: 0 0 20px rgba(46,107,255,0.2); }
+  .node.hot b { color: #fff; }
+
+  .connector { display: flex; align-items: center; justify-content: center; padding: 0 6px; }
+  .conn-line { height: 2px; flex: 1; background: linear-gradient(90deg, rgba(46,107,255,0.3), rgba(46,107,255,0.6)); position: relative; }
+  .conn-arrow { color: #2E6BFF; font-size: 1rem; flex: none; }
+
+  .row-system { display: grid; grid-template-columns: 1fr 24px 1fr 24px 1fr 24px 1fr; gap: 0; align-items: start; }
+
+  .pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+  .pillar { border-radius: 12px; padding: 16px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); }
+  .pillar .p-icon { font-size: 1.4rem; margin-bottom: 8px; }
+  .pillar .p-name { font-size: 0.85rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+  .pillar .p-desc { font-size: 0.75rem; color: #888; line-height: 1.5; }
+  .pillar .p-freq { font-size: 0.65rem; font-weight: 700; color: #2E6BFF; margin-top: 6px; letter-spacing: 0.06em; }
+
+  .timeline { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-top: 16px; }
+  .tw { border-radius: 8px; padding: 10px 6px; text-align: center; }
+  .tw .wn { font-size: 0.62rem; font-weight: 700; color: #555; margin-bottom: 4px; }
+  .tw .wf { font-size: 0.68rem; color: #ccc; line-height: 1.4; }
+  .tw.foundation { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+  .tw.engine { background: rgba(46,107,255,0.08); border: 1px solid rgba(46,107,255,0.2); }
+  .tw.heat { background: rgba(46,107,255,0.16); border: 1px solid rgba(46,107,255,0.35); }
+  .tw.launch { background: rgba(46,107,255,0.3); border: 1px solid rgba(46,107,255,0.7); }
+  .tw.launch .wf { color: #fff; font-weight: 700; }
+</style>
+
+<h2>The full system — Content + Nurture + Launch</h2>
+<p class="subtitle">Free value is the engine. Every piece of content either grows the audience or warms them toward Sept 1.</p>
+
+<div class="section">
+  <div class="label" style="margin-bottom: 14px;">How it all connects</div>
+  <div class="row-system">
+
+    <div class="stage">
+      <div class="stage-label">Attract</div>
+      <div class="node blue"><b>YouTube</b><span>Long-form breakdowns<br>Trade recaps · Edu series</span></div>
+      <div class="node blue"><b>Instagram</b><span>Reels · Charts<br>P&L · Setup clips</span></div>
+    </div>
+
+    <div class="connector"><div class="conn-arrow">→</div></div>
+
+    <div class="stage">
+      <div class="stage-label">Land</div>
+      <div class="node hot"><b>awtrading.com</b><span>SEO fixed · Social links<br>Social proof surfaced<br>Discord CTA everywhere</span></div>
+    </div>
+
+    <div class="connector"><div class="conn-arrow">→</div></div>
+
+    <div class="stage">
+      <div class="stage-label">Nurture</div>
+      <div class="node blue"><b>Discord (Free)</b><span>Free edu content<br>Live sessions<br>Pre-launch hype</span></div>
+    </div>
+
+    <div class="connector"><div class="conn-arrow">→</div></div>
+
+    <div class="stage">
+      <div class="stage-label">Convert</div>
+      <div class="node hot"><b>Sept 1 Launch</b><span>Indicator $39/mo<br>Live Trader $129/mo<br>Mentorship (app)</span></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <div class="label" style="margin-bottom: 14px;">Content pillars — free value only, no hard selling</div>
+  <div class="pillar-grid">
+    <div class="pillar">
+      <div class="p-icon">📈</div>
+      <div class="p-name">Trade Breakdowns</div>
+      <div class="p-desc">Real trades from the week — what the setup was, where you entered, why. Show the thinking, not just the result.</div>
+      <div class="p-freq">YouTube (10–15 min) + IG Reel clip</div>
+    </div>
+    <div class="pillar">
+      <div class="p-icon">🎓</div>
+      <div class="p-name">ICT Concept Series</div>
+      <div class="p-desc">One concept per video — session levels, liquidity, displacement. Builds authority and ranks on YouTube search.</div>
+      <div class="p-freq">YouTube (8–12 min) · weekly</div>
+    </div>
+    <div class="pillar">
+      <div class="p-icon">⚡</div>
+      <div class="p-name">Setup of the Day</div>
+      <div class="p-desc">30–60 second chart clip. Annotated. "Here's what I was watching this morning." No commentary needed — just the chart.</div>
+      <div class="p-freq">Instagram Reel · 3–5×/week</div>
+    </div>
+    <div class="pillar">
+      <div class="p-icon">🏆</div>
+      <div class="p-name">P&L + Wins</div>
+      <div class="p-desc">Screenshot posts with context. Not flexing — teaching. "Here's the setup that produced this. Here's why it worked."</div>
+      <div class="p-freq">Instagram · 1–2×/week</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label" style="margin-bottom: 14px;">8-week runway to Sept 1</div>
+  <div class="timeline">
+    <div class="tw foundation">
+      <div class="wn">W1</div>
+      <div class="wf">Site fixes<br>SEO<br>Social links<br>Social proof</div>
+    </div>
+    <div class="tw foundation">
+      <div class="wn">W2</div>
+      <div class="wf">Content plan<br>Film batch 1<br>Discord<br>nurture flow</div>
+    </div>
+    <div class="tw engine">
+      <div class="wn">W3</div>
+      <div class="wf">Post daily<br>YouTube #1<br>Reels × 3</div>
+    </div>
+    <div class="tw engine">
+      <div class="wn">W4</div>
+      <div class="wf">ICT series<br>Breakdowns<br>Discord free<br>edu drops</div>
+    </div>
+    <div class="tw engine">
+      <div class="wn">W5</div>
+      <div class="wf">Film batch 2<br>P&L posts<br>"Coming soon"<br>teaser drops</div>
+    </div>
+    <div class="tw heat">
+      <div class="wn">W6</div>
+      <div class="wf">Countdown<br>live on site<br>Indicator<br>preview clips</div>
+    </div>
+    <div class="tw heat">
+      <div class="wn">W7</div>
+      <div class="wf">Launch week<br>build-up<br>Discord hype<br>IG story push</div>
+    </div>
+    <div class="tw launch">
+      <div class="wn">🚀</div>
+      <div class="wf">SEPT 1<br>LAUNCH<br>ALL platforms</div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top: 24px;">Does this overall picture look right? I'll go deeper on each section — site changes, Discord nurture flow, and content calendar — one at a time.</p>
