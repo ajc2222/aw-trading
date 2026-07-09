@@ -125,12 +125,14 @@ nav{position:sticky;top:0;left:0;right:0;z-index:100;background:linear-gradient(
 .nav-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;margin-left:8px}
 .nav-burger span{display:block;width:22px;height:2px;background:var(--white);border-radius:2px;transition:transform .2s,opacity .2s}
 @media(max-width:900px){.nav-burger{display:flex}}
-.mobile-nav{position:fixed;inset:0;z-index:1000;background:rgba(7,7,9,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;padding:40px}
+.mobile-nav{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;z-index:1000;background:rgba(7,7,9,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:stretch;justify-content:center;padding:40px 32px}
 .mobile-nav[hidden]{display:none}
-.mobile-nav-close{position:absolute;top:20px;right:20px;background:none;border:none;color:var(--white);font-size:1.8rem;cursor:pointer;line-height:1;padding:8px}
-.mobile-nav-links{display:flex;flex-direction:column;align-items:center;gap:28px}
-.mobile-nav-links a{font-size:1.4rem;font-weight:700;color:var(--white)}
-.mobile-nav-cta{margin-top:8px}
+.mobile-nav-close{position:absolute;top:20px;right:20px;background:none;border:none;color:var(--white);font-size:1.8rem;cursor:pointer;line-height:1;padding:12px}
+.mobile-nav-links{display:flex;flex-direction:column;align-items:stretch;gap:0;width:100%}
+.mobile-nav-links a{font-size:1.35rem;font-weight:700;color:var(--white);padding:18px 0;text-align:center;border-bottom:1px solid var(--line);transition:color .2s}
+.mobile-nav-links a:first-child{border-top:1px solid var(--line)}
+.mobile-nav-links a:hover{color:var(--blue)}
+.mobile-nav-cta{margin-top:32px;text-align:center;display:flex;justify-content:center}
 
 /* ---------- HERO ---------- */
 .hero{position:relative;overflow:hidden}
@@ -784,19 +786,30 @@ renderChannels();
 selectChannel('certificates-payouts');
 
 function initScrollTrack(track, direction){
-  if(!track) return;
+  if(!track) return ()=>false;
+  const strip = track.parentElement;
   let target = 0, current = 0, lastY = window.scrollY, half = track.scrollWidth / 2;
+  let dragging = false, didDrag = false, dragStartX = 0, dragStartTarget = 0;
   window.addEventListener('resize', ()=>{ half = track.scrollWidth / 2; }, {passive:true});
+  strip.style.cursor = 'grab';
+  const startDrag = x=>{ dragging=true; didDrag=false; dragStartX=x; dragStartTarget=target; strip.style.cursor='grabbing'; };
+  const moveDrag = x=>{ if(!dragging) return; const dx=x-dragStartX; if(Math.abs(dx)>4) didDrag=true; target=dragStartTarget-dx; };
+  const endDrag = ()=>{ dragging=false; strip.style.cursor='grab'; };
+  strip.addEventListener('mousedown', e=>startDrag(e.clientX));
+  strip.addEventListener('touchstart', e=>startDrag(e.touches[0].clientX), {passive:true});
+  window.addEventListener('mousemove', e=>moveDrag(e.clientX));
+  strip.addEventListener('touchmove', e=>moveDrag(e.touches[0].clientX), {passive:true});
+  window.addEventListener('mouseup', endDrag);
+  strip.addEventListener('touchend', endDrag, {passive:true});
   function loop(){
-    const y = window.scrollY;
-    target += direction * (y - lastY);
-    lastY = y;
+    if(!dragging){ const y=window.scrollY; target+=direction*(y-lastY); lastY=y; } else { lastY=window.scrollY; }
     current += (target - current) * 0.08;
     const pos = ((current % half) + half) % half;
     track.style.transform = `translateX(${-pos}px)`;
     requestAnimationFrame(loop);
   }
   loop();
+  return ()=>didDrag;
 }
 
 const certTrack = document.getElementById('certTrack');
@@ -806,14 +819,16 @@ if(certTrack){
     img.addEventListener('load', res, {once:true});
     img.addEventListener('error', res, {once:true});
   });
-  Promise.all(certImgs.map(whenLoaded)).then(()=> initScrollTrack(certTrack, 1));
-
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');
-  certImgs.forEach(img=>{
-    img.addEventListener('click', ()=>{
-      lightboxImg.src = img.src;
-      lightbox.classList.add('active');
+  Promise.all(certImgs.map(whenLoaded)).then(()=>{
+    const wasDragged = initScrollTrack(certTrack, 1);
+    certImgs.forEach(img=>{
+      img.addEventListener('click', ()=>{
+        if(wasDragged()) return;
+        lightboxImg.src = img.src;
+        lightbox.classList.add('active');
+      });
     });
   });
   lightbox.addEventListener('click', ()=> lightbox.classList.remove('active'));
