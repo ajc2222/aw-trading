@@ -102,6 +102,7 @@ nav,main,footer{position:relative;z-index:2}
 
 /* CTA glow — spinning gradient border */
 @property --spin-a{syntax:'<angle>';inherits:false;initial-value:0deg}
+:root{--spin-a:0deg}
 @keyframes spin-grad{to{--spin-a:360deg}}
 .glow-ring{position:relative;display:inline-flex;border-radius:99px}
 .glow-ring::before{content:"";position:absolute;inset:-2px;border-radius:inherit;background:conic-gradient(from var(--spin-a),#5865F2,#7289DA,#00D4FF,#2E6BFF,transparent 55%);animation:spin-grad 2.4s linear infinite;pointer-events:none}
