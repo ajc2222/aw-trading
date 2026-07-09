@@ -228,29 +228,30 @@ footer{border-top:1px solid var(--line);padding:44px 0}
 
 /* ---------- HERO VIDEO ---------- */
 .vid-wrap{width:100%;max-width:760px;margin:0 auto 40px;animation:card-rise .8s cubic-bezier(.2,.8,.2,1) both}
-/* ---------- MOCK WINDOW ---------- */
-.mock-win{border-radius:16px;overflow:hidden;background:var(--panel-2);border:1px solid var(--line);box-shadow:0 24px 64px -20px rgba(0,0,0,.6)}
-.mock-bar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.03)}
-.mock-tv{height:18px;width:auto;display:block;opacity:.7}
-.mock-label{font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-left:auto}
-.mock-img{aspect-ratio:16/9;background:linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.015));display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
-.mock-img img,.mock-img video{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0}
-.mock-placeholder{display:flex;flex-direction:column;align-items:center;gap:10px;opacity:.35;position:relative;z-index:1}
-.mock-placeholder svg{width:36px;height:36px;color:var(--muted)}
-.mock-placeholder span{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+/* ---------- IMAGE CARD ---------- */
+.img-card{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:16/9;background:linear-gradient(135deg,#0e0e14,#0a0a10);border:1px solid var(--line);box-shadow:0 24px 64px -20px rgba(0,0,0,.7)}
+.feat-row:not(.flip) .img-card::before{content:"";position:absolute;left:0;top:12%;bottom:12%;width:3px;background:linear-gradient(180deg,transparent,var(--blue),transparent);border-radius:99px;z-index:2}
+.feat-row.flip .img-card::before{content:"";position:absolute;right:0;top:12%;bottom:12%;width:3px;background:linear-gradient(180deg,transparent,var(--blue),transparent);border-radius:99px;z-index:2}
+.img-card-inner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.img-card img,.img-card video{width:100%;height:100%;object-fit:cover;display:block}
+.img-label{position:absolute;bottom:12px;right:12px;z-index:3;font-family:var(--mono);font-size:.62rem;background:rgba(7,7,9,.85);padding:5px 11px;border-radius:7px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.img-placeholder{opacity:.3;display:flex;flex-direction:column;align-items:center;gap:8px}
+.img-placeholder svg{width:32px;height:32px}
+.img-placeholder span{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase}
 /* ---------- FEATURE ROWS ---------- */
-.feat-rows{display:flex;flex-direction:column;gap:80px}
-.feat-row{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.feat-rows{display:flex;flex-direction:column;gap:100px}
+.feat-row{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;position:relative}
 .feat-row.flip{direction:rtl}
 .feat-row.flip>*{direction:ltr}
-@media(max-width:860px){.feat-row,.feat-row.flip{grid-template-columns:1fr;direction:ltr;gap:32px}}
-.feat-body{display:flex;flex-direction:column;gap:14px}
-.feat-body h3{font-size:clamp(1.5rem,2.8vw,2.1rem);font-weight:900;line-height:1.1;letter-spacing:-.025em}
+@media(max-width:860px){.feat-row,.feat-row.flip{grid-template-columns:1fr;direction:ltr;gap:32px}.feat-num{font-size:4rem!important}}
+.feat-body{display:flex;flex-direction:column;gap:14px;position:relative}
+.feat-num{font-family:var(--mono);font-size:6rem;font-weight:900;color:rgba(255,255,255,.04);line-height:1;letter-spacing:-.05em;position:absolute;top:-32px;left:-8px;pointer-events:none;user-select:none}
+.feat-body h3{font-size:clamp(1.5rem,2.8vw,2.1rem);font-weight:900;line-height:1.1;letter-spacing:-.025em;position:relative;z-index:1}
 .feat-body h3 em{font-style:normal;color:var(--blue);text-shadow:0 0 30px var(--blue-glow)}
-.feat-body p{color:var(--muted);font-size:.95rem;line-height:1.65}
-.feat-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
-.feat-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(46,107,255,.08);border:1px solid rgba(46,107,255,.22);border-radius:99px;padding:6px 14px;font-size:.8rem;color:var(--white);font-weight:500}
-.feat-chip::before{content:"✓";color:var(--blue);font-weight:700;font-size:.72rem}
+.feat-body p{color:var(--muted);font-size:.95rem;line-height:1.65;position:relative;z-index:1}
+.feat-list{display:flex;flex-direction:column;gap:8px;margin-top:4px;position:relative;z-index:1;padding:0}
+.feat-list li{list-style:none;display:flex;align-items:center;gap:10px;font-size:.88rem;color:var(--muted)}
+.feat-list li::before{content:"";width:18px;height:2px;background:var(--blue);flex-shrink:0;box-shadow:0 0 8px var(--blue-glow)}
 </style>
 </head>
 <body>
@@ -316,19 +317,16 @@ footer{border-top:1px solid var(--line);padding:44px 0}
 <header class="hero">
   <div class="wrap hero-grid">
     <div class="vid-wrap">
-      <div class="mock-win">
-        <div class="mock-bar">
-          <img src="assets/tv-logo.png" alt="TradingView" class="mock-tv">
-          <span class="mock-label">AW Indicator — Live Demo</span>
-        </div>
-        <div class="mock-img">
+      <div class="img-card">
+        <div class="img-card-inner">
           <!-- When video is ready, replace the div below with:
                <video src="assets/hero-demo.mp4" autoplay muted loop playsinline></video> -->
-          <div class="mock-placeholder">
+          <div class="img-placeholder">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             <span>Video coming soon</span>
           </div>
         </div>
+        <span class="img-label">AW Indicator — Live Demo</span>
       </div>
     </div>
 
@@ -350,132 +348,122 @@ footer{border-top:1px solid var(--line);padding:44px 0}
     <div class="feat-rows">
 
       <div class="feat-row">
-        <div class="mock-win">
-          <div class="mock-bar">
-            <img src="assets/tv-logo.png" alt="TradingView" class="mock-tv">
-            <span class="mock-label">CISD + IFVG</span>
-          </div>
-          <div class="mock-img">
+        <div class="img-card">
+          <div class="img-card-inner">
             <!-- Replace with: <img src="assets/feature-cisd-ifvg.png" alt="CISD and IFVG marked on chart" loading="lazy"> -->
-            <div class="mock-placeholder">
+            <div class="img-placeholder">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
               <span>Image placeholder</span>
             </div>
           </div>
+          <span class="img-label">CISD + IFVG</span>
         </div>
         <div class="feat-body">
+          <div class="feat-num">01</div>
           <div class="eyebrow">Precision Entry Tools</div>
           <h3>Live <em>CISD + IFVG</em> Detection</h3>
           <p>The moment a Change in State of Delivery forms or an Inversion Fair Value Gap appears, AW Indicator marks it on your chart in real time — so you never miss the signal that changes the direction.</p>
-          <div class="feat-chips">
-            <span class="feat-chip">Auto-drawn FVG boxes</span>
-            <span class="feat-chip">Inversion tracking</span>
-            <span class="feat-chip">CISD shift markers</span>
-          </div>
+          <ul class="feat-list">
+            <li>Auto-drawn FVG boxes</li>
+            <li>Inversion tracking</li>
+            <li>CISD shift markers</li>
+          </ul>
         </div>
       </div>
 
       <div class="feat-row flip">
-        <div class="mock-win">
-          <div class="mock-bar">
-            <img src="assets/tv-logo.png" alt="TradingView" class="mock-tv">
-            <span class="mock-label">AUTO LEVELS</span>
-          </div>
-          <div class="mock-img">
+        <div class="img-card">
+          <div class="img-card-inner">
             <!-- Replace with: <img src="assets/feature-sessions.png" alt="Session levels and PD arrays on chart" loading="lazy"> -->
-            <div class="mock-placeholder">
+            <div class="img-placeholder">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
               <span>Image placeholder</span>
             </div>
           </div>
+          <span class="img-label">AUTO LEVELS</span>
         </div>
         <div class="feat-body">
+          <div class="feat-num">02</div>
           <div class="eyebrow">Levels On Autopilot</div>
           <h3><em>Sessions,</em> PDH/PDL & PD Arrays</h3>
           <p>Session highs and lows, previous day high and low, and PD Arrays are plotted automatically — the full context map is ready the second you open your chart.</p>
-          <div class="feat-chips">
-            <span class="feat-chip">Asia / London / NY levels</span>
-            <span class="feat-chip">PDH / PDL auto-drawn</span>
-            <span class="feat-chip">PD Array zones</span>
-          </div>
+          <ul class="feat-list">
+            <li>Asia / London / NY levels</li>
+            <li>PDH / PDL auto-drawn</li>
+            <li>PD Array zones</li>
+          </ul>
         </div>
       </div>
 
       <div class="feat-row">
-        <div class="mock-win">
-          <div class="mock-bar">
-            <img src="assets/tv-logo.png" alt="TradingView" class="mock-tv">
-            <span class="mock-label">PROTECTED LEVELS</span>
-          </div>
-          <div class="mock-img">
+        <div class="img-card">
+          <div class="img-card-inner">
             <!-- Replace with: <img src="assets/feature-protected-hl.png" alt="Protected high and low levels on chart" loading="lazy"> -->
-            <div class="mock-placeholder">
+            <div class="img-placeholder">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
               <span>Image placeholder</span>
             </div>
           </div>
+          <span class="img-label">PROTECTED LEVELS</span>
         </div>
         <div class="feat-body">
+          <div class="feat-num">03</div>
           <div class="eyebrow">Smart Money Structure</div>
           <h3>Live <em>Protected</em> H/L Detection</h3>
           <p>AW Indicator identifies and tracks protected highs and lows as they form — the structural levels institutional traders are defending and the ones they'll eventually take out.</p>
-          <div class="feat-chips">
-            <span class="feat-chip">Real-time level tracking</span>
-            <span class="feat-chip">Dynamic label updates</span>
-            <span class="feat-chip">Structure context</span>
-          </div>
+          <ul class="feat-list">
+            <li>Real-time level tracking</li>
+            <li>Dynamic label updates</li>
+            <li>Structure context</li>
+          </ul>
         </div>
       </div>
 
       <div class="feat-row flip">
-        <div class="mock-win">
-          <div class="mock-bar">
-            <img src="assets/tv-logo.png" alt="TradingView" class="mock-tv">
-            <span class="mock-label">EQH / EQL</span>
-          </div>
-          <div class="mock-img">
+        <div class="img-card">
+          <div class="img-card-inner">
             <!-- Replace with: <img src="assets/feature-eqhl.png" alt="Equal highs and lows marked on chart" loading="lazy"> -->
-            <div class="mock-placeholder">
+            <div class="img-placeholder">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
               <span>Image placeholder</span>
             </div>
           </div>
+          <span class="img-label">EQH / EQL</span>
         </div>
         <div class="feat-body">
+          <div class="feat-num">04</div>
           <div class="eyebrow">Liquidity Mapping</div>
           <h3>Live <em>Equal High</em> / Low Detection</h3>
           <p>Double tops and double bottoms mark resting liquidity the market is drawn to. AW Indicator flags equal highs and lows the moment they form so you know exactly where the hunt is.</p>
-          <div class="feat-chips">
-            <span class="feat-chip">EQH / EQL marking</span>
-            <span class="feat-chip">Liquidity sweep alerts</span>
-            <span class="feat-chip">Auto-detection</span>
-          </div>
+          <ul class="feat-list">
+            <li>EQH / EQL marking</li>
+            <li>Liquidity sweep alerts</li>
+            <li>Auto-detection</li>
+          </ul>
         </div>
       </div>
 
       <div class="feat-row">
-        <div class="mock-win">
-          <div class="mock-bar">
-            <img src="assets/tv-logo.png" alt="TradingView" class="mock-tv">
-            <span class="mock-label">SWING DIVERGENCE</span>
-          </div>
-          <div class="mock-img">
+        <div class="img-card">
+          <div class="img-card-inner">
             <!-- Replace with: <img src="assets/feature-divergence.png" alt="Swing divergence signals on chart" loading="lazy"> -->
-            <div class="mock-placeholder">
+            <div class="img-placeholder">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
               <span>Image placeholder</span>
             </div>
           </div>
+          <span class="img-label">SWING DIVERGENCE</span>
         </div>
         <div class="feat-body">
+          <div class="feat-num">05</div>
           <div class="eyebrow">Quarterly Theory</div>
           <h3><em>High Probability</em> Swing Divergence</h3>
           <p>Built on quarterly theory, AW Indicator detects swing divergence setups that align with the highest-probability reversal windows — signaling when a shift in direction is statistically loaded.</p>
-          <div class="feat-chips">
-            <span class="feat-chip">Quarterly theory alignment</span>
-            <span class="feat-chip">Divergence signals</span>
-            <span class="feat-chip">Reversal confirmation</span>
-          </div>
+          <ul class="feat-list">
+            <li>Quarterly theory alignment</li>
+            <li>Divergence signals</li>
+            <li>Reversal confirmation</li>
+          </ul>
         </div>
       </div>
 
