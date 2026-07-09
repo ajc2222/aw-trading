@@ -16,8 +16,6 @@
 <meta name="twitter:description" content="Exclusive AW Trading discount codes on vetted prop firm evaluations. Same challenge, smaller entry fee.">
 <meta name="twitter:image" content="https://awtrading.com/assets/og-image.png">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#070709;
@@ -392,7 +390,7 @@ document.querySelectorAll('.buy[data-code]').forEach(btn=>{
   const icon = btn.querySelector('.copy-ic');
   btn.addEventListener('click', async ()=>{
     const code = btn.dataset.code;
-    try{ await navigator.clipboard.writeText(code); }catch(e){}
+    try{ await navigator.clipboard.writeText(code); }catch(e){ /* fallback: execCommand may work on older browsers */ try{ const ta=document.createElement('textarea'); ta.value=code; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }catch(e2){} }
     btn.classList.add('copied');
     if(icon) icon.style.display='none';
     const label = btn.childNodes[0];

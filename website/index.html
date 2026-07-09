@@ -16,8 +16,6 @@
 <meta name="twitter:description" content="Join 80+ traders learning ICT methodology live. Access the AW+ Indicator, mentorship, and a community that shows you real price action — free to join.">
 <meta name="twitter:image" content="https://awtrading.com/assets/og-image.png">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#070709;
@@ -763,7 +761,19 @@ function renderChannels(){
       const el = document.createElement('div');
       el.className = 'd-chan' + (ch.id === 'certificates-payouts' ? ' active' : '');
       el.dataset.id = ch.id;
-      el.innerHTML = `<span class="hash">#</span>${ch.emoji ? ' ' + ch.emoji + ' |' : ''} ${ch.label || ch.id}${ch.locked ? '<span class="lock">🔒</span>' : ''}`;
+      el.innerHTML = '';
+      const hash = document.createElement('span');
+      hash.className = 'hash';
+      hash.textContent = '#';
+      el.appendChild(hash);
+      if (ch.emoji) { el.appendChild(document.createTextNode(' ' + ch.emoji + ' |')); }
+      el.appendChild(document.createTextNode(' ' + (ch.label || ch.id)));
+      if (ch.locked) {
+        const lock = document.createElement('span');
+        lock.className = 'lock';
+        lock.textContent = '🔒';
+        el.appendChild(lock);
+      }
       el.addEventListener('click', ()=> selectChannel(ch.id));
       dChannels.appendChild(el);
     });
@@ -784,17 +794,43 @@ function selectChannel(id){
   ch.messages.forEach(m=>{
     const row = document.createElement('div');
     row.className = 'd-msg';
-    row.innerHTML = `
-      <div class="av">${initials(m.who)}</div>
-      <div>
-        <div class="line1">
-          <span class="name">${m.who}</span>
-          ${m.role==='mentor' ? '<span class="badge">MENTOR</span>' : ''}
-          <span class="time">${m.time}</span>
-        </div>
-        ${m.text ? `<div class="text">${m.text}</div>` : ''}
-        ${m.image ? `<img class="img" src="${m.image}" alt="">` : ''}
-      </div>`;
+    row.innerHTML = '';
+    const av = document.createElement('div');
+    av.className = 'av';
+    av.textContent = initials(m.who);
+    row.appendChild(av);
+    const bodyDiv = document.createElement('div');
+    const line1 = document.createElement('div');
+    line1.className = 'line1';
+    const name = document.createElement('span');
+    name.className = 'name';
+    name.textContent = m.who;
+    line1.appendChild(name);
+    if (m.role === 'mentor') {
+      const badge = document.createElement('span');
+      badge.className = 'badge';
+      badge.textContent = 'MENTOR';
+      line1.appendChild(badge);
+    }
+    const time = document.createElement('span');
+    time.className = 'time';
+    time.textContent = m.time;
+    line1.appendChild(time);
+    bodyDiv.appendChild(line1);
+    if (m.text) {
+      const text = document.createElement('div');
+      text.className = 'text';
+      text.textContent = m.text;
+      bodyDiv.appendChild(text);
+    }
+    if (m.image) {
+      const img = document.createElement('img');
+      img.className = 'img';
+      img.src = m.image;
+      img.alt = '';
+      bodyDiv.appendChild(img);
+    }
+    row.appendChild(bodyDiv);
     dChatBody.appendChild(row);
   });
 }

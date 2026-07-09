@@ -15,11 +15,12 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+  <!-- giveaways omitted while inactive — uncomment when a giveaway cycle is live -->
+  <!--<url>
     <loc>https://awtrading.com/giveaways</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-  </url>
+  </url>-->
   <url>
     <loc>https://awtrading.com/terms</loc>
     <changefreq>yearly</changefreq>

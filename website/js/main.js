@@ -14,7 +14,7 @@
 const STRIPE_LINKS = {
   foundations: 'https://whop.com/aw-trading-discord',   // index: $49/mo Foundations
   liveTrader: 'https://whop.com/aw-trading-discord',    // index: $129/mo Live Trader
-  innerCircle: 'https://whop.com/aw-trading-discord',   // index: $499/mo Inner Circle (Apply)
+  innerCircle: 'https://whop.com/aw-trading-discord',   // index: $499/mo Inner Circle (Apply) — TODO: update to correct payment link before launch
   indicatorOnly: 'https://whop.com/aw-trading-discord', // indicator: $39/mo Indicator Only
   indicatorBundle: 'https://whop.com/aw-trading-discord' // indicator: bundled Live Trader CTA
 };
@@ -210,53 +210,5 @@ const GIVEAWAY_END = new Date('2026-07-31T20:00:00');
     tick();
   })();
 
-  /* ---------- giveaway entry form ---------- */
-  (function entryForm() {
-    const enterBtn = document.getElementById('enter');
-    const give = document.querySelector('.give');
-    const form = document.getElementById('entry-form');
-    if (!enterBtn || !give || !form) return;
-
-    enterBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      give.classList.add('entry-mode');
-      form.classList.add('open');
-      const firstField = form.querySelector('input:not([type="checkbox"])');
-      if (firstField) firstField.focus();
-    });
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const msgEl = form.querySelector('.form-msg');
-      const submitBtn = form.querySelector('button[type="submit"]');
-      const honeypot = form.querySelector('input[name="_gotcha"]');
-      if (honeypot && honeypot.value) return; // silently drop bot submissions
-
-      if (submitBtn) submitBtn.disabled = true;
-      try {
-        const res = await fetch(form.action, {
-          method: 'POST',
-          body: new FormData(form),
-          headers: { Accept: 'application/json' }
-        });
-        if (res.ok) {
-          form.reset();
-          form.querySelectorAll('.field, .field-check').forEach((f) => f.style.display = 'none');
-          if (submitBtn) submitBtn.style.display = 'none';
-          if (msgEl) {
-            msgEl.textContent = "You're entered. We'll verify your entry and reach out if you win.";
-            msgEl.className = 'form-msg success';
-          }
-        } else {
-          throw new Error('Form submission failed');
-        }
-      } catch (err) {
-        if (msgEl) {
-          msgEl.textContent = 'Something went wrong submitting your entry. Please try again.';
-          msgEl.className = 'form-msg error';
-        }
-        if (submitBtn) submitBtn.disabled = false;
-      }
-    });
-  })();
+  /* ---------- (giveaway entry form removed — giveaway now redirects to Discord) ---------- */
 })();
