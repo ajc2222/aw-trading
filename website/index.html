@@ -87,14 +87,16 @@ nav,main,footer{position:relative;z-index:2}
 .btn-small{padding:9px 16px;font-size:.82rem}
 
 /* CTA glow — spinning gradient border */
-@keyframes spin-grad{to{transform:rotate(360deg)}}
+@property --spin-a{syntax:'<angle>';inherits:false;initial-value:0deg}
+:root{--spin-a:0deg}
+@keyframes spin-grad{to{--spin-a:360deg}}
 .hero-join{display:flex;justify-content:center;margin-top:64px}
 .glow-ring{position:relative;display:inline-flex;border-radius:99px}
 .glow-ring[hidden]{display:none}
-.glow-ring::before{content:"";position:absolute;inset:-2px;border-radius:inherit;background:conic-gradient(from 0deg,#5865F2,#7289DA,#00D4FF,#2E6BFF,transparent 55%);animation:spin-grad 2.4s linear infinite;pointer-events:none}
+.glow-ring::before{content:"";position:absolute;inset:-2px;border-radius:inherit;background:conic-gradient(from var(--spin-a),#5865F2,#7289DA,#00D4FF,#2E6BFF,transparent 55%);animation:spin-grad 2.4s linear infinite;pointer-events:none}
 .glow-ring .btn{position:relative;z-index:1}
 .spin-silver{position:relative;display:inline-flex;border-radius:99px}
-.spin-silver::before{content:'';position:absolute;inset:-2px;border-radius:99px;background:conic-gradient(from 0deg,#fff,#a0b4d0,#fff,#c8d8f0,transparent 55%);animation:spin-grad 2.4s linear infinite;pointer-events:none;z-index:0}
+.spin-silver::before{content:'';position:absolute;inset:-2px;border-radius:99px;background:conic-gradient(from var(--spin-a),#fff,#a0b4d0,#fff,#c8d8f0,transparent 55%);animation:spin-grad 2.4s linear infinite;pointer-events:none;z-index:0}
 .spin-silver .btn{position:relative;z-index:1}
 .spin-silver .btn-ghost{background:#111114}
 
@@ -306,8 +308,8 @@ footer{border-top:1px solid var(--line);padding:44px 0}
 .nav-social{display:flex;align-items:center;gap:8px;margin-right:4px}
 .nav-social-wrap{position:relative;width:32px;height:32px;border-radius:10px}
 .nav-social-wrap::before{content:'';position:absolute;inset:-2px;border-radius:11px;z-index:0;animation:spin-grad 2s linear infinite}
-.nav-social-wrap.yt::before{background:conic-gradient(from 0deg,#fff,#a0b4d0,#fff,#c8d8f0,transparent 55%)}
-.nav-social-wrap.ig::before{background:conic-gradient(from 0deg,#fff,#a0b4d0,#fff,#c8d8f0,transparent 55%)}
+.nav-social-wrap.yt::before{background:conic-gradient(from var(--spin-a),#fff,#a0b4d0,#fff,#c8d8f0,transparent 55%)}
+.nav-social-wrap.ig::before{background:conic-gradient(from var(--spin-a),#fff,#a0b4d0,#fff,#c8d8f0,transparent 55%)}
 .nav-social a{position:relative;z-index:1;width:32px;height:32px;border-radius:9px;background:#111114;display:grid;place-items:center;color:var(--muted);transition:color .2s;text-decoration:none}
 .nav-social a:hover{color:var(--white)}
 @media(max-width:900px){.nav-social{display:none}}
