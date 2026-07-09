@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /drafts/
+Disallow: /.superpowers/
+Disallow: /api/
 
 Sitemap: https://awtrading.com/sitemap.xml
