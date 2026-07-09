@@ -125,10 +125,10 @@ nav{position:sticky;top:0;left:0;right:0;z-index:100;background:linear-gradient(
 .nav-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;margin-left:8px}
 .nav-burger span{display:block;width:22px;height:2px;background:var(--white);border-radius:2px;transition:transform .2s,opacity .2s}
 @media(max-width:900px){.nav-burger{display:flex}}
-.mobile-nav-backdrop{position:fixed;top:68px;left:0;right:0;bottom:0;z-index:199;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.mobile-nav-backdrop{position:fixed;top:68px;left:0;right:0;bottom:0;z-index:998;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .3s}
 .mobile-nav-backdrop.open{opacity:1;pointer-events:all}
-.mobile-nav{position:fixed;top:68px;left:0;right:0;z-index:200;background:linear-gradient(180deg,rgba(10,10,14,.97),rgba(7,7,9,.99));backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);border-bottom:1px solid rgba(255,255,255,.26);box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 20px 50px -10px rgba(0,0,0,.8);transform:translateY(-10px);opacity:0;visibility:hidden;transition:transform .32s cubic-bezier(.2,.8,.2,1),opacity .25s ease,visibility 0s .3s;pointer-events:none}
-.mobile-nav.open{transform:translateY(0);opacity:1;visibility:visible;transition:transform .32s cubic-bezier(.2,.8,.2,1),opacity .25s ease;pointer-events:all}
+.mobile-nav{position:fixed;top:68px;left:0;right:0;z-index:999;background:linear-gradient(180deg,rgba(10,10,14,.97),rgba(7,7,9,.99));backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);border-bottom:1px solid rgba(255,255,255,.26);box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 20px 50px -10px rgba(0,0,0,.8);transform:translateY(-10px);opacity:0;pointer-events:none;transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .25s ease}
+.mobile-nav.open{transform:translateY(0);opacity:1;pointer-events:all}
 .mobile-nav-links{display:flex;flex-direction:column}
 .mobile-nav-links a{display:flex;align-items:center;gap:10px;font-size:.9rem;font-weight:700;color:#A8ADB8;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.12);transition:color .2s,background .2s}
 .mobile-nav-links a:first-child{border-top:1px solid rgba(255,255,255,.12)}
