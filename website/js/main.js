@@ -69,51 +69,37 @@ const GIVEAWAY_END = new Date('2026-07-31T20:00:00');
     els.forEach((el) => cio.observe(el));
   })();
 
-  /* ---------- mobile nav (hamburger + full-screen overlay) ---------- */
+  /* ---------- mobile nav (compact sheet) ---------- */
   (function mobileNav() {
     const burger = document.querySelector('.nav-burger');
     const overlay = document.querySelector('.mobile-nav');
+    const backdrop = document.querySelector('.mobile-nav-backdrop');
     if (!burger || !overlay) return;
 
-    const closeBtn = overlay.querySelector('.mobile-nav-close');
-    const focusable = overlay.querySelectorAll('a, button');
-    let lastFocused = null;
-
     function openNav() {
-      lastFocused = document.activeElement;
       overlay.classList.add('open');
+      if (backdrop) backdrop.classList.add('open');
       burger.setAttribute('aria-expanded', 'true');
       burger.setAttribute('aria-label', 'Close navigation');
-      document.body.classList.add('nav-locked');
-      const first = overlay.querySelector('a, button');
-      if (first) first.focus();
       document.addEventListener('keydown', onKeydown);
     }
 
     function closeNav() {
       overlay.classList.remove('open');
+      if (backdrop) backdrop.classList.remove('open');
       burger.setAttribute('aria-expanded', 'false');
       burger.setAttribute('aria-label', 'Open navigation');
-      document.body.classList.remove('nav-locked');
       document.removeEventListener('keydown', onKeydown);
-      if (lastFocused) lastFocused.focus();
     }
 
     function onKeydown(e) {
-      if (e.key === 'Escape') { closeNav(); return; }
-      if (e.key !== 'Tab' || !focusable.length) return;
-      const first = focusable[0], last = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault(); last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault(); first.focus();
-      }
+      if (e.key === 'Escape') closeNav();
     }
 
     burger.addEventListener('click', () => {
       overlay.classList.contains('open') ? closeNav() : openNav();
     });
-    if (closeBtn) closeBtn.addEventListener('click', closeNav);
+    if (backdrop) backdrop.addEventListener('click', closeNav);
     overlay.querySelectorAll('.mobile-nav-links a').forEach((a) => {
       a.addEventListener('click', closeNav);
     });

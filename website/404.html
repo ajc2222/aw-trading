@@ -41,11 +41,19 @@ nav{position:sticky;top:0;left:0;right:0;z-index:100;background:linear-gradient(
 .nav-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px}
 .nav-burger span{display:block;width:22px;height:2px;background:var(--white);border-radius:2px}
 @media(max-width:900px){.nav-burger{display:flex}}
-.mobile-nav{position:fixed;inset:0;z-index:200;background:rgba(7,7,9,.97);backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;padding:40px}
-.mobile-nav[hidden]{display:none}
-.mobile-nav-close{position:absolute;top:20px;right:20px;background:none;border:none;color:var(--white);font-size:1.8rem;cursor:pointer;line-height:1;padding:8px}
-.mobile-nav-links{display:flex;flex-direction:column;align-items:center;gap:28px}
-.mobile-nav-links a{font-size:1.4rem;font-weight:700;color:var(--white)}
+.mobile-nav-backdrop{position:fixed;top:68px;left:0;right:0;bottom:0;z-index:199;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.mobile-nav-backdrop.open{opacity:1;pointer-events:all}
+.mobile-nav{position:fixed;top:68px;left:0;right:0;z-index:200;background:linear-gradient(180deg,rgba(10,10,14,.97),rgba(7,7,9,.99));backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);border-bottom:1px solid rgba(255,255,255,.26);box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 20px 50px -10px rgba(0,0,0,.8);transform:translateY(-10px);opacity:0;visibility:hidden;transition:transform .32s cubic-bezier(.2,.8,.2,1),opacity .25s ease,visibility 0s .3s;pointer-events:none}
+.mobile-nav.open{transform:translateY(0);opacity:1;visibility:visible;transition:transform .32s cubic-bezier(.2,.8,.2,1),opacity .25s ease;pointer-events:all}
+.mobile-nav-links{display:flex;flex-direction:column}
+.mobile-nav-links a{display:flex;align-items:center;gap:10px;font-size:.9rem;font-weight:700;color:#A8ADB8;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.12);transition:color .2s,background .2s}
+.mobile-nav-links a:first-child{border-top:1px solid rgba(255,255,255,.12)}
+.mobile-nav-links a:hover{color:#F5F6F8;background:rgba(255,255,255,.04)}
+.mobile-nav-links a::before{content:"";width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.26);flex-shrink:0;transition:background .2s,box-shadow .2s}
+.mobile-nav-links a:hover::before{background:#2E6BFF;box-shadow:0 0 8px rgba(46,107,255,.4)}
+.mobile-nav-cta-wrap{padding:14px 20px 18px;border-top:1px solid rgba(255,255,255,.12)}
+.mobile-nav-cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:linear-gradient(180deg,#fff,#DCE2F0);color:#0A0A0B;border:1px solid rgba(255,255,255,.6);border-radius:99px;font-size:.85rem;font-weight:800;text-decoration:none;transition:transform .2s,box-shadow .2s}
+.mobile-nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px -8px rgba(46,107,255,.35)}
 main{flex:1;display:flex;align-items:center;justify-content:center;padding:80px 24px}
 .err-page{text-align:center;max-width:520px}
 .err-code{font-family:var(--mono);font-size:.8rem;color:var(--muted);margin-bottom:20px;letter-spacing:.1em}
@@ -73,7 +81,7 @@ footer{border-top:1px solid var(--line);padding:30px 0}
     </div>
     <div class="nav-right">
       <a href="/" class="btn btn-white nav-cta">Back Home</a>
-      <button class="nav-burger" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-nav">
+      <button class="nav-burger" id="navBurger" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-nav">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -81,8 +89,8 @@ footer{border-top:1px solid var(--line);padding:30px 0}
 </nav>
 </header>
 
-<div id="mobile-nav" class="mobile-nav" role="dialog" aria-modal="true" aria-label="Mobile navigation">
-  <button class="mobile-nav-close" aria-label="Close menu">&times;</button>
+<div id="mobile-nav-backdrop" class="mobile-nav-backdrop" aria-hidden="true"></div>
+<div id="mobile-nav" class="mobile-nav">
   <nav class="mobile-nav-links">
     <a href="/">Home</a>
     <a href="/#pricing">Membership</a>
@@ -90,7 +98,9 @@ footer{border-top:1px solid var(--line);padding:30px 0}
     <a href="/indicator">Indicator</a>
     <a href="/giveaways">Giveaways</a>
   </nav>
-  <a href="/" class="btn btn-white mobile-nav-cta">Back Home</a>
+  <div class="mobile-nav-cta-wrap">
+    <a href="/" class="mobile-nav-cta">Back Home →</a>
+  </div>
 </div>
 
 <main id="main-content">
@@ -120,11 +130,14 @@ footer{border-top:1px solid var(--line);padding:30px 0}
 <script>
 const burger=document.getElementById('navBurger');
 const mobileNav=document.getElementById('mobile-nav');
-const navClose=document.getElementById('navClose');
+const backdrop=document.getElementById('mobile-nav-backdrop');
 if(burger&&mobileNav){
-  burger.addEventListener('click',()=>{mobileNav.hidden=false;burger.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';});
-  navClose.addEventListener('click',()=>{mobileNav.hidden=true;burger.setAttribute('aria-expanded','false');document.body.style.overflow='';});
-  mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mobileNav.hidden=true;burger.setAttribute('aria-expanded','false');document.body.style.overflow='';}));
+  function openNav(){mobileNav.classList.add('open');if(backdrop)backdrop.classList.add('open');burger.setAttribute('aria-expanded','true');}
+  function closeNav(){mobileNav.classList.remove('open');if(backdrop)backdrop.classList.remove('open');burger.setAttribute('aria-expanded','false');}
+  burger.addEventListener('click',()=>mobileNav.classList.contains('open')?closeNav():openNav());
+  if(backdrop)backdrop.addEventListener('click',closeNav);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNav();});
+  mobileNav.querySelectorAll('.mobile-nav-links a').forEach(a=>a.addEventListener('click',closeNav));
 }
 </script>
 </body>

@@ -99,14 +99,19 @@ nav{position:sticky;top:0;left:0;right:0;z-index:100;background:linear-gradient(
 .nav-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;margin-left:8px}
 .nav-burger span{display:block;width:22px;height:2px;background:var(--white);border-radius:2px;transition:transform .2s,opacity .2s}
 @media(max-width:900px){.nav-burger{display:flex}}
-.mobile-nav{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;z-index:1000;background:rgba(7,7,9,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:stretch;justify-content:center;padding:40px 32px}
-.mobile-nav[hidden]{display:none}
-.mobile-nav-close{position:absolute;top:20px;right:20px;background:none;border:none;color:var(--white);font-size:1.8rem;cursor:pointer;line-height:1;padding:12px}
-.mobile-nav-links{display:flex;flex-direction:column;align-items:stretch;gap:0;width:100%}
-.mobile-nav-links a{font-size:1.35rem;font-weight:700;color:var(--white);padding:18px 0;text-align:center;border-bottom:1px solid var(--line);transition:color .2s}
-.mobile-nav-links a:first-child{border-top:1px solid var(--line)}
-.mobile-nav-links a:hover{color:var(--blue)}
-.mobile-nav-cta{margin-top:32px;text-align:center;display:flex;justify-content:center}
+.mobile-nav-backdrop{position:fixed;top:68px;left:0;right:0;bottom:0;z-index:199;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.mobile-nav-backdrop.open{opacity:1;pointer-events:all}
+.mobile-nav{position:fixed;top:68px;left:0;right:0;z-index:200;background:linear-gradient(180deg,rgba(10,10,14,.97),rgba(7,7,9,.99));backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);border-bottom:1px solid rgba(255,255,255,.26);box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 20px 50px -10px rgba(0,0,0,.8);transform:translateY(-10px);opacity:0;visibility:hidden;transition:transform .32s cubic-bezier(.2,.8,.2,1),opacity .25s ease,visibility 0s .3s;pointer-events:none}
+.mobile-nav.open{transform:translateY(0);opacity:1;visibility:visible;transition:transform .32s cubic-bezier(.2,.8,.2,1),opacity .25s ease;pointer-events:all}
+.mobile-nav-links{display:flex;flex-direction:column}
+.mobile-nav-links a{display:flex;align-items:center;gap:10px;font-size:.9rem;font-weight:700;color:#A8ADB8;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.12);transition:color .2s,background .2s}
+.mobile-nav-links a:first-child{border-top:1px solid rgba(255,255,255,.12)}
+.mobile-nav-links a:hover{color:#F5F6F8;background:rgba(255,255,255,.04)}
+.mobile-nav-links a::before{content:"";width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.26);flex-shrink:0;transition:background .2s,box-shadow .2s}
+.mobile-nav-links a:hover::before{background:#2E6BFF;box-shadow:0 0 8px rgba(46,107,255,.4)}
+.mobile-nav-cta-wrap{padding:14px 20px 18px;border-top:1px solid rgba(255,255,255,.12)}
+.mobile-nav-cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:linear-gradient(180deg,#fff,#DCE2F0);color:#0A0A0B;border:1px solid rgba(255,255,255,.6);border-radius:99px;font-size:.85rem;font-weight:800;text-decoration:none;transition:transform .2s,box-shadow .2s}
+.mobile-nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px -8px rgba(46,107,255,.35)}
 
 /* ---------- PAGE HERO ---------- */
 .page-hero{position:relative;padding:76px 0 60px;overflow:hidden;text-align:center}
@@ -252,8 +257,8 @@ footer{border-top:1px solid var(--line);padding:44px 0}
 </div>
 <script>(function(){var t=new Date('2026-09-01T00:00:00Z');function u(){var n=t-Date.now();if(n<=0){document.querySelector('.launch-bar').textContent='🚀 AW Indicator + Live Trader — now live!';return;}var d=Math.floor(n/864e5),h=Math.floor(n%864e5/36e5),m=Math.floor(n%36e5/6e4),s=Math.floor(n%6e4/1e3);document.getElementById('lbD').textContent=String(d).padStart(2,'0');document.getElementById('lbH').textContent=String(h).padStart(2,'0');document.getElementById('lbM').textContent=String(m).padStart(2,'0');document.getElementById('lbS').textContent=String(s).padStart(2,'0');}u();setInterval(u,1000);})();</script>
 
-<div id="mobile-nav" class="mobile-nav" role="dialog" aria-modal="true" aria-label="Navigation" hidden>
-  <button class="mobile-nav-close" id="navClose" aria-label="Close menu">&times;</button>
+<div id="mobile-nav-backdrop" class="mobile-nav-backdrop" aria-hidden="true"></div>
+<div id="mobile-nav" class="mobile-nav">
   <nav class="mobile-nav-links">
     <a href="/">Home</a>
     <a href="/indicator">Indicator</a>
@@ -261,7 +266,9 @@ footer{border-top:1px solid var(--line);padding:44px 0}
     <a href="/prop-firms">Prop Firms</a>
     <a href="/giveaways" aria-current="page">Giveaways</a>
   </nav>
-  <a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="btn btn-white mobile-nav-cta">Join AW Trading</a>
+  <div class="mobile-nav-cta-wrap">
+    <a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener" class="mobile-nav-cta">Join AW Trading →</a>
+  </div>
 </div>
 
 <main id="main-content">
@@ -392,11 +399,14 @@ enterBtn.addEventListener('click', ()=>{
 });
 const burger=document.getElementById('navBurger');
 const mobileNav=document.getElementById('mobile-nav');
-const navClose=document.getElementById('navClose');
+const backdrop=document.getElementById('mobile-nav-backdrop');
 if(burger&&mobileNav){
-  burger.addEventListener('click',()=>{mobileNav.hidden=false;burger.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';});
-  navClose.addEventListener('click',()=>{mobileNav.hidden=true;burger.setAttribute('aria-expanded','false');document.body.style.overflow='';});
-  mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mobileNav.hidden=true;burger.setAttribute('aria-expanded','false');document.body.style.overflow='';}));
+  function openNav(){mobileNav.classList.add('open');if(backdrop)backdrop.classList.add('open');burger.setAttribute('aria-expanded','true');}
+  function closeNav(){mobileNav.classList.remove('open');if(backdrop)backdrop.classList.remove('open');burger.setAttribute('aria-expanded','false');}
+  burger.addEventListener('click',()=>mobileNav.classList.contains('open')?closeNav():openNav());
+  if(backdrop)backdrop.addEventListener('click',closeNav);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNav();});
+  mobileNav.querySelectorAll('.mobile-nav-links a').forEach(a=>a.addEventListener('click',closeNav));
 }
 </script>
 </body>
