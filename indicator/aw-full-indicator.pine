@@ -1,0 +1,1745 @@
+//@version=6
+// AW Indicator — Full
+// Combines: CISD+IFVG, Session Liquidity, HTF FVG, Trailing Stop, EQH/EQL, Swing Divergence
+indicator("AW Indicator — Full", shorttitle="AW Full", overlay=true,
+     max_bars_back=1000, max_boxes_count=500, max_lines_count=500, max_labels_count=500)
+
+// ═══════════════════════════════════════════════════════════════════
+// SHARED HELPERS
+// ═══════════════════════════════════════════════════════════════════
+
+f_text_size(string s) =>
+    switch s
+        "tiny"   => size.tiny
+        "small"  => size.small
+        "normal" => size.normal
+        "large"  => size.large
+        => size.tiny
+
+f_size(string s) =>
+    switch s
+        "tiny"   => size.tiny
+        "small"  => size.small
+        "normal" => size.normal
+        "large"  => size.large
+        => size.small
+
+// ═══════════════════════════════════════════════════════════════════
+// SETTINGS: CISD  (shared with Trailing Stop + Swing Divergence)
+// ═══════════════════════════════════════════════════════════════════
+
+g1 = "CISD Settings"
+show_bull_cisd = input.bool(true,      "Show Bullish CISD",           group=g1)
+show_bear_cisd = input.bool(true,      "Show Bearish CISD",           group=g1)
+cisd_col       = input.color(#888888,  "CISD Line Color",              group=g1)
+cisd_label_txt = input.string("CISD",  "Label Text",                   group=g1)
+cisd_window    = input.int(4,  "Trigger Window",  minval=1, maxval=20, group=g1)
+max_leg        = input.int(10, "Max Leg Length",  minval=1, maxval=30, group=g1)
+line_width     = input.int(1,  "Line Width",      minval=1, maxval=5,  group=g1)
+remove_failed  = input.bool(true, "Remove Failed CISD/IFVG",           group=g1)
+max_cisd       = input.int(5,  "Max CISDs Shown", minval=1, maxval=20, group=g1)
+
+g1p = "Potential CISD"
+pcisd_col        = input.color(color.new(#888888, 50), "Line Color",  group=g1p)
+pcisd_width      = input.int(1,   "Line Width", minval=1, maxval=5,   group=g1p)
+pcisd_show_label = input.bool(true, "Show Label",                      group=g1p)
+pcisd_label_txt  = input.string("Potential CISD", "Label Text",        group=g1p)
+pcisd_label_size = input.string("small", "Label Size",
+                    options=["tiny","small","normal","large"],          group=g1p)
+
+// ═══════════════════════════════════════════════════════════════════
+// SETTINGS: IFVG
+// ═══════════════════════════════════════════════════════════════════
+
+g2 = "IFVG Settings"
+show_bull_ifvg  = input.bool(true,  "Show Bullish IFVG",               group=g2)
+show_bear_ifvg  = input.bool(true,  "Show Bearish IFVG",               group=g2)
+ifvg_bull_col   = input.color(color.new(#089981, 80), "Bullish IFVG Color", group=g2)
+ifvg_bear_col   = input.color(color.new(#f23645, 80), "Bearish IFVG Color", group=g2)
+ifvg_extend     = input.int(3,  "Rectangle Extension (bars)", minval=1, maxval=20, group=g2)
+use_ifvg_window = input.bool(true, "Use IFVG Trigger Window",          group=g2)
+ifvg_window     = input.int(10, "IFVG Trigger Window", minval=1, maxval=50, group=g2)
+ifvg_label      = input.string("IFVG", "IFVG Text",                    group=g2)
+ifvg_text_col   = input.color(color.white, "IFVG Text Color",          group=g2)
+ifvg_text_size  = input.string("tiny", "IFVG Text Size",
+                    options=["tiny","small","normal","large"],          group=g2)
+max_ifvg        = input.int(3, "Max IFVGs Shown", minval=1, maxval=20, group=g2)
+
+// ═══════════════════════════════════════════════════════════════════
+// SETTINGS: SESSION LIQUIDITY
+// ═══════════════════════════════════════════════════════════════════
+
+g_sl     = "Session Liquidity"
+g_asia   = "Asia Session"
+g_london = "London Session"
+g_ny     = "New York Session"
+g_pd     = "Previous Day"
+
+lw          = input.int(1, "Line Width", minval=1, maxval=4, group=g_sl)
+sl_lookback = input.int(1, "Sessions Lookback", minval=1, maxval=5, group=g_sl,
+     tooltip="How many completed sessions to show per type. Default 1 = previous session only.")
+tz          = input.string("UTC-4", "Session Timezone", group=g_sl,
+     tooltip="UTC offset (e.g. UTC-4, UTC+1) or IANA string (e.g. America/New_York, Europe/London)")
+lbl_pos     = input.string("top", "Label Position", options=["top", "middle", "bottom"], group=g_sl,
+     tooltip="Vertical alignment of label text relative to the session line.")
+
+show_asia     = input.bool(true,       "Show Asia H/L",   group=g_asia)
+asia_col      = input.color(color.red, "Color",            group=g_asia)
+asia_sess     = input.session("1800-0300", "Session Time", group=g_asia)
+show_asia_lbl = input.bool(true,       "Show Labels",      group=g_asia)
+asia_h_txt    = input.string("Asia H.", "High Label",      group=g_asia)
+asia_l_txt    = input.string("Asia L.", "Low Label",       group=g_asia)
+
+show_london     = input.bool(true,        "Show London H/L",   group=g_london)
+london_col      = input.color(color.blue, "Color",              group=g_london)
+london_sess     = input.session("0300-0800", "Session Time",    group=g_london)
+show_london_lbl = input.bool(true,        "Show Labels",        group=g_london)
+london_h_txt    = input.string("London H.", "High Label",       group=g_london)
+london_l_txt    = input.string("London L.", "Low Label",        group=g_london)
+
+show_ny     = input.bool(true,          "Show NY H/L",   group=g_ny)
+ny_col      = input.color(color.orange, "Color",          group=g_ny)
+ny_sess     = input.session("0800-1600", "Session Time",  group=g_ny)
+show_ny_lbl = input.bool(true,          "Show Labels",    group=g_ny)
+ny_h_txt    = input.string("NY H.",     "High Label",     group=g_ny)
+ny_l_txt    = input.string("NY L.",     "Low Label",      group=g_ny)
+
+show_pd     = input.bool(true,         "Show PDH/PDL",  group=g_pd)
+pd_col      = input.color(color.black, "Color",          group=g_pd)
+show_pd_lbl = input.bool(true,         "Show Labels",    group=g_pd)
+pdh_txt     = input.string("PDH",      "High Label",     group=g_pd)
+pdl_txt     = input.string("PDL",      "Low Label",      group=g_pd)
+
+label_style = switch lbl_pos
+    "bottom" => label.style_label_upper_right
+    "middle" => label.style_label_right
+    =>          label.style_label_lower_right
+
+// ═══════════════════════════════════════════════════════════════════
+// SETTINGS: HTF FVG
+// ═══════════════════════════════════════════════════════════════════
+
+g_htf = "HTF FVG"
+show_htf_box  = input.bool(true, "Show HTF FVG",                        group=g_htf)
+zone_col      = input.color(color.new(#888888, 70), "Zone Color",       group=g_htf)
+zone_col_in   = input.color(color.new(#888888, 40), "In-Zone Color",    group=g_htf)
+show_label    = input.bool(true, "Show Label",                           group=g_htf)
+label_col     = input.color(color.white, "Label Color",                  group=g_htf)
+label_size    = input.string("small", "Label Size",
+                 options=["tiny","small","normal","large"],              group=g_htf)
+htf_lb        = input.int(100, "Lookback (HTF bars)", minval=10, maxval=500, group=g_htf)
+extend_bars   = input.int(3,   "Extend Bars Right",   minval=1, maxval=50,   group=g_htf)
+
+g_htf2 = "HTF Current TF FVG"
+show_tf_box    = input.bool(true, "Show Current TF FVG",                 group=g_htf2)
+tf_zone_col    = input.color(color.new(color.gray, 50), "Zone Color",   group=g_htf2)
+tf_zone_col_in = input.color(color.new(color.gray, 30), "In-Zone Color",group=g_htf2)
+
+// ═══════════════════════════════════════════════════════════════════
+// SETTINGS: TRAILING STOP
+// ═══════════════════════════════════════════════════════════════════
+
+g_ts = "Trailing Stop"
+ts_enable      = input.bool(true,     "Enable",               group=g_ts)
+require_fvg    = input.bool(true,     "Require FVG Tap",      group=g_ts)
+ts_max_shown   = input.int(3,         "Max Levels Shown",     group=g_ts, minval=1, maxval=10)
+ts_line_width  = input.int(2,         "Line Width",           group=g_ts, minval=1, maxval=4)
+color_bull     = input.color(#26a69a, "Protected Low Color",  group=g_ts)
+color_bear     = input.color(#ef5350, "Protected High Color", group=g_ts)
+
+g_tsl = "Trailing Stop Labels"
+ts_show_lbl  = input.bool(true,              "Show Level Labels", group=g_tsl)
+lbl_bull     = input.string("Protected Low",  "Bull Label Text",  group=g_tsl)
+lbl_bear     = input.string("Protected High", "Bear Label Text",  group=g_tsl)
+lbl_size_str = input.string("Small",          "Label Size",       group=g_tsl,
+                 options=["Tiny","Small","Normal","Large"])
+
+g_tscisd = "Trailing Stop / FVG Detection"
+ts_fvg_lookback = input.int(100, "FVG Lookback (bars)", group=g_tscisd, minval=1, maxval=500)
+
+g_tsprox = "Trailing Stop Proximity"
+prox_dedupe    = input.bool(true,  "Remove Duplicate Levels",         group=g_tsprox)
+prox_threshold = input.float(10.0, "Proximity Threshold (points)",    group=g_tsprox,
+                  minval=0.0, step=0.1)
+
+lbl_sz = switch lbl_size_str
+    "Tiny"   => size.tiny
+    "Small"  => size.small
+    "Normal" => size.normal
+    "Large"  => size.large
+    => size.small
+
+// ═══════════════════════════════════════════════════════════════════
+// SETTINGS: EQH/EQL
+// ═══════════════════════════════════════════════════════════════════
+
+g_eq1 = "EQH/EQL Settings"
+eqhl_lookback_len = input.int(500, "Lookback Length",  minval=50, maxval=5000, step=50, group=g_eq1)
+eqhl_min_dist     = input.int(3,   "Min Bar Distance", minval=1,  maxval=50,            group=g_eq1)
+
+g_eq2 = "EQH/EQL Appearance"
+eqh_col        = input.color(#f23645, "EQH Color",   group=g_eq2)
+eql_col        = input.color(#089981, "EQL Color",   group=g_eq2)
+eqhl_line_wid  = input.int(1, "Line Width", minval=1, maxval=4, group=g_eq2)
+line_style_str = input.string("Dashed", "Line Style",
+                  options=["Solid", "Dashed", "Dotted"],          group=g_eq2)
+
+line_sty = line_style_str == "Solid" ? line.style_solid :
+           line_style_str == "Dotted" ? line.style_dotted :
+           line.style_dashed
+
+// ═══════════════════════════════════════════════════════════════════
+// SETTINGS: SWING DIVERGENCE
+// ═══════════════════════════════════════════════════════════════════
+
+g_sd = "Swing Divergence"
+esSymbol    = input.symbol("CME_MINI:ES1!",  title="ES Symbol",              group=g_sd)
+nqSymbol    = input.symbol("CME_MINI:NQ1!",  title="NQ Symbol",              group=g_sd)
+ymSymbol    = input.symbol("CBOT_MINI:YM1!", title="YM Symbol",              group=g_sd)
+showBullDiv = input.bool(true, title="Show Bullish Divergence (Low)",         group=g_sd)
+showBearDiv = input.bool(true, title="Show Bearish Divergence (High)",        group=g_sd)
+bullColor   = input.color(color.new(color.green, 0), title="Bullish Line Color", group=g_sd)
+bearColor   = input.color(color.new(color.red,   0), title="Bearish Line Color", group=g_sd)
+sd_line_width = input.int(2, title="Line Width", minval=1, maxval=4,          group=g_sd)
+
+g_sdf = "Swing Divergence Filter"
+filterByCisd   = input.bool(false, "Filter to CISD Window", group=g_sdf,
+     tooltip="When ON: bullish divergences only fire during an active bullish CISD, bearish during active bearish CISD.")
+cisd_div_color = input.color(color.new(color.gray, 0), "Color",    group=g_sdf)
+cisd_div_width = input.int(1, "Line Width", minval=1, maxval=4,     group=g_sdf)
+
+// ═══════════════════════════════════════════════════════════════════
+// SHARED COMPUTED VALUES
+// ═══════════════════════════════════════════════════════════════════
+
+tf_ms      = timeframe.in_seconds() * 1000
+lowest_10  = ta.lowest(low,  10)[1]
+highest_10 = ta.highest(high, 10)[1]
+
+// ═══════════════════════════════════════════════════════════════════
+// SHARED CISD STATE
+// pend_bull_leg      — used by CISD+IFVG for line drawing
+// pend_bull_low      — used by CISD+IFVG for failure detection
+// pend_bull_cisd_src — used by Trailing Stop for protected level scan
+// ═══════════════════════════════════════════════════════════════════
+
+var bool  pend_bull          = false
+var int   pend_bull_bar      = 0
+var float pend_bull_cisd     = na
+var int   pend_bull_leg      = 0
+var float pend_bull_low      = na
+var int   pend_bull_cisd_src = 0
+
+var bool  pend_bear          = false
+var int   pend_bear_bar      = 0
+var float pend_bear_cisd     = na
+var int   pend_bear_leg      = 0
+var float pend_bear_high     = na
+var int   pend_bear_cisd_src = 0
+
+// Swing Divergence reads CISD state from the previous bar (before isconfirmed clears it)
+// so both borders of the CISD window are inclusive.
+bool cisd_bull_prev = pend_bull
+bool cisd_bear_prev = pend_bear
+
+// ═══════════════════════════════════════════════════════════════════
+// FEATURE 1+2: CISD + IFVG STATE
+// ═══════════════════════════════════════════════════════════════════
+
+var line  pend_bull_line  = na
+var line  pend_bear_line  = na
+var label pend_bull_label = na
+var label pend_bear_label = na
+
+var line[]  bull_cisd_lines  = array.new_line(0)
+var label[] bull_cisd_labels = array.new_label(0)
+var float[] bull_cisd_lows   = array.new_float(0)
+
+var line[]  bear_cisd_lines  = array.new_line(0)
+var label[] bear_cisd_labels = array.new_label(0)
+var float[] bear_cisd_highs  = array.new_float(0)
+
+type Fvg
+    float top
+    float bottom
+    int   startTime
+    int   detectedBar
+    bool  isBull
+    bool  inverted = false
+    float sweepLevel
+    bool  isBullCisd
+    box   drawnBox = na
+
+var fvgArray = array.new<Fvg>()
+
+var int   leg_bull_start    = na
+var int   leg_bull_end      = na
+var int   leg_bear_start    = na
+var int   leg_bear_end      = na
+var int   leg_bull_detected = na
+var int   leg_bear_detected = na
+var float leg_bull_low      = na
+var float leg_bear_high     = na
+
+f_trim_ifvgs() =>
+    int drawn = 0
+    for k = 0 to fvgArray.size() - 1
+        fk = fvgArray.get(k)
+        if fk.inverted and not na(fk.drawnBox)
+            drawn += 1
+    while drawn >= max_ifvg
+        int oldest_idx  = -1
+        int oldest_time = int(na)
+        for k = 0 to fvgArray.size() - 1
+            fk = fvgArray.get(k)
+            if fk.inverted and not na(fk.drawnBox)
+                if na(oldest_time) or fk.startTime < oldest_time
+                    oldest_time := fk.startTime
+                    oldest_idx  := k
+        if oldest_idx < 0
+            break
+        fk_old = fvgArray.get(oldest_idx)
+        box.delete(fk_old.drawnBox)
+        fk_old.drawnBox := na
+        fvgArray.set(oldest_idx, fk_old)
+        drawn -= 1
+
+// ═══════════════════════════════════════════════════════════════════
+// FEATURE 3: SESSION LIQUIDITY STATE + HELPERS
+// ═══════════════════════════════════════════════════════════════════
+
+type SessLevel
+    float price
+    bool  is_high
+    bool  mitigated = false
+    int   x1
+    int   lbl_x_add
+    line  ln
+    label lb
+
+var float day_h     = na
+var float day_l     = na
+var int   day_h_bar = na
+var int   day_l_bar = na
+
+var float pd_high   = na
+var float pd_low    = na
+var int   pd_h_bar  = na
+var int   pd_l_bar  = na
+
+bool new_day = timeframe.change("1D")
+
+var array<SessLevel> pd_h_arr     = array.new<SessLevel>()
+var array<SessLevel> pd_l_arr     = array.new<SessLevel>()
+var array<SessLevel> asia_h_arr   = array.new<SessLevel>()
+var array<SessLevel> asia_l_arr   = array.new<SessLevel>()
+var array<SessLevel> london_h_arr = array.new<SessLevel>()
+var array<SessLevel> london_l_arr = array.new<SessLevel>()
+var array<SessLevel> ny_h_arr     = array.new<SessLevel>()
+var array<SessLevel> ny_l_arr     = array.new<SessLevel>()
+
+f_update(array<SessLevel> levels) =>
+    int n = array.size(levels)
+    if n > 0
+        for i = 0 to n - 1
+            sl = levels.get(i)
+            if not sl.mitigated
+                line.set_x2(sl.ln, bar_index)
+                if not na(sl.lb)
+                    label.set_x(sl.lb, bar_index + sl.lbl_x_add)
+                if barstate.isconfirmed and bar_index > sl.x1
+                    bool hit = sl.is_high ? high >= sl.price : low <= sl.price
+                    if hit
+                        sl.mitigated := true
+
+f_add(array<SessLevel> levels, float price, bool is_high, int x1_bar,
+      string txt, color col, int width, int lb_count, bool show_lbl, int lbl_x_add) =>
+    while array.size(levels) >= lb_count
+        old = array.shift(levels)
+        line.delete(old.ln)
+        label.delete(old.lb)
+    new_ln = line.new(x1_bar, price, bar_index, price,
+         color=col, width=width, style=line.style_solid)
+    lbl_x  = bar_index + lbl_x_add
+    new_lb = show_lbl ? label.new(lbl_x, price, txt,
+         yloc      = yloc.price,
+         style     = label_style,
+         color     = color.new(color.white, 100),
+         textcolor = col,
+         size      = size.small) : na
+    array.push(levels, SessLevel.new(
+         price=price, is_high=is_high, x1=x1_bar,
+         lbl_x_add=lbl_x_add, ln=new_ln, lb=new_lb))
+
+f_suppress_label_if_match(array<SessLevel> sess, array<SessLevel> priority_ref) =>
+    float tol = syminfo.mintick * 0.5
+    int ns = array.size(sess)
+    int np = array.size(priority_ref)
+    if ns > 0 and np > 0
+        for i = 0 to ns - 1
+            s = sess.get(i)
+            if not na(s.lb)
+                for j = 0 to np - 1
+                    p = priority_ref.get(j)
+                    if not p.mitigated and math.abs(s.price - p.price) <= tol
+                        label.delete(s.lb)
+                        s.lb := na
+                        break
+
+bool in_asia    = not na(time(timeframe.period, asia_sess,   tz))
+bool asia_end   = not in_asia   and in_asia[1]
+bool in_london  = not na(time(timeframe.period, london_sess, tz))
+bool london_end = not in_london and in_london[1]
+bool in_ny      = not na(time(timeframe.period, ny_sess,     tz))
+bool ny_end     = not in_ny     and in_ny[1]
+
+var float asia_h     = na
+var float asia_l     = na
+var int   asia_h_bar = na
+var int   asia_l_bar = na
+
+var float london_h     = na
+var float london_l     = na
+var int   london_h_bar = na
+var int   london_l_bar = na
+
+var float ny_h     = na
+var float ny_l     = na
+var int   ny_h_bar = na
+var int   ny_l_bar = na
+
+// ═══════════════════════════════════════════════════════════════════
+// FEATURE 4: HTF FVG — HELPERS
+// ═══════════════════════════════════════════════════════════════════
+
+f_tf_label(string tf) =>
+    if tf == "D"
+        "Daily"
+    else if tf == "W"
+        "Weekly"
+    else if tf == "M"
+        "Monthly"
+    else
+        float mins = str.tonumber(tf)
+        if not na(mins) and mins >= 60 and int(mins) % 60 == 0
+            str.tostring(int(mins / 60)) + "h"
+        else
+            tf + "m"
+
+f_htf_scan(int lb) =>
+    float t1  = na
+    float b1  = na
+    int   tm1 = na
+    bool  u1  = false
+    float t2  = na
+    float b2  = na
+    int   tm2 = na
+    bool  u2  = false
+    float t3  = na
+    float b3  = na
+    int   tm3 = na
+    bool  u3  = false
+    int   found = 0
+    for i = 1 to lb
+        if found >= 3
+            break
+        if na(high[i + 2])
+            break
+        if low[i] > high[i + 2]
+            float bot = high[i + 2]
+            float top = low[i]
+            bool  inv = false
+            if i > 0
+                for j = 0 to i - 1
+                    if close[j] < bot
+                        inv := true
+                        break
+            if not inv
+                if found == 0
+                    t1  := top
+                    b1  := bot
+                    tm1 := time[i + 1]
+                    u1  := true
+                else if found == 1
+                    t2  := top
+                    b2  := bot
+                    tm2 := time[i + 1]
+                    u2  := true
+                else
+                    t3  := top
+                    b3  := bot
+                    tm3 := time[i + 1]
+                    u3  := true
+                found += 1
+        if found < 3 and high[i] < low[i + 2]
+            float top = low[i + 2]
+            float bot = high[i]
+            bool  inv = false
+            if i > 0
+                for j = 0 to i - 1
+                    if close[j] > top
+                        inv := true
+                        break
+            if not inv
+                if found == 0
+                    t1  := top
+                    b1  := bot
+                    tm1 := time[i + 1]
+                    u1  := false
+                else if found == 1
+                    t2  := top
+                    b2  := bot
+                    tm2 := time[i + 1]
+                    u2  := false
+                else
+                    t3  := top
+                    b3  := bot
+                    tm3 := time[i + 1]
+                    u3  := false
+                found += 1
+    [t1, b1, tm1, u1, t2, b2, tm2, u2, t3, b3, tm3, u3]
+
+f_htf_scan_tf(int lb) =>
+    float at    = na
+    float ab    = na
+    int   atm   = na
+    bool  at_ub = false
+    float mt    = na
+    float mb    = na
+    int   mtm   = na
+    bool  mt_ub = false
+    for i = 1 to lb
+        if not na(at) and not na(mt)
+            break
+        if na(high[i + 2])
+            break
+        if low[i] > high[i + 2]
+            float bot     = high[i + 2]
+            float top     = low[i]
+            bool  inv     = false
+            bool  touched = false
+            for j = 0 to i - 1
+                if close[j] < bot
+                    inv := true
+                    break
+                if not touched and low[j] <= top and high[j] >= bot
+                    touched := true
+            if not inv
+                if close >= bot and close <= top
+                    if na(at)
+                        at    := top
+                        ab    := bot
+                        atm   := time[i + 1]
+                        at_ub := true
+                else if touched and na(mt)
+                    mt    := top
+                    mb    := bot
+                    mtm   := time[i + 1]
+                    mt_ub := true
+        if high[i] < low[i + 2]
+            float top     = low[i + 2]
+            float bot     = high[i]
+            bool  inv     = false
+            bool  touched = false
+            for j = 0 to i - 1
+                if close[j] > top
+                    inv := true
+                    break
+                if not touched and low[j] <= top and high[j] >= bot
+                    touched := true
+            if not inv
+                if close >= bot and close <= top
+                    if na(at)
+                        at    := top
+                        ab    := bot
+                        atm   := time[i + 1]
+                        at_ub := false
+                else if touched and na(mt)
+                    mt    := top
+                    mb    := bot
+                    mtm   := time[i + 1]
+                    mt_ub := false
+    [at, ab, atm, at_ub, mt, mb, mtm, mt_ub]
+
+f_htf_in(float t, float b) => not na(t) and close >= b and close <= t
+
+f_htf_resolve(float t1, float b1, int tm1, bool u1,
+              float t2, float b2, int tm2, bool u2,
+              float t3, float b3, int tm3, bool u3) =>
+    float zt = na
+    float zb  = na
+    int   ztm = na
+    bool  zu  = false
+    if f_htf_in(t1, b1)
+        zt := t1
+        zb := b1
+        ztm := tm1
+        zu := u1
+    else if f_htf_in(t2, b2)
+        zt := t2
+        zb := b2
+        ztm := tm2
+        zu := u2
+    else if f_htf_in(t3, b3)
+        zt := t3
+        zb := b3
+        ztm := tm3
+        zu := u3
+    [zt, zb, ztm, zu]
+
+f_htf_best(float t1, float b1, int tm1, bool u1,
+           float t2, float b2, int tm2, bool u2,
+           float t3, float b3, int tm3, bool u3) =>
+    float zt = na
+    float zb  = na
+    int   ztm = na
+    bool  zu  = false
+    if not na(t1)
+        zt := t1
+        zb := b1
+        ztm := tm1
+        zu := u1
+    else if not na(t2)
+        zt := t2
+        zb := b2
+        ztm := tm2
+        zu := u2
+    else if not na(t3)
+        zt := t3
+        zb := b3
+        ztm := tm3
+        zu := u3
+    [zt, zb, ztm, zu]
+
+// ─── HTF security requests (top-level, no lookahead) ──────────────
+[t1_d,  b1_d,  tm1_d,  u1_d,  t2_d,  b2_d,  tm2_d,  u2_d,  t3_d,  b3_d,  tm3_d,  u3_d]  = request.security(syminfo.tickerid, "D",   f_htf_scan(htf_lb), lookahead=barmerge.lookahead_off)
+[t1_4h, b1_4h, tm1_4h, u1_4h, t2_4h, b2_4h, tm2_4h, u2_4h, t3_4h, b3_4h, tm3_4h, u3_4h] = request.security(syminfo.tickerid, "240", f_htf_scan(htf_lb), lookahead=barmerge.lookahead_off)
+[t1_1h, b1_1h, tm1_1h, u1_1h, t2_1h, b2_1h, tm2_1h, u2_1h, t3_1h, b3_1h, tm3_1h, u3_1h] = request.security(syminfo.tickerid, "60",  f_htf_scan(htf_lb), lookahead=barmerge.lookahead_off)
+[t1_30, b1_30, tm1_30, u1_30, t2_30, b2_30, tm2_30, u2_30, t3_30, b3_30, tm3_30, u3_30]  = request.security(syminfo.tickerid, "30",  f_htf_scan(htf_lb), lookahead=barmerge.lookahead_off)
+[t1_15, b1_15, tm1_15, u1_15, t2_15, b2_15, tm2_15, u2_15, t3_15, b3_15, tm3_15, u3_15]  = request.security(syminfo.tickerid, "15",  f_htf_scan(htf_lb), lookahead=barmerge.lookahead_off)
+[t1_5,  b1_5,  tm1_5,  u1_5,  t2_5,  b2_5,  tm2_5,  u2_5,  t3_5,  b3_5,  tm3_5,  u3_5]  = request.security(syminfo.tickerid, "5",   f_htf_scan(htf_lb), lookahead=barmerge.lookahead_off)
+
+// ─── Top-down resolution ──────────────────────────────────────────
+[rd_t,  rd_b,  rd_tm,  rd_u]  = f_htf_resolve(t1_d,  b1_d,  tm1_d,  u1_d,  t2_d,  b2_d,  tm2_d,  u2_d,  t3_d,  b3_d,  tm3_d,  u3_d)
+[r4_t,  r4_b,  r4_tm,  r4_u]  = f_htf_resolve(t1_4h, b1_4h, tm1_4h, u1_4h, t2_4h, b2_4h, tm2_4h, u2_4h, t3_4h, b3_4h, tm3_4h, u3_4h)
+[r1_t,  r1_b,  r1_tm,  r1_u]  = f_htf_resolve(t1_1h, b1_1h, tm1_1h, u1_1h, t2_1h, b2_1h, tm2_1h, u2_1h, t3_1h, b3_1h, tm3_1h, u3_1h)
+[r30_t, r30_b, r30_tm, r30_u] = f_htf_resolve(t1_30, b1_30, tm1_30, u1_30, t2_30, b2_30, tm2_30, u2_30, t3_30, b3_30, tm3_30, u3_30)
+[r15_t, r15_b, r15_tm, r15_u] = f_htf_resolve(t1_15, b1_15, tm1_15, u1_15, t2_15, b2_15, tm2_15, u2_15, t3_15, b3_15, tm3_15, u3_15)
+[r5_t,  r5_b,  r5_tm,  r5_u]  = f_htf_resolve(t1_5,  b1_5,  tm1_5,  u1_5,  t2_5,  b2_5,  tm2_5,  u2_5,  t3_5,  b3_5,  tm3_5,  u3_5)
+
+float  act_top  = na
+float  act_bot  = na
+int    act_tm   = na
+string act_lbl  = na
+string act_tf   = na
+bool   act_bull = false
+
+if not na(rd_t)
+    act_top  := rd_t
+    act_bot  := rd_b
+    act_tm   := rd_tm
+    act_bull := rd_u
+    act_lbl  := "Daily"
+    act_tf   := "D"
+else if not na(r4_t)
+    act_top  := r4_t
+    act_bot  := r4_b
+    act_tm   := r4_tm
+    act_bull := r4_u
+    act_lbl  := "4h"
+    act_tf   := "240"
+else if not na(r1_t)
+    act_top  := r1_t
+    act_bot  := r1_b
+    act_tm   := r1_tm
+    act_bull := r1_u
+    act_lbl  := "1h"
+    act_tf   := "60"
+else if not na(r30_t)
+    act_top  := r30_t
+    act_bot  := r30_b
+    act_tm   := r30_tm
+    act_bull := r30_u
+    act_lbl  := "30m"
+    act_tf   := "30"
+else if not na(r15_t)
+    act_top  := r15_t
+    act_bot  := r15_b
+    act_tm   := r15_tm
+    act_bull := r15_u
+    act_lbl  := "15m"
+    act_tf   := "15"
+else if not na(r5_t)
+    act_top  := r5_t
+    act_bot  := r5_b
+    act_tm   := r5_tm
+    act_bull := r5_u
+    act_lbl  := "5m"
+    act_tf   := "5"
+
+if na(act_top)
+    [fd_t,  fd_b,  fd_tm,  fd_u]  = f_htf_best(t1_d,  b1_d,  tm1_d,  u1_d,  t2_d,  b2_d,  tm2_d,  u2_d,  t3_d,  b3_d,  tm3_d,  u3_d)
+    [f4_t,  f4_b,  f4_tm,  f4_u]  = f_htf_best(t1_4h, b1_4h, tm1_4h, u1_4h, t2_4h, b2_4h, tm2_4h, u2_4h, t3_4h, b3_4h, tm3_4h, u3_4h)
+    [f1_t,  f1_b,  f1_tm,  f1_u]  = f_htf_best(t1_1h, b1_1h, tm1_1h, u1_1h, t2_1h, b2_1h, tm2_1h, u2_1h, t3_1h, b3_1h, tm3_1h, u3_1h)
+    [f30_t, f30_b, f30_tm, f30_u] = f_htf_best(t1_30, b1_30, tm1_30, u1_30, t2_30, b2_30, tm2_30, u2_30, t3_30, b3_30, tm3_30, u3_30)
+    [f15_t, f15_b, f15_tm, f15_u] = f_htf_best(t1_15, b1_15, tm1_15, u1_15, t2_15, b2_15, tm2_15, u2_15, t3_15, b3_15, tm3_15, u3_15)
+    [f5_t,  f5_b,  f5_tm,  f5_u]  = f_htf_best(t1_5,  b1_5,  tm1_5,  u1_5,  t2_5,  b2_5,  tm2_5,  u2_5,  t3_5,  b3_5,  tm3_5,  u3_5)
+    if not na(fd_t)
+        act_top  := fd_t
+        act_bot  := fd_b
+        act_tm   := fd_tm
+        act_bull := fd_u
+        act_lbl  := "Daily"
+        act_tf   := "D"
+    else if not na(f4_t)
+        act_top  := f4_t
+        act_bot  := f4_b
+        act_tm   := f4_tm
+        act_bull := f4_u
+        act_lbl  := "4h"
+        act_tf   := "240"
+    else if not na(f1_t)
+        act_top  := f1_t
+        act_bot  := f1_b
+        act_tm   := f1_tm
+        act_bull := f1_u
+        act_lbl  := "1h"
+        act_tf   := "60"
+    else if not na(f30_t)
+        act_top  := f30_t
+        act_bot  := f30_b
+        act_tm   := f30_tm
+        act_bull := f30_u
+        act_lbl  := "30m"
+        act_tf   := "30"
+    else if not na(f15_t)
+        act_top  := f15_t
+        act_bot  := f15_b
+        act_tm   := f15_tm
+        act_bull := f15_u
+        act_lbl  := "15m"
+        act_tf   := "15"
+    else if not na(f5_t)
+        act_top  := f5_t
+        act_bot  := f5_b
+        act_tm   := f5_tm
+        act_bull := f5_u
+        act_lbl  := "5m"
+        act_tf   := "5"
+
+[tf_at, tf_ab, tf_atm, tf_at_ub, tf_mt, tf_mb, tf_mtm, tf_mt_ub] = f_htf_scan_tf(htf_lb)
+
+float tf_top  = na
+float tf_bot  = na
+int   tf_tm   = na
+bool  tf_bull = false
+
+if not na(tf_at)
+    tf_top  := tf_at
+    tf_bot  := tf_ab
+    tf_tm   := tf_atm
+    tf_bull := tf_at_ub
+else if not na(tf_mt)
+    tf_top  := tf_mt
+    tf_bot  := tf_mb
+    tf_tm   := tf_mtm
+    tf_bull := tf_mt_ub
+
+// ─── HTF mitigation state ─────────────────────────────────────────
+var float htf_vb     = na
+var bool  htf_iz     = false
+var float htf_ex     = na
+var float htf_sv_top = na
+var float htf_sv_bot = na
+var bool  htf_bull   = false
+var bool  htf_done   = false
+
+var float tf_vb      = na
+var bool  tf_iz      = false
+var float tf_ex      = na
+var float tf_sv_top  = na
+var float tf_sv_bot  = na
+var bool  tf_vb_bull = false
+var bool  tf_done    = false
+
+// ─── HTF display state ────────────────────────────────────────────
+var box   htf_active_box  = na
+var float htf_prev_top    = na
+var float htf_prev_bot    = na
+var box   htf_tf_box      = na
+var float htf_tf_prev_top = na
+var float htf_tf_prev_bot = na
+
+// ═══════════════════════════════════════════════════════════════════
+// FEATURE 10: TRAILING STOP STATE
+// ═══════════════════════════════════════════════════════════════════
+
+var float[] bull_fvg_bot  = array.new_float(0)
+var float[] bull_fvg_top  = array.new_float(0)
+var float[] bull_fvg_vtop = array.new_float(0)
+var int[]   bull_fvg_bar  = array.new_int(0)
+var float[] bear_fvg_bot  = array.new_float(0)
+var float[] bear_fvg_top  = array.new_float(0)
+var float[] bear_fvg_vbot = array.new_float(0)
+var int[]   bear_fvg_bar  = array.new_int(0)
+
+var line[]  ts_bull_lines = array.new_line()
+var label[] ts_bull_lbls  = array.new_label()
+var float[] ts_bull_lvls  = array.new_float()
+
+var line[]  ts_bear_lines = array.new_line()
+var label[] ts_bear_lbls  = array.new_label()
+var float[] ts_bear_lvls  = array.new_float()
+
+// ═══════════════════════════════════════════════════════════════════
+// FEATURE 11: EQH/EQL STATE
+// ═══════════════════════════════════════════════════════════════════
+
+type BarLevel
+    float price
+    int   idx
+
+var BarLevel[] eqh_hs      = array.new<BarLevel>()
+var BarLevel[] eqh_ls      = array.new<BarLevel>()
+var line[]     eqh_h_lines = array.new<line>()
+var line[]     eqh_l_lines = array.new<line>()
+
+draw_eq_lines(BarLevel[] items, line[] drawn, color col) =>
+    for ln in drawn
+        line.delete(ln)
+    drawn.clear()
+    n = items.size() - 1
+    while n > 0
+        cur = items.get(n)
+        for m = n - 1 to 0
+            prev = items.get(m)
+            if cur.price == prev.price
+                if cur.idx - prev.idx >= eqhl_min_dist
+                    drawn.push(line.new(prev.idx, cur.price, cur.idx, cur.price,
+                                        color=col, width=eqhl_line_wid, style=line_sty))
+                    break
+            else
+                break
+        n -= 1
+
+// ═══════════════════════════════════════════════════════════════════
+// SWING DIVERGENCE STATE
+// ═══════════════════════════════════════════════════════════════════
+
+[esHigh, esLow] = request.security(esSymbol, timeframe.period, [high, low])
+[nqHigh, nqLow] = request.security(nqSymbol, timeframe.period, [high, low])
+[ymHigh, ymLow] = request.security(ymSymbol, timeframe.period, [high, low])
+
+var line[]  bull_div_lines  = array.new_line()
+var float[] bull_div_levels = array.new_float()
+var line[]  bear_div_lines  = array.new_line()
+var float[] bear_div_levels = array.new_float()
+
+// ═══════════════════════════════════════════════════════════════════
+// CONFIRMED BAR LOGIC
+// ═══════════════════════════════════════════════════════════════════
+
+if barstate.isconfirmed
+
+    // ── Feature 3: Previous Day tracking ──────────────────────────
+    if new_day
+        if not na(day_h)
+            pd_high  := day_h
+            pd_low   := day_l
+            pd_h_bar := day_h_bar
+            pd_l_bar := day_l_bar
+        day_h     := high
+        day_l     := low
+        day_h_bar := bar_index
+        day_l_bar := bar_index
+    else
+        if na(day_h) or high > day_h
+            day_h     := high
+            day_h_bar := bar_index
+        if na(day_l) or low < day_l
+            day_l     := low
+            day_l_bar := bar_index
+
+    // ── Feature 10: FVG detection (trailing stop) ─────────────────
+    if low > high[2]
+        array.push(bull_fvg_bot,  high[2])
+        array.push(bull_fvg_top,  low)
+        array.push(bull_fvg_vtop, low)
+        array.push(bull_fvg_bar,  bar_index)
+    if high < low[2]
+        array.push(bear_fvg_bot,  high)
+        array.push(bear_fvg_top,  low[2])
+        array.push(bear_fvg_vbot, high)
+        array.push(bear_fvg_bar,  bar_index)
+
+    // ── Shared CISD swing detection ───────────────────────────────
+    float recent_swing_low = na
+    for j = 2 to 50
+        if close[j] < open[j] and close[j-1] > open[j-1]
+            recent_swing_low := math.min(low[j], low[j-1])
+            break
+
+    float recent_swing_high = na
+    for j = 2 to 50
+        if close[j] > open[j] and close[j-1] < open[j-1]
+            recent_swing_high := math.max(high[j], high[j-1])
+            break
+
+    is_lower_low   = low[0]  < lowest_10  or (not na(recent_swing_low)  and low[0]  < recent_swing_low)
+    is_higher_high = high[0] > highest_10 or (not na(recent_swing_high) and high[0] > recent_swing_high)
+
+    // ── Shared: Bullish CISD setup ────────────────────────────────
+    if is_lower_low
+        int   bear_start          = -1
+        float highest_open        = na
+        int   first_bar           = -1
+        int   highest_open_bar_j  = -1
+
+        for j = 1 to 50
+            if close[j] < open[j]
+                bear_start := j
+                break
+
+        if bear_start >= 0
+            for j = bear_start to bear_start + max_leg - 1
+                if close[j] < open[j]
+                    if na(highest_open) or open[j] > highest_open
+                        highest_open      := open[j]
+                        highest_open_bar_j := j
+                    first_bar := j
+                else
+                    break
+
+        if not na(highest_open) and first_bar >= 0
+            pend_bull          := true
+            pend_bull_bar      := bar_index
+            pend_bull_leg      := bar_index - first_bar
+            pend_bull_cisd     := highest_open
+            pend_bull_low      := low[0]
+            pend_bull_cisd_src := bar_index - highest_open_bar_j
+            leg_bull_start    := bar_index - first_bar
+            leg_bull_end      := bar_index - bear_start
+            leg_bull_detected := bar_index
+            leg_bull_low      := low[0]
+            if show_bull_cisd
+                if not na(pend_bull_line)
+                    line.delete(pend_bull_line)
+                if not na(pend_bull_label)
+                    label.delete(pend_bull_label)
+                pend_bull_line := line.new(leg_bull_start, pend_bull_cisd, bar_index + 2, pend_bull_cisd,
+                     color=pcisd_col, width=pcisd_width, style=line.style_dotted)
+                pend_bull_label := pcisd_show_label ?
+                     label.new(bar_index + 2, pend_bull_cisd, pcisd_label_txt,
+                          yloc=yloc.price, color=color.new(color.black, 100),
+                          textcolor=pcisd_col, style=label.style_label_lower_right,
+                          size=f_text_size(pcisd_label_size)) : na
+
+    // ── Shared: Bearish CISD setup ────────────────────────────────
+    if is_higher_high
+        int   bull_start         = -1
+        float lowest_open        = na
+        int   first_bar_b        = -1
+        int   lowest_open_bar_j  = -1
+
+        for j = 1 to 50
+            if close[j] > open[j]
+                bull_start := j
+                break
+
+        if bull_start >= 0
+            for j = bull_start to bull_start + max_leg - 1
+                if close[j] > open[j]
+                    if na(lowest_open) or open[j] < lowest_open
+                        lowest_open      := open[j]
+                        lowest_open_bar_j := j
+                    first_bar_b := j
+                else
+                    break
+
+        if not na(lowest_open) and first_bar_b >= 0
+            pend_bear          := true
+            pend_bear_bar      := bar_index
+            pend_bear_leg      := bar_index - first_bar_b
+            pend_bear_cisd     := lowest_open
+            pend_bear_high     := high[0]
+            pend_bear_cisd_src := bar_index - lowest_open_bar_j
+            leg_bear_start    := bar_index - first_bar_b
+            leg_bear_end      := bar_index - bull_start
+            leg_bear_detected := bar_index
+            leg_bear_high     := high[0]
+            if show_bear_cisd
+                if not na(pend_bear_line)
+                    line.delete(pend_bear_line)
+                if not na(pend_bear_label)
+                    label.delete(pend_bear_label)
+                pend_bear_line := line.new(leg_bear_start, pend_bear_cisd, bar_index + 2, pend_bear_cisd,
+                     color=pcisd_col, width=pcisd_width, style=line.style_dotted)
+                pend_bear_label := pcisd_show_label ?
+                     label.new(bar_index + 2, pend_bear_cisd, pcisd_label_txt,
+                          yloc=yloc.price, color=color.new(color.black, 100),
+                          textcolor=pcisd_col, style=label.style_label_lower_right,
+                          size=f_text_size(pcisd_label_size)) : na
+
+    // ── Shared: CISD trigger (CISD line + Trailing Stop level) ────
+    if pend_bull
+        bs_bull = bar_index - pend_bull_bar
+        if bs_bull >= 0 and bs_bull <= cisd_window
+            if close > pend_bull_cisd
+                // Delete pending visuals
+                if not na(pend_bull_line)
+                    line.delete(pend_bull_line)
+                    pend_bull_line := na
+                if not na(pend_bull_label)
+                    label.delete(pend_bull_label)
+                    pend_bull_label := na
+
+                // Feature 1: draw confirmed CISD line
+                if show_bull_cisd
+                    l  = line.new(pend_bull_leg, pend_bull_cisd, bar_index, pend_bull_cisd,
+                         color=cisd_col, width=line_width, style=line.style_solid)
+                    lb = label.new(bar_index, pend_bull_cisd, cisd_label_txt,
+                         yloc=yloc.price, color=color.new(color.black, 100),
+                         textcolor=cisd_col, style=label.style_label_lower_right,
+                         size=size.small)
+                    array.push(bull_cisd_lines,  l)
+                    array.push(bull_cisd_labels, lb)
+                    array.push(bull_cisd_lows,   pend_bull_low)
+                    if array.size(bull_cisd_lines) > max_cisd
+                        line.delete(array.shift(bull_cisd_lines))
+                        label.delete(array.shift(bull_cisd_labels))
+                        array.shift(bull_cisd_lows)
+
+                // Feature 10: draw trailing stop protected level
+                if ts_enable
+                    int   scan_range = math.max(bar_index - pend_bull_cisd_src, 0)
+                    float d_low      = na
+                    int   d_low_bar  = bar_index
+                    for j = 0 to scan_range
+                        if na(d_low) or low[j] < d_low
+                            d_low     := low[j]
+                            d_low_bar := bar_index - j
+                    bool fvg_ok = not require_fvg
+                    if require_fvg
+                        int n_bfvg = array.size(bull_fvg_bot)
+                        if n_bfvg > 0
+                            for fi = 0 to n_bfvg - 1
+                                if d_low <= array.get(bull_fvg_vtop, fi)
+                                    fvg_ok := true
+                                    break
+                    if fvg_ok
+                        while array.size(ts_bull_lines) + array.size(ts_bear_lines) >= ts_max_shown
+                            bool rm_bull = array.size(ts_bull_lines) > 0 and
+                                 (array.size(ts_bear_lines) == 0 or
+                                  line.get_x1(array.get(ts_bull_lines, 0)) <=
+                                  line.get_x1(array.get(ts_bear_lines, 0)))
+                            if rm_bull
+                                line.delete(array.shift(ts_bull_lines))
+                                _lb = array.shift(ts_bull_lbls)
+                                if not na(_lb)
+                                    label.delete(_lb)
+                                array.shift(ts_bull_lvls)
+                            else if array.size(ts_bear_lines) > 0
+                                line.delete(array.shift(ts_bear_lines))
+                                _lb = array.shift(ts_bear_lbls)
+                                if not na(_lb)
+                                    label.delete(_lb)
+                                array.shift(ts_bear_lvls)
+                            else
+                                break
+                        new_ln = line.new(d_low_bar, d_low, bar_index, d_low,
+                                          color=color_bull, width=ts_line_width)
+                        new_lb = ts_show_lbl ? label.new(bar_index, d_low, lbl_bull,
+                                                         yloc=yloc.price, style=label.style_label_left,
+                                                         color=color.new(color_bull, 100),
+                                                         textcolor=color_bull, size=lbl_sz) : na
+                        array.push(ts_bull_lines, new_ln)
+                        array.push(ts_bull_lbls,  new_lb)
+                        array.push(ts_bull_lvls,  d_low)
+                        if prox_dedupe
+                            int   ni  = array.size(ts_bull_lvls) - 1
+                            float nv  = array.get(ts_bull_lvls, ni)
+                            int   del = -1
+                            if ni > 0
+                                for i = 0 to ni - 1
+                                    if math.abs(nv - array.get(ts_bull_lvls, i)) <= prox_threshold
+                                        del := nv > array.get(ts_bull_lvls, i) ? ni : i
+                                        break
+                            if del >= 0
+                                line.delete(array.get(ts_bull_lines, del))
+                                lb_del = array.get(ts_bull_lbls, del)
+                                if not na(lb_del)
+                                    label.delete(lb_del)
+                                array.remove(ts_bull_lines, del)
+                                array.remove(ts_bull_lbls,  del)
+                                array.remove(ts_bull_lvls,  del)
+
+                pend_bull := false
+
+        else if bs_bull > cisd_window
+            pend_bull := false
+            if not na(pend_bull_line)
+                line.delete(pend_bull_line)
+                pend_bull_line := na
+            if not na(pend_bull_label)
+                label.delete(pend_bull_label)
+                pend_bull_label := na
+
+    if pend_bear
+        bs_bear = bar_index - pend_bear_bar
+        if bs_bear >= 0 and bs_bear <= cisd_window
+            if close < pend_bear_cisd
+                if not na(pend_bear_line)
+                    line.delete(pend_bear_line)
+                    pend_bear_line := na
+                if not na(pend_bear_label)
+                    label.delete(pend_bear_label)
+                    pend_bear_label := na
+
+                if show_bear_cisd
+                    l  = line.new(pend_bear_leg, pend_bear_cisd, bar_index, pend_bear_cisd,
+                         color=cisd_col, width=line_width, style=line.style_solid)
+                    lb = label.new(bar_index, pend_bear_cisd, cisd_label_txt,
+                         yloc=yloc.price, color=color.new(color.black, 100),
+                         textcolor=cisd_col, style=label.style_label_lower_right,
+                         size=size.small)
+                    array.push(bear_cisd_lines,  l)
+                    array.push(bear_cisd_labels, lb)
+                    array.push(bear_cisd_highs,  pend_bear_high)
+                    if array.size(bear_cisd_lines) > max_cisd
+                        line.delete(array.shift(bear_cisd_lines))
+                        label.delete(array.shift(bear_cisd_labels))
+                        array.shift(bear_cisd_highs)
+
+                if ts_enable
+                    int   scan_range = math.max(bar_index - pend_bear_cisd_src, 0)
+                    float d_high     = na
+                    int   d_high_bar = bar_index
+                    for j = 0 to scan_range
+                        if na(d_high) or high[j] > d_high
+                            d_high     := high[j]
+                            d_high_bar := bar_index - j
+                    bool fvg_ok = not require_fvg
+                    if require_fvg
+                        int n_bfvg = array.size(bear_fvg_bot)
+                        if n_bfvg > 0
+                            for fi = 0 to n_bfvg - 1
+                                if d_high >= array.get(bear_fvg_vbot, fi)
+                                    fvg_ok := true
+                                    break
+                    if fvg_ok
+                        while array.size(ts_bull_lines) + array.size(ts_bear_lines) >= ts_max_shown
+                            bool rm_bull = array.size(ts_bull_lines) > 0 and
+                                 (array.size(ts_bear_lines) == 0 or
+                                  line.get_x1(array.get(ts_bull_lines, 0)) <=
+                                  line.get_x1(array.get(ts_bear_lines, 0)))
+                            if rm_bull
+                                line.delete(array.shift(ts_bull_lines))
+                                _lb = array.shift(ts_bull_lbls)
+                                if not na(_lb)
+                                    label.delete(_lb)
+                                array.shift(ts_bull_lvls)
+                            else if array.size(ts_bear_lines) > 0
+                                line.delete(array.shift(ts_bear_lines))
+                                _lb = array.shift(ts_bear_lbls)
+                                if not na(_lb)
+                                    label.delete(_lb)
+                                array.shift(ts_bear_lvls)
+                            else
+                                break
+                        new_ln = line.new(d_high_bar, d_high, bar_index, d_high,
+                                          color=color_bear, width=ts_line_width)
+                        new_lb = ts_show_lbl ? label.new(bar_index, d_high, lbl_bear,
+                                                         yloc=yloc.price, style=label.style_label_left,
+                                                         color=color.new(color_bear, 100),
+                                                         textcolor=color_bear, size=lbl_sz) : na
+                        array.push(ts_bear_lines, new_ln)
+                        array.push(ts_bear_lbls,  new_lb)
+                        array.push(ts_bear_lvls,  d_high)
+                        if prox_dedupe
+                            int   ni  = array.size(ts_bear_lvls) - 1
+                            float nv  = array.get(ts_bear_lvls, ni)
+                            int   del = -1
+                            if ni > 0
+                                for i = 0 to ni - 1
+                                    if math.abs(nv - array.get(ts_bear_lvls, i)) <= prox_threshold
+                                        del := nv < array.get(ts_bear_lvls, i) ? ni : i
+                                        break
+                            if del >= 0
+                                line.delete(array.get(ts_bear_lines, del))
+                                lb_del = array.get(ts_bear_lbls, del)
+                                if not na(lb_del)
+                                    label.delete(lb_del)
+                                array.remove(ts_bear_lines, del)
+                                array.remove(ts_bear_lbls,  del)
+                                array.remove(ts_bear_lvls,  del)
+
+                pend_bear := false
+
+        else if bs_bear > cisd_window
+            pend_bear := false
+            if not na(pend_bear_line)
+                line.delete(pend_bear_line)
+                pend_bear_line := na
+            if not na(pend_bear_label)
+                label.delete(pend_bear_label)
+                pend_bear_label := na
+
+    // ── Pending CISD failure ──────────────────────────────────────
+    if pend_bull and remove_failed
+        if low[0] < pend_bull_low
+            pend_bull := false
+            if not na(pend_bull_line)
+                line.delete(pend_bull_line)
+                pend_bull_line := na
+            if not na(pend_bull_label)
+                label.delete(pend_bull_label)
+                pend_bull_label := na
+
+    if pend_bear and remove_failed
+        if high[0] > pend_bear_high
+            pend_bear := false
+            if not na(pend_bear_line)
+                line.delete(pend_bear_line)
+                pend_bear_line := na
+            if not na(pend_bear_label)
+                label.delete(pend_bear_label)
+                pend_bear_label := na
+
+    // ── Confirmed CISD failure ────────────────────────────────────
+    if remove_failed and array.size(bull_cisd_lines) > 0
+        for i = array.size(bull_cisd_lines) - 1 to 0
+            sweep = array.get(bull_cisd_lows, i)
+            if low[0] < sweep
+                line.delete(array.get(bull_cisd_lines,  i))
+                label.delete(array.get(bull_cisd_labels, i))
+                array.remove(bull_cisd_lines,  i)
+                array.remove(bull_cisd_labels, i)
+                array.remove(bull_cisd_lows,   i)
+                if array.size(fvgArray) > 0
+                    for k = array.size(fvgArray) - 1 to 0
+                        f = fvgArray.get(k)
+                        if f.isBullCisd and f.sweepLevel == sweep
+                            if not na(f.drawnBox)
+                                box.delete(f.drawnBox)
+                            fvgArray.remove(k)
+
+    if remove_failed and array.size(bear_cisd_lines) > 0
+        for i = array.size(bear_cisd_lines) - 1 to 0
+            sweep = array.get(bear_cisd_highs, i)
+            if high[0] > sweep
+                line.delete(array.get(bear_cisd_lines,  i))
+                label.delete(array.get(bear_cisd_labels, i))
+                array.remove(bear_cisd_lines,  i)
+                array.remove(bear_cisd_labels, i)
+                array.remove(bear_cisd_highs,  i)
+                if array.size(fvgArray) > 0
+                    for k = array.size(fvgArray) - 1 to 0
+                        f = fvgArray.get(k)
+                        if not f.isBullCisd and f.sweepLevel == sweep
+                            if not na(f.drawnBox)
+                                box.delete(f.drawnBox)
+                            fvgArray.remove(k)
+
+    // ── Feature 10: FVG purge ─────────────────────────────────────
+    int nb = array.size(bull_fvg_bot)
+    if nb > 0
+        for i = nb - 1 to 0
+            float bot_i  = array.get(bull_fvg_bot,  i)
+            float vtop_i = array.get(bull_fvg_vtop, i)
+            if close < bot_i or bar_index - array.get(bull_fvg_bar, i) > ts_fvg_lookback
+                array.remove(bull_fvg_bot,  i)
+                array.remove(bull_fvg_top,  i)
+                array.remove(bull_fvg_vtop, i)
+                array.remove(bull_fvg_bar,  i)
+            else if not pend_bull and low <= vtop_i
+                float new_vtop = math.min(vtop_i, low)
+                if new_vtop <= bot_i
+                    array.remove(bull_fvg_bot,  i)
+                    array.remove(bull_fvg_top,  i)
+                    array.remove(bull_fvg_vtop, i)
+                    array.remove(bull_fvg_bar,  i)
+                else
+                    array.set(bull_fvg_vtop, i, new_vtop)
+
+    int nbr = array.size(bear_fvg_bot)
+    if nbr > 0
+        for i = nbr - 1 to 0
+            float top_i  = array.get(bear_fvg_top,  i)
+            float vbot_i = array.get(bear_fvg_vbot, i)
+            if close > top_i or bar_index - array.get(bear_fvg_bar, i) > ts_fvg_lookback
+                array.remove(bear_fvg_bot,  i)
+                array.remove(bear_fvg_top,  i)
+                array.remove(bear_fvg_vbot, i)
+                array.remove(bear_fvg_bar,  i)
+            else if not pend_bear and high >= vbot_i
+                float new_vbot = math.max(vbot_i, high)
+                if new_vbot >= top_i
+                    array.remove(bear_fvg_bot,  i)
+                    array.remove(bear_fvg_top,  i)
+                    array.remove(bear_fvg_vbot, i)
+                    array.remove(bear_fvg_bar,  i)
+                else
+                    array.set(bear_fvg_vbot, i, new_vbot)
+
+    // ── Feature 4: HTF FVG mitigation ────────────────────────────
+    if not na(act_top)
+        if act_top != htf_sv_top or act_bot != htf_sv_bot
+            htf_sv_top := act_top
+            htf_sv_bot := act_bot
+            htf_bull   := act_bull
+            htf_vb     := act_bull ? act_top : act_bot
+            htf_iz     := false
+            htf_ex     := na
+            htf_done   := false
+        if not htf_done
+            bool htf_inside = htf_bull ? (low <= htf_vb and high >= act_bot) : (high >= htf_vb and low <= act_top)
+            if htf_inside
+                float body_lo = math.min(open, close)
+                float body_hi = math.max(open, close)
+                if not htf_iz
+                    htf_iz := true
+                    htf_ex := htf_bull ? body_lo : body_hi
+                else
+                    htf_ex := htf_bull ? math.min(htf_ex, body_lo) : math.max(htf_ex, body_hi)
+                bool htf_full = htf_bull ? body_lo <= act_bot : body_hi >= act_top
+                if htf_full
+                    htf_done := true
+                    htf_iz   := false
+            bool htf_exited = htf_iz and (htf_bull ? close > htf_vb : close < htf_vb)
+            if htf_exited
+                htf_iz := false
+                htf_vb := htf_bull ? math.min(htf_ex, htf_vb) : math.max(htf_ex, htf_vb)
+    else
+        htf_sv_top := na
+        htf_sv_bot := na
+        htf_iz     := false
+        htf_vb     := na
+        htf_ex     := na
+        htf_done   := false
+
+    if not na(tf_top)
+        if tf_top != tf_sv_top or tf_bot != tf_sv_bot
+            tf_sv_top  := tf_top
+            tf_sv_bot  := tf_bot
+            tf_vb_bull := tf_bull
+            tf_vb      := tf_bull ? tf_top : tf_bot
+            tf_iz      := false
+            tf_ex      := na
+            tf_done    := false
+        if not tf_done
+            bool tf_inside = tf_vb_bull ? (low <= tf_vb and high >= tf_bot) : (high >= tf_vb and low <= tf_top)
+            if tf_inside
+                float body_lo = math.min(open, close)
+                float body_hi = math.max(open, close)
+                if not tf_iz
+                    tf_iz := true
+                    tf_ex := tf_vb_bull ? body_lo : body_hi
+                else
+                    tf_ex := tf_vb_bull ? math.min(tf_ex, body_lo) : math.max(tf_ex, body_hi)
+                bool tf_full = tf_vb_bull ? body_lo <= tf_bot : body_hi >= tf_top
+                if tf_full
+                    tf_done := true
+                    tf_iz   := false
+            bool tf_exited = tf_iz and (tf_vb_bull ? close > tf_vb : close < tf_vb)
+            if tf_exited
+                tf_iz := false
+                tf_vb := tf_vb_bull ? math.min(tf_ex, tf_vb) : math.max(tf_ex, tf_vb)
+    else
+        tf_sv_top := na
+        tf_sv_bot := na
+        tf_iz     := false
+        tf_vb     := na
+        tf_ex     := na
+        tf_done   := false
+
+    // ── Feature 3: Session-end level registration ─────────────────
+    if new_day and not na(pd_high) and not na(pd_h_bar) and show_pd
+        f_add(pd_h_arr, pd_high, true,  pd_h_bar, pdh_txt, pd_col, lw, 1, show_pd_lbl, 0)
+        f_add(pd_l_arr, pd_low,  false, pd_l_bar, pdl_txt, pd_col, lw, 1, show_pd_lbl, 0)
+
+    if in_asia and not in_asia[1]
+        asia_h     := high
+        asia_l     := low
+        asia_h_bar := bar_index
+        asia_l_bar := bar_index
+    if in_asia
+        if high > asia_h
+            asia_h     := high
+            asia_h_bar := bar_index
+        if low < asia_l
+            asia_l     := low
+            asia_l_bar := bar_index
+    if asia_end and not na(asia_h) and show_asia
+        f_add(asia_h_arr, asia_h, true,  asia_h_bar, asia_h_txt, asia_col, lw, sl_lookback, show_asia_lbl, 0)
+        f_add(asia_l_arr, asia_l, false, asia_l_bar, asia_l_txt, asia_col, lw, sl_lookback, show_asia_lbl, 0)
+
+    if in_london and not in_london[1]
+        london_h     := high
+        london_l     := low
+        london_h_bar := bar_index
+        london_l_bar := bar_index
+    if in_london
+        if high > london_h
+            london_h     := high
+            london_h_bar := bar_index
+        if low < london_l
+            london_l     := low
+            london_l_bar := bar_index
+    if london_end and not na(london_h) and show_london
+        f_add(london_h_arr, london_h, true,  london_h_bar, london_h_txt, london_col, lw, sl_lookback, show_london_lbl, 0)
+        f_add(london_l_arr, london_l, false, london_l_bar, london_l_txt, london_col, lw, sl_lookback, show_london_lbl, 0)
+
+    if in_ny and not in_ny[1]
+        ny_h     := high
+        ny_l     := low
+        ny_h_bar := bar_index
+        ny_l_bar := bar_index
+    if in_ny
+        if high > ny_h
+            ny_h     := high
+            ny_h_bar := bar_index
+        if low < ny_l
+            ny_l     := low
+            ny_l_bar := bar_index
+    if ny_end and not na(ny_h) and show_ny
+        f_add(ny_h_arr, ny_h, true,  ny_h_bar, ny_h_txt, ny_col, lw, sl_lookback, show_ny_lbl, 0)
+        f_add(ny_l_arr, ny_l, false, ny_l_bar, ny_l_txt, ny_col, lw, sl_lookback, show_ny_lbl, 0)
+
+// ═══════════════════════════════════════════════════════════════════
+// EVERY BAR LOGIC
+// ═══════════════════════════════════════════════════════════════════
+
+// ── Feature 1: extend pending CISD dotted lines ───────────────────
+if pend_bull and not na(pend_bull_line) and show_bull_cisd
+    line.set_x2(pend_bull_line, bar_index + 2)
+    if not na(pend_bull_label)
+        label.set_x(pend_bull_label, bar_index + 2)
+if pend_bear and not na(pend_bear_line) and show_bear_cisd
+    line.set_x2(pend_bear_line, bar_index + 2)
+    if not na(pend_bear_label)
+        label.set_x(pend_bear_label, bar_index + 2)
+
+// ── Feature 2: IFVG detection + processing ───────────────────────
+bool bullFvg = low > high[2]
+bool bearFvg = high < low[2]
+int  mid_bar = bar_index - 1
+
+if bearFvg and show_bull_ifvg
+    if not na(leg_bull_start) and mid_bar >= leg_bull_start and mid_bar <= leg_bull_end
+        if not use_ifvg_window or (bar_index - leg_bull_detected <= ifvg_window)
+            fvgArray.push(Fvg.new(
+                 top         = low[2],
+                 bottom      = high,
+                 startTime   = time[1],
+                 detectedBar = leg_bull_detected,
+                 isBull      = false,
+                 sweepLevel  = leg_bull_low,
+                 isBullCisd  = true))
+
+if bullFvg and show_bear_ifvg
+    if not na(leg_bear_start) and mid_bar >= leg_bear_start and mid_bar <= leg_bear_end
+        if not use_ifvg_window or (bar_index - leg_bear_detected <= ifvg_window)
+            fvgArray.push(Fvg.new(
+                 top         = low,
+                 bottom      = high[2],
+                 startTime   = time[1],
+                 detectedBar = leg_bear_detected,
+                 isBull      = true,
+                 sweepLevel  = leg_bear_high,
+                 isBullCisd  = false))
+
+if fvgArray.size() > 0
+    for i = fvgArray.size() - 1 to 0
+        Fvg f = fvgArray.get(i)
+        if use_ifvg_window and not f.inverted
+            if bar_index - f.detectedBar > ifvg_window
+                fvgArray.remove(i)
+                continue
+        if not f.inverted
+            if not f.isBull and close > f.top
+                f.inverted := true
+                if show_bull_ifvg
+                    f_trim_ifvgs()
+                    b = box.new(
+                         left         = f.startTime,
+                         top          = f.top,
+                         right        = time + tf_ms * ifvg_extend,
+                         bottom       = f.bottom,
+                         xloc         = xloc.bar_time,
+                         bgcolor      = ifvg_bull_col,
+                         border_color = color.new(color.white, 100),
+                         border_width = 0,
+                         text         = ifvg_label,
+                         text_size    = f_text_size(ifvg_text_size),
+                         text_color   = ifvg_text_col,
+                         text_halign  = text.align_right,
+                         text_valign  = text.align_center)
+                    f.drawnBox := b
+            else if f.isBull and close < f.bottom
+                f.inverted := true
+                if show_bear_ifvg
+                    f_trim_ifvgs()
+                    b = box.new(
+                         left         = f.startTime,
+                         top          = f.top,
+                         right        = time + tf_ms * ifvg_extend,
+                         bottom       = f.bottom,
+                         xloc         = xloc.bar_time,
+                         bgcolor      = ifvg_bear_col,
+                         border_color = color.new(color.white, 100),
+                         border_width = 0,
+                         text         = ifvg_label,
+                         text_size    = f_text_size(ifvg_text_size),
+                         text_color   = ifvg_text_col,
+                         text_halign  = text.align_right,
+                         text_valign  = text.align_center)
+                    f.drawnBox := b
+        else
+            if not f.isBull and close < f.bottom
+                if not na(f.drawnBox)
+                    box.delete(f.drawnBox)
+                fvgArray.remove(i)
+            else if f.isBull and close > f.top
+                if not na(f.drawnBox)
+                    box.delete(f.drawnBox)
+                fvgArray.remove(i)
+
+// ── Feature 3: Session level updates + label dedup ───────────────
+if show_pd
+    f_update(pd_h_arr)
+    f_update(pd_l_arr)
+if show_asia
+    f_update(asia_h_arr)
+    f_update(asia_l_arr)
+if show_london
+    f_update(london_h_arr)
+    f_update(london_l_arr)
+if show_ny
+    f_update(ny_h_arr)
+    f_update(ny_l_arr)
+
+if show_pd and show_pd_lbl
+    f_suppress_label_if_match(asia_h_arr,   pd_h_arr)
+    f_suppress_label_if_match(asia_l_arr,   pd_l_arr)
+    f_suppress_label_if_match(london_h_arr, pd_h_arr)
+    f_suppress_label_if_match(london_l_arr, pd_l_arr)
+    f_suppress_label_if_match(ny_h_arr,     pd_h_arr)
+    f_suppress_label_if_match(ny_l_arr,     pd_l_arr)
+if show_ny
+    if show_london
+        f_suppress_label_if_match(london_h_arr, ny_h_arr)
+        f_suppress_label_if_match(london_l_arr, ny_l_arr)
+    if show_asia
+        f_suppress_label_if_match(asia_h_arr, ny_h_arr)
+        f_suppress_label_if_match(asia_l_arr, ny_l_arr)
+if show_london and show_asia
+    f_suppress_label_if_match(asia_h_arr, london_h_arr)
+    f_suppress_label_if_match(asia_l_arr, london_l_arr)
+
+// ── Feature 4: HTF FVG box display ───────────────────────────────
+right_ms = time + timeframe.in_seconds() * 1000 * (extend_bars + 1)
+
+bool  htf_partial  = not na(htf_vb) and (htf_bull ? htf_vb < act_top : htf_vb > act_bot)
+float htf_disp_top = (htf_partial and htf_bull)     ? htf_vb : act_top
+float htf_disp_bot = (htf_partial and not htf_bull) ? htf_vb : act_bot
+color htf_bg       = htf_iz ? zone_col_in : zone_col
+bool  zone_changed = act_top != htf_prev_top or act_bot != htf_prev_bot
+bool  zone_active  = show_htf_box and not na(act_top) and not htf_done
+
+if zone_active
+    if na(htf_active_box) or zone_changed
+        if not na(htf_active_box)
+            box.delete(htf_active_box)
+        htf_active_box := box.new(
+             left         = act_tm,
+             top          = htf_disp_top,
+             right        = right_ms,
+             bottom       = htf_disp_bot,
+             xloc         = xloc.bar_time,
+             bgcolor      = htf_bg,
+             border_color = color.new(color.white, 100),
+             border_width = 0,
+             text         = show_label ? act_lbl : "",
+             text_color   = label_col,
+             text_size    = f_size(label_size),
+             text_halign  = text.align_right,
+             text_valign  = text.align_center)
+        htf_prev_top := act_top
+        htf_prev_bot := act_bot
+    else
+        box.set_top(htf_active_box,    htf_disp_top)
+        box.set_bottom(htf_active_box, htf_disp_bot)
+        box.set_bgcolor(htf_active_box, htf_bg)
+        box.set_right(htf_active_box,  right_ms)
+else
+    if not na(htf_active_box)
+        box.delete(htf_active_box)
+        htf_active_box := na
+    htf_prev_top := na
+    htf_prev_bot := na
+
+bool  tf_partial  = not na(tf_vb) and (tf_vb_bull ? tf_vb < tf_top : tf_vb > tf_bot)
+float tf_disp_top = (tf_partial and tf_vb_bull)     ? tf_vb : tf_top
+float tf_disp_bot = (tf_partial and not tf_vb_bull) ? tf_vb : tf_bot
+color tf_bg       = tf_iz ? tf_zone_col_in : tf_zone_col
+bool  draw_tf_box = show_tf_box and not na(tf_top) and not tf_done
+bool  tf_changed  = tf_top != htf_tf_prev_top or tf_bot != htf_tf_prev_bot
+
+if draw_tf_box
+    if na(htf_tf_box) or tf_changed
+        if not na(htf_tf_box)
+            box.delete(htf_tf_box)
+        htf_tf_box := box.new(
+             left         = tf_tm,
+             top          = tf_disp_top,
+             right        = right_ms,
+             bottom       = tf_disp_bot,
+             xloc         = xloc.bar_time,
+             bgcolor      = tf_bg,
+             border_color = color.new(color.white, 100),
+             border_width = 0,
+             text         = show_label ? f_tf_label(timeframe.period) : "",
+             text_color   = label_col,
+             text_size    = f_size(label_size),
+             text_halign  = text.align_right,
+             text_valign  = text.align_center)
+        htf_tf_prev_top := tf_top
+        htf_tf_prev_bot := tf_bot
+    else
+        box.set_top(htf_tf_box,    tf_disp_top)
+        box.set_bottom(htf_tf_box, tf_disp_bot)
+        box.set_bgcolor(htf_tf_box, tf_bg)
+        box.set_right(htf_tf_box,  right_ms)
+else
+    if not na(htf_tf_box)
+        box.delete(htf_tf_box)
+        htf_tf_box := na
+    htf_tf_prev_top := na
+    htf_tf_prev_bot := na
+
+// ── Feature 10: Trailing stop — extend lines + real-time mitigation
+if ts_enable
+    int n_bull = array.size(ts_bull_lines)
+    if n_bull > 0
+        for i = 0 to n_bull - 1
+            ln = array.get(ts_bull_lines, i)
+            lb = array.get(ts_bull_lbls, i)
+            if not na(ln)
+                line.set_x2(ln, bar_index)
+            if not na(lb)
+                label.set_x(lb, bar_index)
+
+    int n_bear = array.size(ts_bear_lines)
+    if n_bear > 0
+        for i = 0 to n_bear - 1
+            ln = array.get(ts_bear_lines, i)
+            lb = array.get(ts_bear_lbls, i)
+            if not na(ln)
+                line.set_x2(ln, bar_index)
+            if not na(lb)
+                label.set_x(lb, bar_index)
+
+    int n_bul = array.size(ts_bull_lvls)
+    if n_bul > 0
+        for i = n_bul - 1 to 0
+            lvl = array.get(ts_bull_lvls, i)
+            if not na(lvl) and low < lvl
+                line.delete(array.get(ts_bull_lines, i))
+                lb = array.get(ts_bull_lbls, i)
+                if not na(lb)
+                    label.delete(lb)
+                array.remove(ts_bull_lines, i)
+                array.remove(ts_bull_lbls,  i)
+                array.remove(ts_bull_lvls,  i)
+
+    int n_bea = array.size(ts_bear_lvls)
+    if n_bea > 0
+        for i = n_bea - 1 to 0
+            lvl = array.get(ts_bear_lvls, i)
+            if not na(lvl) and high > lvl
+                line.delete(array.get(ts_bear_lines, i))
+                lb = array.get(ts_bear_lbls, i)
+                if not na(lb)
+                    label.delete(lb)
+                array.remove(ts_bear_lines, i)
+                array.remove(ts_bear_lbls,  i)
+                array.remove(ts_bear_lvls,  i)
+
+// ── Swing Divergence: invalidate failed + draw new ────────────────
+if bull_div_lines.size() > 0
+    for i = bull_div_lines.size() - 1 to 0
+        if low < bull_div_levels.get(i)
+            line.delete(bull_div_lines.get(i))
+            bull_div_lines.remove(i)
+            bull_div_levels.remove(i)
+
+if bear_div_lines.size() > 0
+    for i = bear_div_lines.size() - 1 to 0
+        if high > bear_div_levels.get(i)
+            line.delete(bear_div_lines.get(i))
+            bear_div_lines.remove(i)
+            bear_div_levels.remove(i)
+
+esBrokeBelow = esLow  < esLow[1]
+nqBrokeBelow = nqLow  < nqLow[1]
+ymBrokeBelow = ymLow  < ymLow[1]
+
+anyBullDiv = (esBrokeBelow and not nqBrokeBelow and not ymBrokeBelow) or
+             (nqBrokeBelow and not esBrokeBelow and not ymBrokeBelow) or
+             (ymBrokeBelow and not esBrokeBelow and not nqBrokeBelow) or
+             (esBrokeBelow and nqBrokeBelow     and not ymBrokeBelow) or
+             (esBrokeBelow and ymBrokeBelow     and not nqBrokeBelow) or
+             (nqBrokeBelow and ymBrokeBelow     and not esBrokeBelow)
+
+esBrokeAbove = esHigh > esHigh[1]
+nqBrokeAbove = nqHigh > nqHigh[1]
+ymBrokeAbove = ymHigh > ymHigh[1]
+
+anyBearDiv = (esBrokeAbove and not nqBrokeAbove and not ymBrokeAbove) or
+             (nqBrokeAbove and not esBrokeAbove and not ymBrokeAbove) or
+             (ymBrokeAbove and not esBrokeAbove and not nqBrokeAbove) or
+             (esBrokeAbove and nqBrokeAbove     and not ymBrokeAbove) or
+             (esBrokeAbove and ymBrokeAbove     and not nqBrokeAbove) or
+             (nqBrokeAbove and ymBrokeAbove     and not esBrokeAbove)
+
+bool bullAllowed   = not filterByCisd or cisd_bull_prev or pend_bull
+bool bearAllowed   = not filterByCisd or cisd_bear_prev or pend_bear
+color drawBullColor = filterByCisd ? cisd_div_color : bullColor
+color drawBearColor = filterByCisd ? cisd_div_color : bearColor
+int   drawBullWidth = filterByCisd ? cisd_div_width : sd_line_width
+int   drawBearWidth = filterByCisd ? cisd_div_width : sd_line_width
+
+if showBullDiv and anyBullDiv and bullAllowed
+    l = line.new(bar_index[1], low[1], bar_index, low,
+                 color=drawBullColor, width=drawBullWidth, style=line.style_solid)
+    bull_div_lines.push(l)
+    bull_div_levels.push(math.min(low[1], low))
+
+if showBearDiv and anyBearDiv and bearAllowed
+    l = line.new(bar_index[1], high[1], bar_index, high,
+                 color=drawBearColor, width=drawBearWidth, style=line.style_solid)
+    bear_div_lines.push(l)
+    bear_div_levels.push(math.max(high[1], high))
+
+alertcondition(anyBullDiv,               title="Bullish Swing Divergence", message="Bullish Swing Divergence detected across ES/NQ/YM")
+alertcondition(anyBearDiv,               title="Bearish Swing Divergence", message="Bearish Swing Divergence detected across ES/NQ/YM")
+alertcondition(anyBullDiv or anyBearDiv, title="Any Swing Divergence",     message="Swing Divergence detected across ES/NQ/YM")
+
+// ── Feature 11: EQH/EQL accumulation (every bar) ─────────────────
+int eqhl_min_bar = last_bar_index - eqhl_lookback_len
+
+if eqhl_min_bar <= bar_index
+    if eqh_hs.size() > 0 and high >= high[1]
+        while eqh_hs.size() > 0 and eqh_hs.last().price < high
+            eqh_hs.pop()
+    eqh_hs.push(BarLevel.new(high, bar_index))
+
+    if eqh_ls.size() > 0 and low <= low[1]
+        while eqh_ls.size() > 0 and eqh_ls.last().price > low
+            eqh_ls.pop()
+    eqh_ls.push(BarLevel.new(low, bar_index))
+
+// ── Feature 11: EQH/EQL draw (last bar only) ─────────────────────
+if barstate.islast
+    draw_eq_lines(eqh_hs, eqh_h_lines, eqh_col)
+    draw_eq_lines(eqh_ls, eqh_l_lines, eql_col)
