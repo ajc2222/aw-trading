@@ -21,6 +21,18 @@ Before any code task (search, edit, debug, refactor):
 
 Re-index after significant changes: `codebase-memory-mcp cli index_repository --repo-path . --mode fast`
 
+## Website Patterns
+
+- Spinning gradient borders: read `website/drafts/spinning-gradient-notes.md` before touching any `spin-*` CSS
+- `@property --spin-a` drives all spin animations — `transform:rotate` approach was tried and reverted (mobile compat regressed)
+- `website/drafts/` is the prototyping sandbox — test CSS/HTML experiments there before touching production files
+- Pre-launch HTML gating: `grep -rn "LAUNCH:" website/` finds every gated block (CTAs, pricing, firm buttons)
+
+## Project Files
+
+- Pine Script indicator: `indicator/aw-full-indicator.pine` (v6 syntax, merges 6 modules)
+- Launch execution plan: `docs/superpowers/plans/2026-07-07-aw-trading-launch-execution.md`
+
 ## Build & Test
 
 - ALWAYS run tests after code changes
