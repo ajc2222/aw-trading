@@ -1,6 +1,6 @@
 //@version=6
 // AW Indicator — Full
-// Combines: CISD+IFVG, Session Liquidity, HTF FVG, Trailing Stop, EQH/EQL, Swing Divergence
+// Combines: CISD+IFVG, Session Liquidity, HTF FVG, Trailing Stop, EQH/EQL, SMT Divergence
 indicator("AW Indicator — Full", shorttitle="AW Full", overlay=true,
      max_bars_back=1000, max_boxes_count=500, max_lines_count=500, max_labels_count=500)
 
@@ -23,6 +23,29 @@ f_size(string s) =>
         "normal" => size.normal
         "large"  => size.large
         => size.small
+
+f_line_style(string s) =>
+    switch s
+        "dashed" => line.style_dashed
+        "dotted" => line.style_dotted
+        =>          line.style_solid
+
+// ═══════════════════════════════════════════════════════════════════
+// SMT TYPES
+// ═══════════════════════════════════════════════════════════════════
+
+// Tracks a pivot on the lead symbol + what the other two were doing at that bar
+type liq
+    float lead
+    int   tm
+    float ref1
+    float ref2
+    float chart
+
+type smt_obj
+    line  ln
+    label lb
+    float extreme
 
 // ═══════════════════════════════════════════════════════════════════
 // SETTINGS: CISD  (shared with Trailing Stop + Swing Divergence)
@@ -189,24 +212,47 @@ line_sty = line_style_str == "Solid" ? line.style_solid :
            line.style_dashed
 
 // ═══════════════════════════════════════════════════════════════════
-// SETTINGS: SWING DIVERGENCE
+// SETTINGS: SMT
 // ═══════════════════════════════════════════════════════════════════
 
-g_sd = "Swing Divergence"
-esSymbol    = input.symbol("CME_MINI:ES1!",  title="ES Symbol",              group=g_sd)
-nqSymbol    = input.symbol("CME_MINI:NQ1!",  title="NQ Symbol",              group=g_sd)
-ymSymbol    = input.symbol("CBOT_MINI:YM1!", title="YM Symbol",              group=g_sd)
-showBullDiv = input.bool(true, title="Show Bullish Divergence (Low)",         group=g_sd)
-showBearDiv = input.bool(true, title="Show Bearish Divergence (High)",        group=g_sd)
-bullColor   = input.color(color.new(color.green, 0), title="Bullish Line Color", group=g_sd)
-bearColor   = input.color(color.new(color.red,   0), title="Bearish Line Color", group=g_sd)
-sd_line_width = input.int(2, title="Line Width", minval=1, maxval=4,          group=g_sd)
+g_smt = "SMT Settings"
+sym_1          = input.symbol("CME_MINI:ES1!",  "Symbol 1",           group=g_smt, inline="s1")
+use_sym_1      = input.bool(true,               "",                    group=g_smt, inline="s1")
+sym_1_name     = input.string("ES",             "Symbol 1 Short Name", group=g_smt)
+sym_2          = input.symbol("CME_MINI:NQ1!",  "Symbol 2",           group=g_smt, inline="s2")
+use_sym_2      = input.bool(true,               "",                    group=g_smt, inline="s2")
+sym_2_name     = input.string("NQ",             "Symbol 2 Short Name", group=g_smt)
+sym_3          = input.symbol("CBOT_MINI:YM1!", "Symbol 3",           group=g_smt, inline="s3")
+use_sym_3      = input.bool(true,               "",                    group=g_smt, inline="s3")
+sym_3_name     = input.string("YM",             "Symbol 3 Short Name", group=g_smt)
+smt_pivot_len  = input.int(3, "Pivot Strength", minval=1, maxval=20,  group=g_smt)
+smt_real_time  = input.bool(false, "Work in Real-Time",                group=g_smt,
+     tooltip="Detect SMTs without right-bar confirmation. May produce signals that are immediately broken.",
+     display=display.status_line)
+smt_del_broken = input.bool(false, "Remove Broken SMTs",               group=g_smt,
+     display=display.status_line)
+smt_show_bull  = input.bool(true,  "Show Bullish SMT",                 group=g_smt)
+smt_show_bear  = input.bool(true,  "Show Bearish SMT",                 group=g_smt)
 
-g_sdf = "Swing Divergence Filter"
-filterByCisd   = input.bool(false, "Filter to CISD Window", group=g_sdf,
-     tooltip="When ON: bullish divergences only fire during an active bullish CISD, bearish during active bearish CISD.")
-cisd_div_color = input.color(color.new(color.gray, 0), "Color",    group=g_sdf)
-cisd_div_width = input.int(1, "Line Width", minval=1, maxval=4,     group=g_sdf)
+g_smt_app = "SMT Appearance"
+smt_bull_col = input.color(#089981,   "Bullish:",   group=g_smt_app, inline="smt_bull")
+smt_bull_wid = input.int(1, " Width", minval=1, maxval=5, group=g_smt_app, inline="smt_bull", display=display.none)
+smt_bull_sty = input.string("dashed", " Style",
+               options=["solid","dashed","dotted"], group=g_smt_app, inline="smt_bull", display=display.none)
+smt_bear_col = input.color(#f23645,   "Bearish:",   group=g_smt_app, inline="smt_bear")
+smt_bear_wid = input.int(1, " Width", minval=1, maxval=5, group=g_smt_app, inline="smt_bear", display=display.none)
+smt_bear_sty = input.string("dashed", " Style",
+               options=["solid","dashed","dotted"], group=g_smt_app, inline="smt_bear", display=display.none)
+smt_show_lbl = input.bool(true,        "Show Label",   group=g_smt_app)
+smt_lbl_col  = input.color(color.gray, "Label Color",  group=g_smt_app, inline="smt_lbl")
+smt_lbl_size = input.string("small",   " Size",
+               options=["tiny","small","normal","large"], group=g_smt_app, inline="smt_lbl", display=display.none)
+
+g_smt_alrt = "SMT Alert Settings"
+smt_alrt_form  = input.bool(true, "Formation", group=g_smt_alrt, inline="smt_alrt")
+smt_alrt_break = input.bool(true, "Breakage",  group=g_smt_alrt, inline="smt_alrt")
+
+smt_txt_sz = f_text_size(smt_lbl_size)
 
 // ═══════════════════════════════════════════════════════════════════
 // SHARED COMPUTED VALUES
@@ -236,11 +282,6 @@ var float pend_bear_cisd     = na
 var int   pend_bear_leg      = 0
 var float pend_bear_high     = na
 var int   pend_bear_cisd_src = 0
-
-// Swing Divergence reads CISD state from the previous bar (before isconfirmed clears it)
-// so both borders of the CISD window are inclusive.
-bool cisd_bull_prev = pend_bull
-bool cisd_bear_prev = pend_bear
 
 // ═══════════════════════════════════════════════════════════════════
 // FEATURE 1+2: CISD + IFVG STATE
@@ -823,17 +864,52 @@ draw_eq_lines(BarLevel[] items, line[] drawn, color col) =>
         n -= 1
 
 // ═══════════════════════════════════════════════════════════════════
-// SWING DIVERGENCE STATE
+// SMT STATE
 // ═══════════════════════════════════════════════════════════════════
 
-[esHigh, esLow] = request.security(esSymbol, timeframe.period, [high, low])
-[nqHigh, nqLow] = request.security(nqSymbol, timeframe.period, [high, low])
-[ymHigh, ymLow] = request.security(ymSymbol, timeframe.period, [high, low])
+var liq[] smt_highs_a = array.new<liq>()
+var liq[] smt_lows_a  = array.new<liq>()
+var liq[] smt_highs_b = array.new<liq>()
+var liq[] smt_lows_b  = array.new<liq>()
+var liq[] smt_highs_c = array.new<liq>()
+var liq[] smt_lows_c  = array.new<liq>()
 
-var line[]  bull_div_lines  = array.new_line()
-var float[] bull_div_levels = array.new_float()
-var line[]  bear_div_lines  = array.new_line()
-var float[] bear_div_levels = array.new_float()
+var smt_obj[] smt_bear_smts = array.new<smt_obj>()
+var smt_obj[] smt_bull_smts = array.new<smt_obj>()
+
+f_smt_draw(int t1, float p1, int t2, float p2, bool bull, string suffix) =>
+    col = bull ? smt_bull_col : smt_bear_col
+    wid = bull ? smt_bull_wid : smt_bear_wid
+    sty = f_line_style(bull ? smt_bull_sty : smt_bear_sty)
+    ln  = line.new(t1, p1, t2, p2, xloc=xloc.bar_time, color=col, width=wid, style=sty)
+    lb  = smt_show_lbl ? label.new(
+         math.round(math.avg(t1, t2)),
+         math.avg(p1, p2),
+         "SMT " + suffix,
+         xloc      = xloc.bar_time,
+         style     = bull ? label.style_label_up : label.style_label_down,
+         color     = color.new(color.gray, 100),
+         textcolor = smt_lbl_col,
+         size      = smt_txt_sz) : na
+    extreme = bull ? math.min(p1, p2) : math.max(p1, p2)
+    smt_obj.new(ln, lb, extreme)
+
+// ═══════════════════════════════════════════════════════════════════
+// SMT DATA
+// ═══════════════════════════════════════════════════════════════════
+
+smt_right_len = smt_real_time ? 0 : smt_pivot_len
+
+[smt_ha, smt_la] = request.security(sym_1, timeframe.period, [high, low], lookahead=barmerge.lookahead_off)
+[smt_hb, smt_lb] = request.security(sym_2, timeframe.period, [high, low], lookahead=barmerge.lookahead_off)
+[smt_hc, smt_lc] = request.security(sym_3, timeframe.period, [high, low], lookahead=barmerge.lookahead_off)
+
+smt_ph_a = ta.pivothigh(smt_ha, smt_pivot_len, smt_right_len)
+smt_pl_a = ta.pivotlow (smt_la, smt_pivot_len, smt_right_len)
+smt_ph_b = ta.pivothigh(smt_hb, smt_pivot_len, smt_right_len)
+smt_pl_b = ta.pivotlow (smt_lb, smt_pivot_len, smt_right_len)
+smt_ph_c = ta.pivothigh(smt_hc, smt_pivot_len, smt_right_len)
+smt_pl_c = ta.pivotlow (smt_lc, smt_pivot_len, smt_right_len)
 
 // ═══════════════════════════════════════════════════════════════════
 // CONFIRMED BAR LOGIC
@@ -1406,6 +1482,146 @@ if barstate.isconfirmed
         f_add(ny_l_arr, ny_l, false, ny_l_bar, ny_l_txt, ny_col, lw, sl_lookback, show_ny_lbl, 0)
 
 // ═══════════════════════════════════════════════════════════════════
+// SMT LOGIC
+// ═══════════════════════════════════════════════════════════════════
+
+if barstate.isconfirmed
+    smt_off = smt_right_len
+    smt_ch  = high[smt_off]
+    smt_cl  = low[smt_off]
+    smt_tm  = time[smt_off]
+
+    a_h = smt_ha[smt_off]
+    a_l = smt_la[smt_off]
+    b_h = smt_hb[smt_off]
+    b_l = smt_lb[smt_off]
+    c_h = smt_hc[smt_off]
+    c_l = smt_lc[smt_off]
+
+    // ─── ES leads bearish (ES HH, NQ+YM LH) ─────────────────────
+    if use_sym_1 and not na(smt_ph_a) and smt_show_bear
+        if smt_highs_a.size() > 0
+            liq prev = smt_highs_a.last()
+            if a_h > prev.lead
+                d2 = use_sym_2 and b_h < prev.ref1
+                d3 = use_sym_3 and c_h < prev.ref2
+                if (not use_sym_2 or d2) and (not use_sym_3 or d3) and (use_sym_2 or use_sym_3)
+                    sfx = use_sym_2 and use_sym_3 ? sym_2_name + "+" + sym_3_name :
+                          use_sym_2 ? sym_2_name : sym_3_name
+                    smt_bear_smts.push(f_smt_draw(prev.tm, prev.chart, smt_tm, smt_ch, false, sym_1_name + " / " + sfx))
+                    if smt_alrt_form
+                        alert("Bearish " + timeframe.period + " SMT: " + sym_1_name + " HH, " + sfx + " LH", alert.freq_once_per_bar)
+        smt_highs_a.push(liq.new(a_h, smt_tm, b_h, c_h, smt_ch))
+
+    // ─── NQ leads bearish (NQ HH, ES+YM LH) ─────────────────────
+    if use_sym_2 and not na(smt_ph_b) and smt_show_bear
+        if smt_highs_b.size() > 0
+            liq prev = smt_highs_b.last()
+            if b_h > prev.lead
+                d1 = use_sym_1 and a_h < prev.ref1
+                d3 = use_sym_3 and c_h < prev.ref2
+                if (not use_sym_1 or d1) and (not use_sym_3 or d3) and (use_sym_1 or use_sym_3)
+                    sfx = use_sym_1 and use_sym_3 ? sym_1_name + "+" + sym_3_name :
+                          use_sym_1 ? sym_1_name : sym_3_name
+                    smt_bear_smts.push(f_smt_draw(prev.tm, prev.chart, smt_tm, smt_ch, false, sym_2_name + " / " + sfx))
+                    if smt_alrt_form
+                        alert("Bearish " + timeframe.period + " SMT: " + sym_2_name + " HH, " + sfx + " LH", alert.freq_once_per_bar)
+        smt_highs_b.push(liq.new(b_h, smt_tm, a_h, c_h, smt_ch))
+
+    // ─── YM leads bearish (YM HH, ES+NQ LH) ─────────────────────
+    if use_sym_3 and not na(smt_ph_c) and smt_show_bear
+        if smt_highs_c.size() > 0
+            liq prev = smt_highs_c.last()
+            if c_h > prev.lead
+                d1 = use_sym_1 and a_h < prev.ref1
+                d2 = use_sym_2 and b_h < prev.ref2
+                if (not use_sym_1 or d1) and (not use_sym_2 or d2) and (use_sym_1 or use_sym_2)
+                    sfx = use_sym_1 and use_sym_2 ? sym_1_name + "+" + sym_2_name :
+                          use_sym_1 ? sym_1_name : sym_2_name
+                    smt_bear_smts.push(f_smt_draw(prev.tm, prev.chart, smt_tm, smt_ch, false, sym_3_name + " / " + sfx))
+                    if smt_alrt_form
+                        alert("Bearish " + timeframe.period + " SMT: " + sym_3_name + " HH, " + sfx + " LH", alert.freq_once_per_bar)
+        smt_highs_c.push(liq.new(c_h, smt_tm, a_h, b_h, smt_ch))
+
+    // ─── ES leads bullish (ES LL, NQ+YM HL) ─────────────────────
+    if use_sym_1 and not na(smt_pl_a) and smt_show_bull
+        if smt_lows_a.size() > 0
+            liq prev = smt_lows_a.last()
+            if a_l < prev.lead
+                d2 = use_sym_2 and b_l > prev.ref1
+                d3 = use_sym_3 and c_l > prev.ref2
+                if (not use_sym_2 or d2) and (not use_sym_3 or d3) and (use_sym_2 or use_sym_3)
+                    sfx = use_sym_2 and use_sym_3 ? sym_2_name + "+" + sym_3_name :
+                          use_sym_2 ? sym_2_name : sym_3_name
+                    smt_bull_smts.push(f_smt_draw(prev.tm, prev.chart, smt_tm, smt_cl, true, sym_1_name + " / " + sfx))
+                    if smt_alrt_form
+                        alert("Bullish " + timeframe.period + " SMT: " + sym_1_name + " LL, " + sfx + " HL", alert.freq_once_per_bar)
+        smt_lows_a.push(liq.new(a_l, smt_tm, b_l, c_l, smt_cl))
+
+    // ─── NQ leads bullish (NQ LL, ES+YM HL) ─────────────────────
+    if use_sym_2 and not na(smt_pl_b) and smt_show_bull
+        if smt_lows_b.size() > 0
+            liq prev = smt_lows_b.last()
+            if b_l < prev.lead
+                d1 = use_sym_1 and a_l > prev.ref1
+                d3 = use_sym_3 and c_l > prev.ref2
+                if (not use_sym_1 or d1) and (not use_sym_3 or d3) and (use_sym_1 or use_sym_3)
+                    sfx = use_sym_1 and use_sym_3 ? sym_1_name + "+" + sym_3_name :
+                          use_sym_1 ? sym_1_name : sym_3_name
+                    smt_bull_smts.push(f_smt_draw(prev.tm, prev.chart, smt_tm, smt_cl, true, sym_2_name + " / " + sfx))
+                    if smt_alrt_form
+                        alert("Bullish " + timeframe.period + " SMT: " + sym_2_name + " LL, " + sfx + " HL", alert.freq_once_per_bar)
+        smt_lows_b.push(liq.new(b_l, smt_tm, a_l, c_l, smt_cl))
+
+    // ─── YM leads bullish (YM LL, ES+NQ HL) ─────────────────────
+    if use_sym_3 and not na(smt_pl_c) and smt_show_bull
+        if smt_lows_c.size() > 0
+            liq prev = smt_lows_c.last()
+            if c_l < prev.lead
+                d1 = use_sym_1 and a_l > prev.ref1
+                d2 = use_sym_2 and b_l > prev.ref2
+                if (not use_sym_1 or d1) and (not use_sym_2 or d2) and (use_sym_1 or use_sym_2)
+                    sfx = use_sym_1 and use_sym_2 ? sym_1_name + "+" + sym_2_name :
+                          use_sym_1 ? sym_1_name : sym_2_name
+                    smt_bull_smts.push(f_smt_draw(prev.tm, prev.chart, smt_tm, smt_cl, true, sym_3_name + " / " + sfx))
+                    if smt_alrt_form
+                        alert("Bullish " + timeframe.period + " SMT: " + sym_3_name + " LL, " + sfx + " HL", alert.freq_once_per_bar)
+        smt_lows_c.push(liq.new(c_l, smt_tm, a_l, b_l, smt_cl))
+
+// ═══════════════════════════════════════════════════════════════════
+// SMT BROKEN CHECK
+// ═══════════════════════════════════════════════════════════════════
+
+if (smt_del_broken or smt_alrt_break) and barstate.isconfirmed
+    if smt_bear_smts.size() > 0
+        smt_alerted = false
+        for i = smt_bear_smts.size() - 1 to 0
+            smt_obj s = smt_bear_smts.get(i)
+            if high > s.extreme
+                if smt_alrt_break and not smt_alerted
+                    alert("Bearish " + timeframe.period + " SMT Broken", alert.freq_once_per_bar)
+                    smt_alerted := true
+                if smt_del_broken
+                    s.ln.delete()
+                    if not na(s.lb)
+                        s.lb.delete()
+                    smt_bear_smts.remove(i)
+
+    if smt_bull_smts.size() > 0
+        smt_alerted = false
+        for i = smt_bull_smts.size() - 1 to 0
+            smt_obj s = smt_bull_smts.get(i)
+            if low < s.extreme
+                if smt_alrt_break and not smt_alerted
+                    alert("Bullish " + timeframe.period + " SMT Broken", alert.freq_once_per_bar)
+                    smt_alerted := true
+                if smt_del_broken
+                    s.ln.delete()
+                    if not na(s.lb)
+                        s.lb.delete()
+                    smt_bull_smts.remove(i)
+
+// ═══════════════════════════════════════════════════════════════════
 // EVERY BAR LOGIC
 // ═══════════════════════════════════════════════════════════════════
 
@@ -1664,66 +1880,6 @@ if ts_enable
                 array.remove(ts_bear_lines, i)
                 array.remove(ts_bear_lbls,  i)
                 array.remove(ts_bear_lvls,  i)
-
-// ── Swing Divergence: invalidate failed + draw new ────────────────
-if bull_div_lines.size() > 0
-    for i = bull_div_lines.size() - 1 to 0
-        if low < bull_div_levels.get(i)
-            line.delete(bull_div_lines.get(i))
-            bull_div_lines.remove(i)
-            bull_div_levels.remove(i)
-
-if bear_div_lines.size() > 0
-    for i = bear_div_lines.size() - 1 to 0
-        if high > bear_div_levels.get(i)
-            line.delete(bear_div_lines.get(i))
-            bear_div_lines.remove(i)
-            bear_div_levels.remove(i)
-
-esBrokeBelow = esLow  < esLow[1]
-nqBrokeBelow = nqLow  < nqLow[1]
-ymBrokeBelow = ymLow  < ymLow[1]
-
-anyBullDiv = (esBrokeBelow and not nqBrokeBelow and not ymBrokeBelow) or
-             (nqBrokeBelow and not esBrokeBelow and not ymBrokeBelow) or
-             (ymBrokeBelow and not esBrokeBelow and not nqBrokeBelow) or
-             (esBrokeBelow and nqBrokeBelow     and not ymBrokeBelow) or
-             (esBrokeBelow and ymBrokeBelow     and not nqBrokeBelow) or
-             (nqBrokeBelow and ymBrokeBelow     and not esBrokeBelow)
-
-esBrokeAbove = esHigh > esHigh[1]
-nqBrokeAbove = nqHigh > nqHigh[1]
-ymBrokeAbove = ymHigh > ymHigh[1]
-
-anyBearDiv = (esBrokeAbove and not nqBrokeAbove and not ymBrokeAbove) or
-             (nqBrokeAbove and not esBrokeAbove and not ymBrokeAbove) or
-             (ymBrokeAbove and not esBrokeAbove and not nqBrokeAbove) or
-             (esBrokeAbove and nqBrokeAbove     and not ymBrokeAbove) or
-             (esBrokeAbove and ymBrokeAbove     and not nqBrokeAbove) or
-             (nqBrokeAbove and ymBrokeAbove     and not esBrokeAbove)
-
-bool bullAllowed   = not filterByCisd or cisd_bull_prev or pend_bull
-bool bearAllowed   = not filterByCisd or cisd_bear_prev or pend_bear
-color drawBullColor = filterByCisd ? cisd_div_color : bullColor
-color drawBearColor = filterByCisd ? cisd_div_color : bearColor
-int   drawBullWidth = filterByCisd ? cisd_div_width : sd_line_width
-int   drawBearWidth = filterByCisd ? cisd_div_width : sd_line_width
-
-if showBullDiv and anyBullDiv and bullAllowed
-    l = line.new(bar_index[1], low[1], bar_index, low,
-                 color=drawBullColor, width=drawBullWidth, style=line.style_solid)
-    bull_div_lines.push(l)
-    bull_div_levels.push(math.min(low[1], low))
-
-if showBearDiv and anyBearDiv and bearAllowed
-    l = line.new(bar_index[1], high[1], bar_index, high,
-                 color=drawBearColor, width=drawBearWidth, style=line.style_solid)
-    bear_div_lines.push(l)
-    bear_div_levels.push(math.max(high[1], high))
-
-alertcondition(anyBullDiv,               title="Bullish Swing Divergence", message="Bullish Swing Divergence detected across ES/NQ/YM")
-alertcondition(anyBearDiv,               title="Bearish Swing Divergence", message="Bearish Swing Divergence detected across ES/NQ/YM")
-alertcondition(anyBullDiv or anyBearDiv, title="Any Swing Divergence",     message="Swing Divergence detected across ES/NQ/YM")
 
 // ── Feature 11: EQH/EQL accumulation (every bar) ─────────────────
 int eqhl_min_bar = last_bar_index - eqhl_lookback_len
