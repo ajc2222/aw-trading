@@ -27,6 +27,7 @@ Re-index after significant changes: `codebase-memory-mcp cli index_repository --
 - `@property --spin-a` drives all spin animations — `transform:rotate` approach was tried and reverted (mobile compat regressed)
 - `website/drafts/` is the prototyping sandbox — test CSS/HTML experiments there before touching production files
 - Pre-launch HTML gating: `grep -rn "LAUNCH:" website/` finds every gated block (CTAs, pricing, firm buttons)
+- Asset filenames must be URL-safe: no spaces, no `+`, no special characters — use hyphens only (e.g. `ifvg-cisd.png` not `ifvg + cisd.png`). Spaces/plus in filenames cause 404s on Vercel.
 
 ## Project Files
 
