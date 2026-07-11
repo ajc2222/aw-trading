@@ -25,6 +25,7 @@ var string GC = "CISD / Swing Detection"
 cisd_window  = input.int(4,   "Trigger Window",    group=GC, minval=1, maxval=20)
 max_leg      = input.int(10,  "Max Leg Length",    group=GC, minval=1, maxval=30)
 fvg_lookback = input.int(100, "FVG Lookback (bars)", group=GC, minval=1, maxval=500)
+min_fvg_tf   = input.int(1,   "Min FVG Timeframe (min)", group=GC, minval=1, maxval=1440, tooltip="Manipulation leg must tap an FVG that formed on at least this timeframe. 1 = any (uses chart TF).")
 
 var string GPX = "Proximity Filter"
 prox_dedupe    = input.bool(true,  "Remove Duplicate Levels", group=GPX)
@@ -47,9 +48,18 @@ var float[] bear_fvg_top  = array.new_float(0)
 var float[] bear_fvg_vbot = array.new_float(0)  // remaining unmitigated bot
 var int[]   bear_fvg_bar  = array.new_int(0)
 
+// ─── HTF FVG arrays (populated when min_fvg_tf > 1) ──────────────────────
+var float[] htf_bull_fvg_bot = array.new_float(0)
+var float[] htf_bull_fvg_top = array.new_float(0)
+var float[] htf_bear_fvg_bot = array.new_float(0)
+var float[] htf_bear_fvg_top = array.new_float(0)
+
 // ─── CISD pending state ────────────────────────────────────────────────────
 lowest_10  = ta.lowest(low,  10)[1]
 highest_10 = ta.highest(high, 10)[1]
+
+[htf_bar_idx, htf_high_0, htf_low_0, htf_high_2, htf_low_2] = request.security(syminfo.tickerid, str.tostring(min_fvg_tf), [bar_index, high, low, high[2], low[2]], lookahead=barmerge.lookahead_off)
+var int last_htf_bar = -1
 
 var bool  pend_bull          = false
 var int   pend_bull_bar      = 0
@@ -72,6 +82,22 @@ var float[] bear_lvls  = array.new_float()
 
 // ─── Confirmed-bar logic ───────────────────────────────────────────────────
 if barstate.isconfirmed
+
+    // 0. Capture HTF FVGs (fires once per new completed HTF bar)
+    if min_fvg_tf > 1 and htf_bar_idx != last_htf_bar
+        last_htf_bar := htf_bar_idx
+        if htf_low_0 > htf_high_2
+            array.push(htf_bull_fvg_bot, htf_high_2)
+            array.push(htf_bull_fvg_top, htf_low_0)
+            if array.size(htf_bull_fvg_bot) > 50
+                array.shift(htf_bull_fvg_bot)
+                array.shift(htf_bull_fvg_top)
+        if htf_high_0 < htf_low_2
+            array.push(htf_bear_fvg_bot, htf_high_0)
+            array.push(htf_bear_fvg_top, htf_low_2)
+            if array.size(htf_bear_fvg_bot) > 50
+                array.shift(htf_bear_fvg_bot)
+                array.shift(htf_bear_fvg_top)
 
     // 1. Detect new FVGs
     if low > high[2]
@@ -261,12 +287,20 @@ if enable
                     // FVG tap check: manipulation extreme (d_low) must enter unmitigated bull FVG
                     bool fvg_ok = not require_fvg
                     if require_fvg
-                        int n_bfvg = array.size(bull_fvg_bot)
-                        if n_bfvg > 0
-                            for fi = 0 to n_bfvg - 1
-                                if d_low <= array.get(bull_fvg_vtop, fi)
-                                    fvg_ok := true
-                                    break
+                        if min_fvg_tf > 1
+                            int n_htf = array.size(htf_bull_fvg_bot)
+                            if n_htf > 0
+                                for fi = 0 to n_htf - 1
+                                    if d_low <= array.get(htf_bull_fvg_top, fi)
+                                        fvg_ok := true
+                                        break
+                        else
+                            int n_bfvg = array.size(bull_fvg_bot)
+                            if n_bfvg > 0
+                                for fi = 0 to n_bfvg - 1
+                                    if d_low <= array.get(bull_fvg_vtop, fi)
+                                        fvg_ok := true
+                                        break
                     pend_bull := false
                     if fvg_ok
                         // Global cap: remove oldest level across both types
@@ -331,12 +365,20 @@ if enable
                     // FVG tap check: manipulation extreme (d_high) must enter unmitigated bear FVG
                     bool fvg_ok = not require_fvg
                     if require_fvg
-                        int n_bfvg = array.size(bear_fvg_bot)
-                        if n_bfvg > 0
-                            for fi = 0 to n_bfvg - 1
-                                if d_high >= array.get(bear_fvg_vbot, fi)
-                                    fvg_ok := true
-                                    break
+                        if min_fvg_tf > 1
+                            int n_htf = array.size(htf_bear_fvg_bot)
+                            if n_htf > 0
+                                for fi = 0 to n_htf - 1
+                                    if d_high >= array.get(htf_bear_fvg_bot, fi)
+                                        fvg_ok := true
+                                        break
+                        else
+                            int n_bfvg = array.size(bear_fvg_bot)
+                            if n_bfvg > 0
+                                for fi = 0 to n_bfvg - 1
+                                    if d_high >= array.get(bear_fvg_vbot, fi)
+                                        fvg_ok := true
+                                        break
                     pend_bear := false
                     if fvg_ok
                         // Global cap: remove oldest level across both types

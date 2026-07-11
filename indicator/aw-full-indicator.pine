@@ -179,6 +179,7 @@ lbl_size_str = input.string("Small",          "Label Size",       group=g_tsl,
 
 g_tscisd = "Trailing Stop / FVG Detection"
 ts_fvg_lookback = input.int(100, "FVG Lookback (bars)", group=g_tscisd, minval=1, maxval=500)
+min_fvg_tf      = input.int(1,   "Min FVG Timeframe (min)", group=g_tscisd, minval=1, maxval=1440, tooltip="Manipulation leg must tap an FVG that formed on at least this timeframe. 1 = any (uses chart TF).")
 
 g_tsprox = "Trailing Stop Proximity"
 prox_dedupe    = input.bool(true,  "Remove Duplicate Levels",         group=g_tsprox)
@@ -824,6 +825,14 @@ var float[] bear_fvg_top  = array.new_float(0)
 var float[] bear_fvg_vbot = array.new_float(0)
 var int[]   bear_fvg_bar  = array.new_int(0)
 
+var float[] ts_htf_bull_fvg_bot = array.new_float(0)
+var float[] ts_htf_bull_fvg_top = array.new_float(0)
+var float[] ts_htf_bear_fvg_bot = array.new_float(0)
+var float[] ts_htf_bear_fvg_top = array.new_float(0)
+
+[ts_htf_bar_idx, ts_htf_high_0, ts_htf_low_0, ts_htf_high_2, ts_htf_low_2] = request.security(syminfo.tickerid, str.tostring(min_fvg_tf), [bar_index, high, low, high[2], low[2]], lookahead=barmerge.lookahead_off)
+var int ts_last_htf_bar = -1
+
 var line[]  ts_bull_lines = array.new_line()
 var label[] ts_bull_lbls  = array.new_label()
 var float[] ts_bull_lvls  = array.new_float()
@@ -935,6 +944,22 @@ if barstate.isconfirmed
         if na(day_l) or low < day_l
             day_l     := low
             day_l_bar := bar_index
+
+    // ── Feature 10: HTF FVG capture (for min_fvg_tf) ─────────────
+    if min_fvg_tf > 1 and ts_htf_bar_idx != ts_last_htf_bar
+        ts_last_htf_bar := ts_htf_bar_idx
+        if ts_htf_low_0 > ts_htf_high_2
+            array.push(ts_htf_bull_fvg_bot, ts_htf_high_2)
+            array.push(ts_htf_bull_fvg_top, ts_htf_low_0)
+            if array.size(ts_htf_bull_fvg_bot) > 50
+                array.shift(ts_htf_bull_fvg_bot)
+                array.shift(ts_htf_bull_fvg_top)
+        if ts_htf_high_0 < ts_htf_low_2
+            array.push(ts_htf_bear_fvg_bot, ts_htf_high_0)
+            array.push(ts_htf_bear_fvg_top, ts_htf_low_2)
+            if array.size(ts_htf_bear_fvg_bot) > 50
+                array.shift(ts_htf_bear_fvg_bot)
+                array.shift(ts_htf_bear_fvg_top)
 
     // ── Feature 10: FVG detection (trailing stop) ─────────────────
     if low > high[2]
@@ -1096,12 +1121,20 @@ if barstate.isconfirmed
                             d_low_bar := bar_index - j
                     bool fvg_ok = not require_fvg
                     if require_fvg
-                        int n_bfvg = array.size(bull_fvg_bot)
-                        if n_bfvg > 0
-                            for fi = 0 to n_bfvg - 1
-                                if d_low <= array.get(bull_fvg_vtop, fi)
-                                    fvg_ok := true
-                                    break
+                        if min_fvg_tf > 1
+                            int n_htf = array.size(ts_htf_bull_fvg_bot)
+                            if n_htf > 0
+                                for fi = 0 to n_htf - 1
+                                    if d_low <= array.get(ts_htf_bull_fvg_top, fi)
+                                        fvg_ok := true
+                                        break
+                        else
+                            int n_bfvg = array.size(bull_fvg_bot)
+                            if n_bfvg > 0
+                                for fi = 0 to n_bfvg - 1
+                                    if d_low <= array.get(bull_fvg_vtop, fi)
+                                        fvg_ok := true
+                                        break
                     if fvg_ok
                         while array.size(ts_bull_lines) + array.size(ts_bear_lines) >= ts_max_shown
                             bool rm_bull = array.size(ts_bull_lines) > 0 and
@@ -1196,12 +1229,20 @@ if barstate.isconfirmed
                             d_high_bar := bar_index - j
                     bool fvg_ok = not require_fvg
                     if require_fvg
-                        int n_bfvg = array.size(bear_fvg_bot)
-                        if n_bfvg > 0
-                            for fi = 0 to n_bfvg - 1
-                                if d_high >= array.get(bear_fvg_vbot, fi)
-                                    fvg_ok := true
-                                    break
+                        if min_fvg_tf > 1
+                            int n_htf = array.size(ts_htf_bear_fvg_bot)
+                            if n_htf > 0
+                                for fi = 0 to n_htf - 1
+                                    if d_high >= array.get(ts_htf_bear_fvg_bot, fi)
+                                        fvg_ok := true
+                                        break
+                        else
+                            int n_bfvg = array.size(bear_fvg_bot)
+                            if n_bfvg > 0
+                                for fi = 0 to n_bfvg - 1
+                                    if d_high >= array.get(bear_fvg_vbot, fi)
+                                        fvg_ok := true
+                                        break
                     if fvg_ok
                         while array.size(ts_bull_lines) + array.size(ts_bear_lines) >= ts_max_shown
                             bool rm_bull = array.size(ts_bull_lines) > 0 and
@@ -1502,7 +1543,7 @@ if barstate.isconfirmed
     if use_sym_1 and not na(smt_ph_a) and smt_show_bear
         if smt_highs_a.size() > 0
             liq prev = smt_highs_a.last()
-            if a_h > prev.lead
+            if a_h > prev.lead and smt_tm - prev.tm >= tf_ms * smt_pivot_len
                 d2 = use_sym_2 and b_h < prev.ref1
                 d3 = use_sym_3 and c_h < prev.ref2
                 if (not use_sym_2 or d2) and (not use_sym_3 or d3) and (use_sym_2 or use_sym_3)
@@ -1517,7 +1558,7 @@ if barstate.isconfirmed
     if use_sym_2 and not na(smt_ph_b) and smt_show_bear
         if smt_highs_b.size() > 0
             liq prev = smt_highs_b.last()
-            if b_h > prev.lead
+            if b_h > prev.lead and smt_tm - prev.tm >= tf_ms * smt_pivot_len
                 d1 = use_sym_1 and a_h < prev.ref1
                 d3 = use_sym_3 and c_h < prev.ref2
                 if (not use_sym_1 or d1) and (not use_sym_3 or d3) and (use_sym_1 or use_sym_3)
@@ -1532,7 +1573,7 @@ if barstate.isconfirmed
     if use_sym_3 and not na(smt_ph_c) and smt_show_bear
         if smt_highs_c.size() > 0
             liq prev = smt_highs_c.last()
-            if c_h > prev.lead
+            if c_h > prev.lead and smt_tm - prev.tm >= tf_ms * smt_pivot_len
                 d1 = use_sym_1 and a_h < prev.ref1
                 d2 = use_sym_2 and b_h < prev.ref2
                 if (not use_sym_1 or d1) and (not use_sym_2 or d2) and (use_sym_1 or use_sym_2)
@@ -1547,7 +1588,7 @@ if barstate.isconfirmed
     if use_sym_1 and not na(smt_pl_a) and smt_show_bull
         if smt_lows_a.size() > 0
             liq prev = smt_lows_a.last()
-            if a_l < prev.lead
+            if a_l < prev.lead and smt_tm - prev.tm >= tf_ms * smt_pivot_len
                 d2 = use_sym_2 and b_l > prev.ref1
                 d3 = use_sym_3 and c_l > prev.ref2
                 if (not use_sym_2 or d2) and (not use_sym_3 or d3) and (use_sym_2 or use_sym_3)
@@ -1562,7 +1603,7 @@ if barstate.isconfirmed
     if use_sym_2 and not na(smt_pl_b) and smt_show_bull
         if smt_lows_b.size() > 0
             liq prev = smt_lows_b.last()
-            if b_l < prev.lead
+            if b_l < prev.lead and smt_tm - prev.tm >= tf_ms * smt_pivot_len
                 d1 = use_sym_1 and a_l > prev.ref1
                 d3 = use_sym_3 and c_l > prev.ref2
                 if (not use_sym_1 or d1) and (not use_sym_3 or d3) and (use_sym_1 or use_sym_3)
@@ -1577,7 +1618,7 @@ if barstate.isconfirmed
     if use_sym_3 and not na(smt_pl_c) and smt_show_bull
         if smt_lows_c.size() > 0
             liq prev = smt_lows_c.last()
-            if c_l < prev.lead
+            if c_l < prev.lead and smt_tm - prev.tm >= tf_ms * smt_pivot_len
                 d1 = use_sym_1 and a_l > prev.ref1
                 d2 = use_sym_2 and b_l > prev.ref2
                 if (not use_sym_1 or d1) and (not use_sym_2 or d2) and (use_sym_1 or use_sym_2)
