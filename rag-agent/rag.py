@@ -33,6 +33,37 @@ def embed_text(text: str, task_type: str = "RETRIEVAL_DOCUMENT") -> list[float]:
     return result.embeddings[0].values
 
 
+def query_creator(
+    collection: chromadb.Collection,
+    source: str,
+    question: str,
+    n_results: int = 5,
+) -> list[dict]:
+    existing = collection.get(where={"source": source})
+    available = len(existing["ids"])
+    if available == 0:
+        return []
+
+    query_embedding = embed_text(question, task_type="RETRIEVAL_QUERY")
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=min(n_results, available),
+        where={"source": source},
+    )
+
+    return [
+        {
+            "id": results["ids"][0][i],
+            "text": results["documents"][0][i],
+            "source": results["metadatas"][0][i]["source"],
+            "video_id": results["metadatas"][0][i]["video_id"],
+            "title": results["metadatas"][0][i]["title"],
+            "url": results["metadatas"][0][i]["url"],
+        }
+        for i in range(len(results["ids"][0]))
+    ]
+
+
 def upsert_chunks(collection: chromadb.Collection, chunks: list[dict]) -> None:
     if not chunks:
         return
