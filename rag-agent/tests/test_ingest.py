@@ -71,3 +71,52 @@ def test_fetch_transcript_returns_none_on_error():
         MockAPI.return_value.fetch.side_effect = Exception("no captions")
         result = fetch_transcript("abc123")
     assert result is None
+
+
+# --- ingest_creator tests ---
+
+import chromadb
+from ingest import ingest_creator
+
+
+def test_ingest_creator_upserts_chunks():
+    collection = chromadb.EphemeralClient().get_or_create_collection(f"test_ic_{__import__('uuid').uuid4().hex}")
+    creator_config = {"name": "Flux Trades", "playlist_url": "https://youtube.com/playlist?list=PL1"}
+
+    with patch("ingest.fetch_video_metadata") as mock_meta, \
+         patch("ingest.fetch_transcript") as mock_tx, \
+         patch("rag.embed_text") as mock_embed:
+
+        mock_meta.return_value = [{"id": "v1", "title": "Vid 1", "url": "https://yt.com/v1"}]
+        mock_tx.return_value = "a" * 5000
+        mock_embed.return_value = [0.1] * 768
+
+        ingest_creator(collection, "flux_trades", creator_config)
+
+    result = collection.get(where={"source": "flux_trades"})
+    assert len(result["ids"]) > 0
+    assert all(m["video_id"] == "v1" for m in result["metadatas"])
+
+
+def test_ingest_creator_skips_video_already_indexed():
+    collection = chromadb.EphemeralClient().get_or_create_collection(f"test_skip_{__import__('uuid').uuid4().hex}")
+    creator_config = {"name": "Flux Trades", "playlist_url": "https://youtube.com/playlist?list=PL1"}
+
+    collection.upsert(
+        ids=["v1_chunk_0"],
+        embeddings=[[0.0] * 768],
+        documents=["existing content"],
+        metadatas=[{"source": "flux_trades", "video_id": "v1", "title": "Vid 1", "url": "https://yt.com/v1"}],
+    )
+
+    with patch("ingest.fetch_video_metadata") as mock_meta, \
+         patch("ingest.fetch_transcript") as mock_tx, \
+         patch("rag.embed_text") as mock_embed:
+
+        mock_meta.return_value = [{"id": "v1", "title": "Vid 1", "url": "https://yt.com/v1"}]
+        mock_tx.return_value = "new content for v1"
+        mock_embed.return_value = [0.9] * 768
+
+        ingest_creator(collection, "flux_trades", creator_config)
+
+    mock_tx.assert_not_called()
