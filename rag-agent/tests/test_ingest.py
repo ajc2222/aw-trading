@@ -1,4 +1,6 @@
-from ingest import chunk_text
+from unittest.mock import patch
+
+from ingest import chunk_text, fetch_video_metadata, fetch_transcript
 
 
 def test_chunk_text_short_text():
@@ -23,3 +25,49 @@ def test_chunk_text_no_empty_chunks():
     text = "x" * 3000
     chunks = chunk_text(text, chunk_size=2000, overlap=200)
     assert all(len(c) > 0 for c in chunks)
+
+
+def test_fetch_video_metadata_returns_list():
+    mock_info = {
+        "entries": [
+            {"id": "abc123", "title": "Video One"},
+            {"id": "def456", "title": "Video Two"},
+        ]
+    }
+    with patch("yt_dlp.YoutubeDL") as MockYDL:
+        instance = MockYDL.return_value.__enter__.return_value
+        instance.extract_info.return_value = mock_info
+        result = fetch_video_metadata("https://youtube.com/playlist?list=PL123")
+
+    assert result == [
+        {"id": "abc123", "title": "Video One", "url": "https://youtube.com/watch?v=abc123"},
+        {"id": "def456", "title": "Video Two", "url": "https://youtube.com/watch?v=def456"},
+    ]
+
+
+def test_fetch_video_metadata_empty_playlist():
+    mock_info = {"entries": []}
+    with patch("yt_dlp.YoutubeDL") as MockYDL:
+        instance = MockYDL.return_value.__enter__.return_value
+        instance.extract_info.return_value = mock_info
+        result = fetch_video_metadata("https://youtube.com/playlist?list=empty")
+    assert result == []
+
+
+def test_fetch_transcript_returns_joined_text():
+    from youtube_transcript_api._transcripts import FetchedTranscriptSnippet
+    mock_snippets = [
+        FetchedTranscriptSnippet(text="Hello there.", start=0.0, duration=1.5),
+        FetchedTranscriptSnippet(text="Welcome to trading.", start=1.5, duration=2.0),
+    ]
+    with patch("ingest.YouTubeTranscriptApi") as MockAPI:
+        MockAPI.return_value.fetch.return_value = mock_snippets
+        result = fetch_transcript("abc123")
+    assert result == "Hello there. Welcome to trading."
+
+
+def test_fetch_transcript_returns_none_on_error():
+    with patch("ingest.YouTubeTranscriptApi") as MockAPI:
+        MockAPI.return_value.fetch.side_effect = Exception("no captions")
+        result = fetch_transcript("abc123")
+    assert result is None
