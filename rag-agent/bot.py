@@ -36,3 +36,20 @@ def generate_answer(prompt: str) -> str:
         contents=prompt,
     )
     return response.text
+
+
+def format_response(answer: str, chunks: list[dict]) -> str:
+    seen = set()
+    sources = []
+    for chunk in chunks:
+        if chunk["video_id"] not in seen:
+            seen.add(chunk["video_id"])
+            sources.append(f"- [{chunk['title']}]({chunk['url']})")
+    source_block = "\n".join(sources)
+    return f"{answer}\n\n**Sources:**\n{source_block}"
+
+
+def split_message(text: str, limit: int = 2000) -> list[str]:
+    if len(text) <= limit:
+        return [text]
+    return [text[i : i + limit] for i in range(0, len(text), limit)]
