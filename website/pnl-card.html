@@ -108,14 +108,22 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 .tog input:checked+.tog-sl{background:var(--blue)}
 .tog input:checked+.tog-sl::after{transform:translateX(15px)}
 
-/* Export btn */
+/* Export / copy btns */
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
 .btn-exp{
   width:100%;padding:12px;background:var(--blue);color:#fff;border:none;
   border-radius:8px;font-family:var(--disp);font-weight:700;font-size:.88rem;
-  cursor:pointer;transition:opacity .2s,transform .15s;flex-shrink:0;margin-top:4px;
+  cursor:pointer;transition:opacity .2s,transform .15s;flex-shrink:0;
 }
 .btn-exp:hover{opacity:.88;transform:translateY(-1px)}
 .btn-exp:disabled{opacity:.4;cursor:default;transform:none}
+.btn-copy{
+  width:100%;padding:12px;background:transparent;color:var(--white);
+  border:1.5px solid var(--border-s);border-radius:8px;font-family:var(--disp);
+  font-weight:700;font-size:.88rem;cursor:pointer;transition:opacity .2s,transform .15s,border-color .2s;flex-shrink:0;
+}
+.btn-copy:hover{border-color:rgba(255,255,255,.4);transform:translateY(-1px)}
+.btn-copy:disabled{opacity:.4;cursor:default;transform:none}
 
 /* ── Preview area ── */
 .preview-area{
@@ -452,7 +460,10 @@ function checkPw(){
       <div class="tog-row"><span>Logo &amp; domain</span><label class="tog"><input type="checkbox" id="tog-footer" checked><span class="tog-sl"></span></label></div>
     </div>
 
-    <button class="btn-exp" id="export-btn" onclick="exportCard()">Export PNG</button>
+    <div class="btn-row">
+      <button class="btn-exp" id="export-btn" onclick="exportCard()">Export PNG</button>
+      <button class="btn-copy" id="copy-btn" onclick="copyCard()">Copy Image</button>
+    </div>
   </aside>
 
   <!-- ═══ PREVIEW ═══ -->
@@ -890,36 +901,51 @@ function updateScale() {
 
 function refresh() { renderCard(); updateScale(); }
 
-// ── Export ─────────────────────────────────────────────
+// ── Export / Copy ──────────────────────────────────────
+async function renderToCanvas() {
+  await document.fonts.ready;
+  const outer = document.getElementById('card-outer');
+  const prev = outer.style.transform;
+  outer.style.transform = 'scale(1)';
+  try {
+    return await html2canvas(document.getElementById('pnl-card'), {
+      scale:2, useCORS:true, backgroundColor:null, logging:false,
+    });
+  } finally {
+    outer.style.transform = prev;
+  }
+}
+
 async function exportCard() {
   const btn = document.getElementById('export-btn');
   btn.textContent = 'Exporting…'; btn.disabled = true;
-  const outer = document.getElementById('card-outer');
-  const prevTransform = outer.style.transform;
   try {
-    await document.fonts.ready;
-    // reset parent scale so html2canvas sees the element at true 1:1 size
-    outer.style.transform = 'scale(1)';
-    const card = document.getElementById('pnl-card');
-    const canvas = await html2canvas(card, {
-      scale:2, useCORS:true,
-      backgroundColor:null, logging:false,
-    });
+    const canvas = await renderToCanvas();
     const a = document.createElement('a');
     const d = (S.date || todayStr()).replace(/[^a-z0-9]/gi,'-').replace(/-+/g,'-');
     a.download = `aw-pnl-${S.preset}-${S.layout}-${d}.png`;
     a.href = canvas.toDataURL('image/png');
     a.click();
   } catch(err) {
-    btn.textContent = '✕ Export failed';
-    setTimeout(() => { btn.textContent = 'Export PNG'; }, 3000);
-    console.error('Export error:', err);
-    return;
-  } finally {
-    outer.style.transform = prevTransform;
-    if (btn.textContent === 'Exporting…') { btn.textContent = 'Export PNG'; btn.disabled = false; }
+    btn.textContent = '✕ Failed'; setTimeout(()=>{btn.textContent='Export PNG';btn.disabled=false;},3000);
+    console.error('Export error:', err); return;
   }
   btn.textContent = 'Export PNG'; btn.disabled = false;
+}
+
+async function copyCard() {
+  const btn = document.getElementById('copy-btn');
+  btn.textContent = 'Copying…'; btn.disabled = true;
+  try {
+    const canvas = await renderToCanvas();
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = 'Copy Image'; btn.disabled = false; }, 2000);
+  } catch(err) {
+    btn.textContent = '✕ Failed'; setTimeout(()=>{btn.textContent='Copy Image';btn.disabled=false;},3000);
+    console.error('Copy error:', err);
+  }
 }
 
 // ── Wire: preset ───────────────────────────────────────
