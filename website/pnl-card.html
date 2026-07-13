@@ -894,8 +894,12 @@ function refresh() { renderCard(); updateScale(); }
 async function exportCard() {
   const btn = document.getElementById('export-btn');
   btn.textContent = 'Exporting…'; btn.disabled = true;
+  const outer = document.getElementById('card-outer');
+  const prevTransform = outer.style.transform;
   try {
     await document.fonts.ready;
+    // reset parent scale so html2canvas sees the element at true 1:1 size
+    outer.style.transform = 'scale(1)';
     const card = document.getElementById('pnl-card');
     const canvas = await html2canvas(card, {
       scale:2, useCORS:true,
@@ -906,9 +910,16 @@ async function exportCard() {
     a.download = `aw-pnl-${S.preset}-${S.layout}-${d}.png`;
     a.href = canvas.toDataURL('image/png');
     a.click();
+  } catch(err) {
+    btn.textContent = '✕ Export failed';
+    setTimeout(() => { btn.textContent = 'Export PNG'; }, 3000);
+    console.error('Export error:', err);
+    return;
   } finally {
-    btn.textContent = 'Export PNG'; btn.disabled = false;
+    outer.style.transform = prevTransform;
+    if (btn.textContent === 'Exporting…') { btn.textContent = 'Export PNG'; btn.disabled = false; }
   }
+  btn.textContent = 'Export PNG'; btn.disabled = false;
 }
 
 // ── Wire: preset ───────────────────────────────────────
