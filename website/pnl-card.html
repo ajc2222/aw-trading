@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>P&L Card Generator — AW Trading</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+@font-face{font-family:'Archivo';font-weight:300 900;font-display:swap;src:url('/assets/fonts/archivo-variable.woff2') format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-weight:400;font-display:swap;src:url('/assets/fonts/ibm-plex-mono-400.woff2') format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-weight:600;font-display:swap;src:url('/assets/fonts/ibm-plex-mono-600.woff2') format('woff2')}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070709;--panel:#0f1013;
+  --border:rgba(255,255,255,.07);--border-s:rgba(255,255,255,.14);
+  --white:#F5F6F8;--muted:#A8ADB8;
+  --blue:#2E6BFF;--green:#22C55E;--red:#EF4444;
+  --mono:'IBM Plex Mono',monospace;--disp:'Archivo',sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--disp);-webkit-font-smoothing:antialiased;overflow:hidden}
+.app{display:grid;grid-template-columns:300px 1fr;height:100vh}
+
+/* ── Sidebar ── */
+.sidebar{
+  background:var(--panel);border-right:1px solid var(--border);
+  padding:20px;display:flex;flex-direction:column;gap:18px;
+  overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border-s);border-radius:4px}
+.s-head{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;
+  font-weight:600;display:flex;align-items:center;gap:8px;
+  padding-bottom:14px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.s-head::before{content:'';width:18px;height:2px;background:var(--blue);flex-shrink:0}
+.s-label{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+
+/* Fields */
+.field{margin-bottom:9px}
+.field label{display:block;font-size:.7rem;color:var(--muted);font-family:var(--mono);margin-bottom:4px}
+.field input,.field select{
+  width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border-s);
+  border-radius:6px;padding:7px 9px;color:var(--white);font-family:var(--mono);
+  font-size:.8rem;outline:none;transition:border-color .2s;color-scheme:dark;
+}
+.field input:focus,.field select:focus{border-color:var(--blue)}
+.field input[type=range]{padding:4px 0;border:none;background:transparent;accent-color:var(--blue)}
+.field select option{background:#0f1013;color:#F5F6F8}
+
+/* Drop zone - shared style */
+.dz{
+  border:1.5px dashed var(--border-s);border-radius:8px;padding:14px;
+  text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative;
+}
+.dz:hover,.dz.over{border-color:var(--blue);background:rgba(46,107,255,.05)}
+.dz input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+.dz-ico{font-size:1.2rem;margin-bottom:4px}
+.dz-txt{font-size:.72rem;color:var(--muted);line-height:1.5}
+.dz-txt strong{color:var(--blue)}
+.dz-msg{font-family:var(--mono);font-size:.63rem;margin-top:6px;min-height:14px}
+
+/* Preset toggle */
+.preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.preset-btn{
+  border:1.5px solid var(--border-s);border-radius:7px;padding:8px 4px;
+  cursor:pointer;text-align:center;font-size:.63rem;font-family:var(--mono);
+  color:var(--muted);transition:border-color .2s,color .2s,background .2s;background:transparent;
+  line-height:1.4;
+}
+.preset-btn:hover{border-color:rgba(255,255,255,.3);color:var(--white)}
+.preset-btn.active{border-color:var(--blue);color:var(--white);background:rgba(46,107,255,.08)}
+.preset-btn .p-icon{font-size:.95rem;margin-bottom:3px;display:block}
+
+/* Picker grid */
+.picker{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.pick-btn{
+  border:1.5px solid var(--border-s);border-radius:7px;padding:7px 4px;
+  cursor:pointer;text-align:center;font-size:.63rem;font-family:var(--mono);
+  color:var(--muted);transition:border-color .2s,color .2s;background:transparent;
+}
+.pick-btn:hover{border-color:rgba(255,255,255,.3);color:var(--white)}
+.pick-btn.active{border-color:var(--blue);color:var(--white)}
+.swatch{width:20px;height:20px;border-radius:50%;margin:0 auto 4px;border:1px solid rgba(255,255,255,.1)}
+.lay-ico{border-radius:2px;background:var(--border-s);margin:0 auto 4px}
+
+.grad-btn{display:none;font-size:.6rem;font-family:var(--mono);
+  color:var(--muted);transition:border-color .2s,color .2s;background:transparent;
+}
+
+/* Image thumb */
+#bg-thumb{display:none;position:relative;margin-top:6px}
+#bg-thumb img{width:100%;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--border-s)}
+#bg-clear{
+  position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);border:none;
+  color:#fff;border-radius:4px;font-size:.65rem;cursor:pointer;padding:2px 5px;font-family:var(--mono);
+}
+
+/* Toggles */
+.tog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.tog-row span{font-size:.73rem;color:var(--muted)}
+.tog{position:relative;width:32px;height:17px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0;position:absolute}
+.tog-sl{position:absolute;inset:0;background:var(--border-s);border-radius:17px;cursor:pointer;transition:background .2s}
+.tog-sl::after{content:'';position:absolute;width:11px;height:11px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .18s}
+.tog input:checked+.tog-sl{background:var(--blue)}
+.tog input:checked+.tog-sl::after{transform:translateX(15px)}
+
+/* Export btn */
+.btn-exp{
+  width:100%;padding:12px;background:var(--blue);color:#fff;border:none;
+  border-radius:8px;font-family:var(--disp);font-weight:700;font-size:.88rem;
+  cursor:pointer;transition:opacity .2s,transform .15s;flex-shrink:0;margin-top:4px;
+}
+.btn-exp:hover{opacity:.88;transform:translateY(-1px)}
+.btn-exp:disabled{opacity:.4;cursor:default;transform:none}
+
+/* ── Preview area ── */
+.preview-area{
+  display:flex;align-items:center;justify-content:center;overflow:hidden;padding:32px;
+  background:
+    radial-gradient(ellipse at 60% 40%,rgba(46,107,255,.04) 0%,transparent 55%),
+    repeating-linear-gradient(45deg,transparent,transparent 12px,rgba(255,255,255,.012) 12px,rgba(255,255,255,.012) 24px);
+}
+.preview-stack{display:flex;flex-direction:column;align-items:center;gap:12px}
+#preview-label{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.card-scaler{position:relative}
+#card-outer{position:absolute;top:0;left:0;transform-origin:top left}
+
+/* ═══════════════════════════════════════
+   THE CARD
+   ═══════════════════════════════════════ */
+#pnl-card{
+  position:relative;overflow:hidden;
+  font-family:'Archivo',sans-serif;-webkit-font-smoothing:antialiased;
+  background-size:cover !important;background-position:center !important;
+}
+#pnl-card.layout-banner{width:1200px;height:630px}
+#pnl-card.layout-square{width:1080px;height:1080px}
+#pnl-card.layout-story {width:675px; height:1200px}
+
+/* overlay + noise always on top of bg, under content */
+.c-overlay{position:absolute;inset:0;pointer-events:none;z-index:1}
+.c-noise{
+  position:absolute;inset:0;pointer-events:none;z-index:2;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px 200px;mix-blend-mode:overlay;
+}
+.c-inner{position:absolute;inset:0;display:flex;flex-direction:column;z-index:3}
+
+/* accent line */
+.c-accent{height:3px;width:100%;flex-shrink:0}
+
+/* divider */
+.c-div{height:1px;flex-shrink:0;margin-left:0;margin-right:0}
+
+/* shared text elements */
+.c-logo{display:flex;align-items:center;gap:10px}
+.c-logo-mark{display:flex;align-items:center;flex-shrink:0}
+.c-logo-txt{font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase}
+.c-date{font-family:'IBM Plex Mono',monospace;font-size:.76rem;letter-spacing:.04em}
+.c-instr{font-family:'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase}
+.c-pnl-lbl{font-family:'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
+.c-stat{display:flex;flex-direction:column;gap:7px}
+.c-stat-lbl{font-family:'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase}
+.c-stat-val{font-family:'IBM Plex Mono',monospace;font-weight:600}
+
+/* footer with logo */
+.c-footer-inner{display:flex;align-items:center;gap:10px}
+.c-footer-sep{width:1px;height:12px;background:currentColor;opacity:.25;flex-shrink:0}
+.c-footer-logo{display:flex;align-items:center;flex-shrink:0}
+.c-footer-txt{font-family:'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
+
+/* color picker rows */
+.color-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.color-row span{font-size:.73rem;color:var(--muted)}
+.color-row input[type=color]{width:30px;height:22px;border:1px solid var(--border-s);border-radius:4px;padding:1px 2px;background:rgba(255,255,255,.04);cursor:pointer}
+
+/* ── Template: Flex ── */
+.c-body-flex{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.layout-banner .c-body-flex{padding:20px 64px}
+.layout-square .c-body-flex{padding:28px 72px}
+.layout-story  .c-body-flex{padding:28px 52px}
+.c-flex-sub{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+.c-flex-dot{font-family:'IBM Plex Mono',monospace;opacity:.3;font-size:.8rem}
+.c-footer-center .c-footer-inner{justify-content:center}
+
+/* ── Template: Badge ── */
+.c-badge-wrap{display:flex;align-items:flex-start}
+.c-pnl-badge{
+  display:inline-flex;align-items:center;
+  background:rgba(255,255,255,.055);
+  border:1.5px solid rgba(255,255,255,.12);
+  border-radius:16px;
+}
+.layout-banner .c-pnl-badge{padding:20px 44px;border-radius:14px}
+.layout-square .c-pnl-badge{padding:26px 52px;border-radius:18px}
+.layout-story  .c-pnl-badge{padding:18px 36px;border-radius:14px}
+
+/* ── Template: Grid ── */
+.c-grid-panel{display:flex;border-top:1px solid var(--row-div);border-bottom:1px solid var(--row-div);background:rgba(255,255,255,.03)}
+.layout-banner .c-grid-panel{padding:0 64px}
+.layout-square .c-grid-panel{padding:0 72px}
+.layout-story  .c-grid-panel{padding:0 52px}
+.c-grid-stat{display:flex;flex-direction:column;gap:6px;flex:1}
+.layout-banner .c-grid-stat{padding:18px 0}
+.layout-square .c-grid-stat{padding:24px 0}
+.layout-story  .c-grid-stat{padding:18px 0}
+.c-grid-vdiv{width:1px;background:var(--row-div);flex-shrink:0}
+.layout-banner .c-grid-vdiv{margin:14px 32px}
+.layout-square .c-grid-vdiv{margin:18px 40px}
+.layout-story  .c-grid-vdiv{margin:12px 24px}
+
+/* ── Theme colors via CSS vars on the card ── */
+/* We set these as inline style vars on #pnl-card and reference them */
+#pnl-card{
+  --accent:#2E6BFF;
+  --div-c:rgba(255,255,255,.09);
+  --logo-txt:#F5F6F8;
+  --date-c:#A8ADB8;
+  --instr-c:#A8ADB8;
+  --pnl-lbl-c:#A8ADB8;
+  --stat-lbl-c:#A8ADB8;
+  --stat-val-c:#F5F6F8;
+  --footer-c:rgba(168,173,184,.45);
+  --row-div:rgba(255,255,255,.07);
+}
+.c-accent{background:var(--accent)}
+.c-div{background:var(--div-c)}
+.c-logo-txt{color:var(--logo-txt)}
+.c-date{color:var(--date-c)}
+.c-instr{color:var(--instr-c)}
+.c-pnl-lbl{color:var(--pnl-lbl-c)}
+.c-stat-lbl{color:var(--stat-lbl-c)}
+.c-stat-val{color:var(--stat-val-c)}
+.c-footer-txt{color:var(--footer-c)}
+.c-det-row{border-bottom-color:var(--row-div)}
+
+/* ── Banner layout ── */
+.layout-banner .c-header{display:flex;justify-content:space-between;align-items:center;padding:42px 64px 26px}
+.layout-banner .c-body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:20px 64px}
+.layout-banner .c-instr{font-size:.88rem;margin-bottom:8px}
+.layout-banner .c-pnl-num{font-size:90px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-bottom:6px}
+.layout-banner .c-pnl-lbl{font-size:.74rem}
+.layout-banner .c-stats{display:flex;gap:52px;padding:20px 64px}
+.layout-banner .c-stat-lbl{font-size:.66rem}
+.layout-banner .c-stat-val{font-size:.96rem}
+.layout-banner .c-footer-wrap{padding:14px 64px}
+.layout-banner .c-footer-logo{width:18px;height:18px}
+.layout-banner .c-footer-txt{font-size:.6rem}
+/* detail */
+.layout-banner .c-det-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:16px 64px}
+.layout-banner .c-det-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid}
+.layout-banner .c-det-lbl{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--stat-lbl-c)}
+.layout-banner .c-det-val{font-family:'IBM Plex Mono',monospace;font-size:.9rem;font-weight:600;color:var(--stat-val-c)}
+
+/* ── Square layout ── */
+.layout-square .c-header{display:flex;justify-content:space-between;align-items:center;padding:58px 72px 32px}
+.layout-square .c-body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:28px 72px}
+.layout-square .c-instr{font-size:.9rem;margin-bottom:10px}
+.layout-square .c-pnl-num{font-size:104px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-bottom:8px}
+.layout-square .c-pnl-lbl{font-size:.78rem}
+.layout-square .c-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:26px 72px}
+.layout-square .c-stat-lbl{font-size:.68rem}
+.layout-square .c-stat-val{font-size:1rem}
+.layout-square .c-footer-wrap{padding:22px 72px}
+.layout-square .c-footer-logo{width:20px;height:20px}
+.layout-square .c-footer-txt{font-size:.64rem}
+/* detail */
+.layout-square .c-det-grid{display:flex;flex-direction:column;padding:16px 72px}
+.layout-square .c-det-row{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid}
+.layout-square .c-det-lbl{font-family:'IBM Plex Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--stat-lbl-c)}
+.layout-square .c-det-val{font-family:'IBM Plex Mono',monospace;font-size:1.05rem;font-weight:600;color:var(--stat-val-c)}
+
+/* ── Story layout ── */
+.layout-story .c-header{display:flex;justify-content:space-between;align-items:center;padding:60px 52px 44px}
+.layout-story .c-body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:32px 52px}
+.layout-story .c-instr{font-size:.88rem;margin-bottom:10px}
+.layout-story .c-pnl-num{font-size:76px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-bottom:8px}
+.layout-story .c-pnl-lbl{font-size:.76rem}
+.layout-story .c-stats{display:flex;flex-direction:column;padding:4px 52px 20px}
+.layout-story .c-stat-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--row-div)}
+.layout-story .c-stat-lbl{font-size:.7rem}
+.layout-story .c-stat-val{font-size:1rem}
+.layout-story .c-footer-wrap{padding:26px 52px}
+.layout-story .c-footer-logo{width:20px;height:20px}
+.layout-story .c-footer-txt{font-size:.62rem}
+/* detail */
+.layout-story .c-det-grid{display:flex;flex-direction:column;padding:8px 52px 20px}
+.layout-story .c-det-row{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid}
+.layout-story .c-det-lbl{font-family:'IBM Plex Mono',monospace;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--stat-lbl-c)}
+.layout-story .c-det-val{font-family:'IBM Plex Mono',monospace;font-size:1rem;font-weight:600;color:var(--stat-val-c)}
+</style>
+</head>
+<body>
+<div id="pw-gate" style="position:fixed;inset:0;z-index:9999;background:#070709;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;font-family:'IBM Plex Mono',monospace">
+  <div style="font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:#A8ADB8">AW Trading · Admin</div>
+  <input id="pw-input" type="password" placeholder="Password" autocomplete="current-password"
+    style="background:#0f1013;border:1.5px solid #1e2028;border-radius:8px;padding:10px 16px;color:#F5F6F8;font-family:inherit;font-size:.85rem;outline:none;width:220px;text-align:center"
+    onkeydown="if(event.key==='Enter')checkPw()">
+  <button onclick="checkPw()" style="background:#2E6BFF;color:#fff;border:none;border-radius:8px;padding:9px 28px;font-family:inherit;font-size:.8rem;cursor:pointer;letter-spacing:.06em">Enter</button>
+  <div id="pw-err" style="color:#EF4444;font-size:.7rem;min-height:1em"></div>
+</div>
+<script>
+// Change this password
+const PW = 'awtrading2026';
+(function(){if(sessionStorage.getItem('aw-auth')===PW)document.getElementById('pw-gate').style.display='none';})();
+function checkPw(){
+  const v=document.getElementById('pw-input').value;
+  if(v===PW){sessionStorage.setItem('aw-auth',PW);document.getElementById('pw-gate').style.display='none';}
+  else{document.getElementById('pw-err').textContent='Incorrect password';document.getElementById('pw-input').value='';}
+}
+</script>
+<div class="app">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+    <div class="s-head">P&amp;L Card Generator</div>
+
+    <!-- PRESET -->
+    <div>
+      <div class="s-label">Card Preset</div>
+      <div class="preset-grid">
+        <button class="preset-btn active" data-preset="summary">
+          <div class="p-icon">📊</div>
+          Summary
+        </button>
+        <button class="preset-btn" data-preset="detail">
+          <div class="p-icon">📋</div>
+          Trade Detail
+        </button>
+        <button class="preset-btn" data-preset="flex">
+          <div class="p-icon">⚡</div>
+          Flex
+        </button>
+        <button class="preset-btn" data-preset="badge">
+          <div class="p-icon">🏅</div>
+          Badge
+        </button>
+        <button class="preset-btn" data-preset="grid">
+          <div class="p-icon">▦</div>
+          Grid
+        </button>
+      </div>
+    </div>
+
+    <!-- DATA — CSV -->
+    <div>
+      <div class="s-label">CSV Upload</div>
+      <div class="dz" id="csv-dz">
+        <input type="file" id="csv-input" accept=".csv,.txt">
+        <div class="dz-ico">📂</div>
+        <div class="dz-txt">Drop trades CSV or <strong>browse</strong></div>
+        <div class="dz-msg" id="csv-msg"></div>
+      </div>
+    </div>
+
+    <!-- CARD DATA — summary fields -->
+    <div id="data-summary">
+      <div class="s-label">Trade Data</div>
+      <div class="field"><label>Total P&amp;L</label><input type="text" id="m-pnl" placeholder="+14,503.96"></div>
+      <div class="field"><label>RR (e.g. 2.1R)</label><input type="text" id="m-rr" placeholder="2.1R"></div>
+      <div class="field"><label>Points</label><input type="text" id="m-pts" placeholder="24 pts"></div>
+      <div class="field"><label>Accounts Copied</label><input type="number" id="m-accts" placeholder="9"></div>
+    </div>
+
+    <!-- CARD DATA — detail fields -->
+    <div id="data-detail" style="display:none">
+      <div class="s-label">Trade Data</div>
+      <div class="field"><label>P&amp;L</label><input type="text" id="d-pnl" placeholder="+4,865.00"></div>
+      <div class="field"><label>Contracts</label><input type="text" id="d-contracts" placeholder="10"></div>
+      <div class="field"><label>Entry Price</label><input type="text" id="d-entry" placeholder="$29,907.00"></div>
+      <div class="field"><label>Exit Price</label><input type="text" id="d-exit" placeholder="$29,662.25"></div>
+    </div>
+
+    <!-- CARD SETTINGS -->
+    <div>
+      <div class="s-label">Card Settings</div>
+      <div class="field">
+        <label>Ticker</label>
+        <select id="c-instr">
+          <option value="ES1!">ES1!</option>
+          <option value="NQ1!">NQ1!</option>
+          <option value="MNQ1!">MNQ1!</option>
+          <option value="MES1!">MES1!</option>
+          <option value="custom">Custom…</option>
+        </select>
+      </div>
+      <div class="field" id="c-instr-custom-wrap" style="display:none">
+        <input type="text" id="c-instr-custom" placeholder="e.g. CL1!, RTY1!">
+      </div>
+      <div class="field"><label>P&amp;L Label</label><input type="text" id="c-pnl-lbl" value="Daily P&L"></div>
+      <div class="field"><label>Domain</label><input type="text" id="c-domain" value="joinawtrading.com"></div>
+    </div>
+
+    <!-- BACKGROUND -->
+    <div>
+      <div class="s-label">Background</div>
+      <!-- image upload -->
+      <div class="dz" id="img-dz">
+        <input type="file" id="img-input" accept="image/*">
+        <div class="dz-ico">🖼️</div>
+        <div class="dz-txt">Upload background image or <strong>browse</strong></div>
+      </div>
+      <div id="bg-thumb">
+        <img id="bg-preview" src="" alt="">
+        <button id="bg-clear">✕ Remove</button>
+      </div>
+
+    </div>
+
+    <!-- LAYOUT -->
+    <div>
+      <div class="s-label">Layout</div>
+      <div class="picker" id="layout-picker">
+        <button class="pick-btn active" data-layout="banner">
+          <div class="lay-ico" style="width:36px;height:18px"></div>Banner
+        </button>
+        <button class="pick-btn" data-layout="square">
+          <div class="lay-ico" style="width:22px;height:22px"></div>Square
+        </button>
+        <button class="pick-btn" data-layout="story">
+          <div class="lay-ico" style="width:16px;height:28px"></div>Story
+        </button>
+      </div>
+    </div>
+
+    <!-- COLOR TEMPLATES -->
+    <div>
+      <div class="s-label">Color Template</div>
+      <div class="picker" id="theme-picker" style="grid-template-columns:repeat(4,1fr)">
+        <button class="pick-btn active" data-theme="aw">
+          <div class="swatch" style="background:linear-gradient(135deg,#070709 50%,#2E6BFF 50%)"></div>AW
+        </button>
+        <button class="pick-btn" data-theme="blueprint">
+          <div class="swatch" style="background:linear-gradient(135deg,#030b1e 40%,#4D9FFF 100%)"></div>Blueprint
+        </button>
+        <button class="pick-btn" data-theme="neon">
+          <div class="swatch" style="background:linear-gradient(135deg,#040d08 40%,#00FF7F 100%)"></div>Neon
+        </button>
+        <button class="pick-btn" data-theme="ember">
+          <div class="swatch" style="background:linear-gradient(135deg,#130400 40%,#FF6B35 100%)"></div>Ember
+        </button>
+        <button class="pick-btn" data-theme="gold">
+          <div class="swatch" style="background:linear-gradient(135deg,#0d0900 40%,#F5A623 100%)"></div>Gold
+        </button>
+        <button class="pick-btn" data-theme="crimson">
+          <div class="swatch" style="background:linear-gradient(135deg,#0f0005 40%,#FF3860 100%)"></div>Crimson
+        </button>
+        <button class="pick-btn" data-theme="violet">
+          <div class="swatch" style="background:linear-gradient(135deg,#0a0514 40%,#A855F7 100%)"></div>Violet
+        </button>
+        <button class="pick-btn" data-theme="minimal">
+          <div class="swatch" style="background:linear-gradient(135deg,#0A0A0A 50%,#fff 50%)"></div>Minimal
+        </button>
+      </div>
+    </div>
+
+    <!-- COLORS -->
+    <div>
+      <div class="s-label">Text Colors</div>
+      <div class="color-row"><span>Stats labels &amp; values</span><input type="color" id="c-stats-color" value="#A8ADB8"></div>
+      <div class="color-row"><span>Domain / URL text</span><input type="color" id="c-url-color" value="#A8ADB8"></div>
+    </div>
+
+    <!-- VISIBILITY -->
+    <div>
+      <div class="s-label">Show / Hide</div>
+      <div class="tog-row"><span>Stats bar</span><label class="tog"><input type="checkbox" id="tog-stats" checked><span class="tog-sl"></span></label></div>
+      <div class="tog-row"><span>Ticker label</span><label class="tog"><input type="checkbox" id="tog-instr" checked><span class="tog-sl"></span></label></div>
+      <div class="tog-row"><span>Logo &amp; domain</span><label class="tog"><input type="checkbox" id="tog-footer" checked><span class="tog-sl"></span></label></div>
+    </div>
+
+    <button class="btn-exp" id="export-btn" onclick="exportCard()">Export PNG</button>
+  </aside>
+
+  <!-- ═══ PREVIEW ═══ -->
+  <main class="preview-area" id="preview-area">
+    <div class="preview-stack">
+      <span id="preview-label" style="font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Preview — 1200 × 630</span>
+      <div class="card-scaler" id="card-scaler">
+        <div id="card-outer">
+          <div id="pnl-card" class="layout-banner"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ── State ─────────────────────────────────────────────
+const S = {
+  preset: 'summary',
+  theme: 'aw',
+  layout: 'banner',
+  bgImage: null,
+  bgDim: 0.5,
+  // summary
+  pnl: null, rr: '', points: '', accounts: null,
+  // detail
+  dpnl: null, contracts: '', entryPrice: '', exitPrice: '',
+  // shared
+  instr: 'ES1!', pnlLbl: 'Daily P&L', domain: 'joinawtrading.com',
+  showStats: true, showInstr: true, showFooter: true,
+  // color overrides
+  statsColor: '', urlColor: '',
+};
+
+const DIMS = {
+  banner: { w:1200, h:630,  label:'1200 × 630'  },
+  square: { w:1080, h:1080, label:'1080 × 1080' },
+  story:  { w:675,  h:1200, label:'675 × 1200'  },
+};
+
+const THEMES = {
+  aw:       { cardBg:'#070709',                                                          accent:'#2E6BFF', divC:'rgba(255,255,255,.09)', logotxt:'#F5F6F8',  dateC:'#A8ADB8',               instrC:'#A8ADB8',               pnlLblC:'#A8ADB8',               statLblC:'#A8ADB8',              statValC:'#F5F6F8', footerC:'rgba(168,173,184,.45)',  rowDiv:'rgba(255,255,255,.08)' },
+  blueprint:{ cardBg:'linear-gradient(135deg,#030b1e 0%,#0a1640 100%)',                 accent:'#4D9FFF', divC:'rgba(77,159,255,.18)',  logotxt:'#d0e4ff',   dateC:'rgba(77,159,255,.7)',   instrC:'rgba(77,159,255,.7)',   pnlLblC:'rgba(77,159,255,.65)',  statLblC:'rgba(77,159,255,.55)', statValC:'#d0e4ff', footerC:'rgba(77,159,255,.3)',    rowDiv:'rgba(77,159,255,.1)' },
+  neon:     { cardBg:'linear-gradient(135deg,#040d08 0%,#071a0e 100%)',                 accent:'#00FF7F', divC:'rgba(0,255,127,.14)',   logotxt:'#ffffff',   dateC:'#00FF7F',               instrC:'rgba(0,255,127,.65)',   pnlLblC:'rgba(0,255,127,.6)',    statLblC:'rgba(0,255,127,.5)',   statValC:'#00FF7F', footerC:'rgba(0,255,127,.3)',     rowDiv:'rgba(0,255,127,.08)' },
+  ember:    { cardBg:'linear-gradient(135deg,#130400 0%,#2d0d00 100%)',                 accent:'#FF6B35', divC:'rgba(255,107,53,.18)',  logotxt:'#ffe0d0',   dateC:'rgba(255,107,53,.75)',  instrC:'rgba(255,107,53,.75)',  pnlLblC:'rgba(255,107,53,.65)',  statLblC:'rgba(255,107,53,.55)', statValC:'#ffe0d0', footerC:'rgba(255,107,53,.3)',    rowDiv:'rgba(255,107,53,.1)' },
+  gold:     { cardBg:'linear-gradient(135deg,#0d0900 0%,#1e1400 100%)',                 accent:'#F5A623', divC:'rgba(245,166,35,.18)',  logotxt:'#fff3cc',   dateC:'rgba(245,166,35,.7)',   instrC:'rgba(245,166,35,.7)',   pnlLblC:'rgba(245,166,35,.65)',  statLblC:'rgba(245,166,35,.55)', statValC:'#fff3cc', footerC:'rgba(245,166,35,.3)',    rowDiv:'rgba(245,166,35,.1)' },
+  crimson:  { cardBg:'linear-gradient(135deg,#0f0005 0%,#200010 100%)',                 accent:'#FF3860', divC:'rgba(255,56,96,.18)',   logotxt:'#ffd0da',   dateC:'rgba(255,56,96,.7)',    instrC:'rgba(255,56,96,.7)',    pnlLblC:'rgba(255,56,96,.65)',   statLblC:'rgba(255,56,96,.55)',  statValC:'#ffd0da', footerC:'rgba(255,56,96,.3)',     rowDiv:'rgba(255,56,96,.1)' },
+  violet:   { cardBg:'linear-gradient(135deg,#0a0514 0%,#180a30 100%)',                 accent:'#A855F7', divC:'rgba(168,85,247,.18)',  logotxt:'#ead6ff',   dateC:'rgba(168,85,247,.7)',   instrC:'rgba(168,85,247,.7)',   pnlLblC:'rgba(168,85,247,.65)',  statLblC:'rgba(168,85,247,.55)', statValC:'#ead6ff', footerC:'rgba(168,85,247,.3)',    rowDiv:'rgba(168,85,247,.1)' },
+  minimal:  { cardBg:'#0A0A0A',                                                          accent:'#ffffff', divC:'rgba(255,255,255,.07)', logotxt:'#ffffff',   dateC:'rgba(255,255,255,.45)', instrC:'rgba(255,255,255,.45)', pnlLblC:'rgba(255,255,255,.42)', statLblC:'rgba(255,255,255,.4)', statValC:'#ffffff', footerC:'rgba(255,255,255,.22)',  rowDiv:'rgba(255,255,255,.06)' },
+};
+
+// ── Helpers ────────────────────────────────────────────
+function parseMoney(s) {
+  if (!s) return NaN;
+  s = String(s).trim();
+  const neg = s.includes('(') || /^[-−]/.test(s);
+  const n = parseFloat(s.replace(/[$,()%\s−]/g, ''));
+  return isNaN(n) ? NaN : (neg ? -Math.abs(n) : n);
+}
+function fmtMoney(n, force) {
+  if (n === null || n === undefined || isNaN(n)) return force ? '+$0.00' : null;
+  const abs = Math.abs(n).toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2});
+  return (n >= 0 ? '+' : '−') + '$' + abs;
+}
+function pnlColor(n) {
+  if (S.theme === 'neon') return '#00FF7F';
+  if (n !== null && !isNaN(n) && n < 0) return '#EF4444';
+  return '#22C55E';
+}
+function todayStr() {
+  return new Date().toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'});
+}
+function detectCol(h, pats) { return h.findIndex(c => pats.some(p => c.includes(p))); }
+function splitRow(line) {
+  const out=[]; let cur='',q=false;
+  for (const c of line){ if(c==='"')q=!q; else if(c===','&&!q){out.push(cur.trim());cur='';}else cur+=c; }
+  out.push(cur.trim()); return out;
+}
+
+// ── CSV parse ──────────────────────────────────────────
+function parseCSV(text) {
+  const lines = text.trim().replace(/\r\n|\r/g,'\n').split('\n').filter(l=>l.trim());
+  if (lines.length < 2) return null;
+  const hdrs = splitRow(lines[0]).map(h=>h.toLowerCase().replace(/^"|"$/g,''));
+  const pnlI = detectCol(hdrs, ['p&l','pnl','profit','realized','net pnl','gain','net profit']);
+  if (pnlI<0) return null;
+  const symI  = detectCol(hdrs, ['instrument','symbol','contract','ticker','market']);
+  const qtyI  = detectCol(hdrs, ['qty','quantity','contracts','size','volume']);
+  const entI  = detectCol(hdrs, ['buyprice','buy price','entry','fill price','entry price','avg entry']);
+  const exiI  = detectCol(hdrs, ['sellprice','sell price','exit','close price','exit price','avg exit']);
+  const trades=[];
+  for (let i=1;i<lines.length;i++){
+    const r=splitRow(lines[i]);
+    const v=parseMoney(r[pnlI]);
+    if(!isNaN(v)) trades.push({pnl:v,sym:symI>=0?r[symI]:null,qty:qtyI>=0?r[qtyI]:null,entry:entI>=0?r[entI]:null,exit:exiI>=0?r[exiI]:null});
+  }
+  if (!trades.length) return null;
+  const total  = trades.reduce((s,t)=>s+t.pnl, 0);
+  const winners = trades.filter(t=>t.pnl>0);
+  const losers  = trades.filter(t=>t.pnl<0);
+  const best    = trades.reduce((a,b)=>b.pnl>a.pnl?b:a);
+
+  // RR: avg winner / avg loser (absolute), formatted as "1.8R"
+  const avgWin  = winners.length ? winners.reduce((s,t)=>s+t.pnl,0)/winners.length : 0;
+  const avgLoss = losers.length  ? losers.reduce((s,t)=>s+Math.abs(t.pnl),0)/losers.length : 0;
+  const rr = avgLoss > 0 ? (avgWin/avgLoss).toFixed(1)+'R' : winners.length ? '∞R' : '—';
+
+  // Points: sum of (sellPrice - buyPrice) per trade — works for longs in Tradovate format
+  let totalPts = null;
+  if (entI >= 0 && exiI >= 0) {
+    const pts = trades.reduce((s,t) => {
+      const en = parseFloat(String(t.entry||'').replace(/[$,]/g,''));
+      const ex = parseFloat(String(t.exit ||'').replace(/[$,]/g,''));
+      return s + (isNaN(en)||isNaN(ex) ? 0 : ex - en);
+    }, 0);
+    totalPts = Math.round(pts*100)/100; // 2dp
+  }
+
+  return {
+    total, count: trades.length,
+    winRate: Math.round(winners.length/trades.length*100),
+    rr, points: totalPts !== null ? totalPts+' pts' : null,
+    best: best.pnl,
+    symbols: [...new Set(trades.map(t=>t.sym).filter(Boolean))],
+    contracts: best.qty, entryPrice: best.entry, exitPrice: best.exit,
+  };
+}
+
+// ── Logo — fetch to data URL (same-origin, no CORS issues, works in html2canvas) ──
+let LOGO_DATA = '';
+
+async function loadLogo() {
+  try {
+    const res = await fetch('/assets/aw_logo-removebg-preview.png');
+    if (!res.ok) throw new Error('404');
+    const blob = await res.blob();
+    LOGO_DATA = await new Promise((ok, fail) => {
+      const fr = new FileReader();
+      fr.onload = () => ok(fr.result);
+      fr.onerror = fail;
+      fr.readAsDataURL(blob);
+    });
+  } catch {
+    // non-fatal — card still works without logo
+  }
+}
+
+const LOGO_IMG = (h) => LOGO_DATA
+  ? `<img src="${LOGO_DATA}" alt="AW" style="height:${h}px;width:auto;display:block">`
+  : `<span style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:${Math.round(h*.55)}px;letter-spacing:.05em;color:#F5F6F8">AW</span>`;
+
+// ── Apply background to card ───────────────────────────
+function applyCardBg() {
+  if (!S.bgImage) return;
+  const card = document.getElementById('pnl-card');
+  card.style.backgroundImage = `url("${S.bgImage}")`;
+  card.style.backgroundSize  = 'cover';
+  card.style.backgroundPosition = 'center';
+}
+
+// ── Apply theme CSS vars to card ───────────────────────
+function applyTheme() {
+  const card = document.getElementById('pnl-card');
+  const t = THEMES[S.theme];
+  // apply card background from theme (unless user has a custom image)
+  if (!S.bgImage) {
+    const bg = t.cardBg;
+    if (bg.startsWith('linear')) { card.style.backgroundImage = bg; card.style.backgroundColor = ''; }
+    else { card.style.backgroundImage = 'none'; card.style.backgroundColor = bg; }
+  }
+  card.style.setProperty('--accent',    t.accent);
+  card.style.setProperty('--div-c',     t.divC);
+  card.style.setProperty('--logo-txt',  t.logotxt);
+  card.style.setProperty('--date-c',    t.dateC);
+  card.style.setProperty('--instr-c',   t.instrC);
+  card.style.setProperty('--pnl-lbl-c', t.pnlLblC);
+  card.style.setProperty('--stat-lbl-c',t.statLblC);
+  card.style.setProperty('--stat-val-c',t.statValC);
+  card.style.setProperty('--footer-c',  t.footerC);
+  card.style.setProperty('--row-div',   t.rowDiv);
+}
+
+// ── Render card ────────────────────────────────────────
+function renderCard() {
+  const card = document.getElementById('pnl-card');
+  const { preset, layout, showStats, showInstr, showFooter } = S;
+
+  applyTheme();    // sets theme bg + color vars
+  applyCardBg();   // overrides bg if user picked a gradient or image
+
+  const dateTx  = S.date || todayStr();
+  const pnlVal  = preset === 'summary' ? S.pnl : S.dpnl;
+  const col     = pnlColor(pnlVal);
+  const pnlTx   = fmtMoney(pnlVal, true);
+  const sStyle  = S.statsColor ? ` style="color:${S.statsColor}"` : '';
+  const uStyle  = S.urlColor   ? ` style="color:${S.urlColor}"`   : '';
+
+  const header = `
+    <div class="c-header">
+      <div class="c-logo">
+        <div class="c-logo-mark">${LOGO_IMG(36)}</div>
+      </div>
+      <span class="c-date">${dateTx}</span>
+    </div>
+    <div class="c-accent"></div>`;
+
+  const instrHtml = (showInstr && S.instr)
+    ? `<div class="c-instr">${S.instr}</div>` : '';
+
+  const footerHtml = showFooter ? `
+    <div class="c-footer-wrap" style="border-top:1px solid var(--row-div)">
+      <div class="c-footer-inner">
+        <div class="c-footer-logo">${LOGO_IMG(18)}</div>
+        <span class="c-footer-sep"></span>
+        <span class="c-footer-txt"${uStyle}>${S.domain}</span>
+      </div>
+    </div>` : '';
+
+  // ── SUMMARY PRESET ─────────────────────────────────
+  if (preset === 'summary') {
+    const rrTx  = S.rr      || '—';
+    const ptsTx = S.points   || '—';
+    const acTx  = S.accounts !== null ? S.accounts : '—';
+
+    let statsHtml = '';
+    if (showStats) {
+      if (layout === 'story') {
+        statsHtml = `
+          <div class="c-div" style="margin:0 52px"></div>
+          <div class="c-stats">
+            <div class="c-stat-row"><span class="c-stat-lbl"${sStyle}>RR</span><span class="c-stat-val"${sStyle}>${rrTx}</span></div>
+            <div class="c-stat-row"><span class="c-stat-lbl"${sStyle}>Points</span><span class="c-stat-val"${sStyle}>${ptsTx}</span></div>
+            <div class="c-stat-row" style="border-bottom:none"><span class="c-stat-lbl"${sStyle}>Accounts Copied</span><span class="c-stat-val"${sStyle}>${acTx}</span></div>
+          </div>`;
+      } else {
+        statsHtml = `
+          <div class="c-div"></div>
+          <div class="c-stats">
+            <div class="c-stat"><span class="c-stat-lbl"${sStyle}>RR</span><span class="c-stat-val"${sStyle}>${rrTx}</span></div>
+            <div class="c-stat"><span class="c-stat-lbl"${sStyle}>Points</span><span class="c-stat-val"${sStyle}>${ptsTx}</span></div>
+            <div class="c-stat"><span class="c-stat-lbl"${sStyle}>Accounts Copied</span><span class="c-stat-val"${sStyle}>${acTx}</span></div>
+          </div>`;
+      }
+    }
+
+    card.innerHTML = `
+      <div class="c-overlay" style="background:rgba(0,0,0,${S.bgDim})"></div>
+      <div class="c-noise"></div>
+      <div class="c-inner">
+        ${header}
+        <div class="c-body">
+          ${instrHtml}
+          <div class="c-pnl-num" style="color:${col}">${pnlTx}</div>
+          <div class="c-pnl-lbl">${S.pnlLbl}</div>
+        </div>
+        ${statsHtml}
+        ${footerHtml}
+      </div>`;
+  }
+
+  // ── DETAIL PRESET ──────────────────────────────────
+  else if (preset === 'detail') {
+    const conTx   = S.contracts  || '—';
+    const entTx   = S.entryPrice || '—';
+    const exTx    = S.exitPrice  || '—';
+    const totalTx = fmtMoney(S.dpnl, true);
+
+    let detailHtml = '';
+    if (showStats) {
+      // banner gets a 2-col grid, others get stacked rows
+      if (layout === 'banner') {
+        detailHtml = `
+          <div class="c-div"></div>
+          <div class="c-det-grid">
+            <div class="c-det-row"><span class="c-det-lbl"${sStyle}>Contracts</span><span class="c-det-val"${sStyle}>${conTx}</span></div>
+            <div class="c-det-row"><span class="c-det-lbl"${sStyle}>Entry Price</span><span class="c-det-val"${sStyle}>${entTx}</span></div>
+            <div class="c-det-row" style="border-bottom:none"><span class="c-det-lbl"${sStyle}>Exit Price</span><span class="c-det-val"${sStyle}>${exTx}</span></div>
+            <div class="c-det-row" style="border-bottom:none"><span class="c-det-lbl"${sStyle}>Total P&amp;L</span><span class="c-det-val" style="color:${col}">${totalTx}</span></div>
+          </div>`;
+      } else {
+        detailHtml = `
+          <div class="c-div" style="${layout==='story'?'margin:0 52px':''}"></div>
+          <div class="c-det-grid">
+            <div class="c-det-row"><span class="c-det-lbl"${sStyle}>Contracts</span><span class="c-det-val"${sStyle}>${conTx}</span></div>
+            <div class="c-det-row"><span class="c-det-lbl"${sStyle}>Entry Price</span><span class="c-det-val"${sStyle}>${entTx}</span></div>
+            <div class="c-det-row"><span class="c-det-lbl"${sStyle}>Exit Price</span><span class="c-det-val"${sStyle}>${exTx}</span></div>
+            <div class="c-det-row" style="border-bottom:none"><span class="c-det-lbl"${sStyle}>Total P&amp;L</span><span class="c-det-val" style="color:${col}">${totalTx}</span></div>
+          </div>`;
+      }
+    }
+
+    card.innerHTML = `
+      <div class="c-overlay" style="background:rgba(0,0,0,${S.bgDim})"></div>
+      <div class="c-noise"></div>
+      <div class="c-inner">
+        ${header}
+        <div class="c-body">
+          ${instrHtml}
+          <div class="c-pnl-num" style="color:${col}">${pnlTx}</div>
+          <div class="c-pnl-lbl">${S.pnlLbl}</div>
+        </div>
+        ${detailHtml}
+        ${footerHtml}
+      </div>`;
+  }
+
+  // ── FLEX PRESET — minimal centered ─────────────────
+  else if (preset === 'flex') {
+    const footerCentered = showFooter ? `
+      <div class="c-footer-wrap c-footer-center" style="border-top:1px solid var(--row-div)">
+        <div class="c-footer-inner">
+          <div class="c-footer-logo">${LOGO_IMG(18)}</div>
+          <span class="c-footer-sep"></span>
+          <span class="c-footer-txt"${uStyle}>${S.domain}</span>
+        </div>
+      </div>` : '';
+
+    card.innerHTML = `
+      <div class="c-overlay" style="background:rgba(0,0,0,${S.bgDim})"></div>
+      <div class="c-noise"></div>
+      <div class="c-inner">
+        ${header}
+        <div class="c-body-flex">
+          <div class="c-pnl-num" style="color:${col}">${pnlTx}</div>
+          <div class="c-flex-sub">
+            ${showInstr && S.instr ? `<span class="c-instr" style="margin:0">${S.instr}</span><span class="c-flex-dot">·</span>` : ''}
+            <span class="c-pnl-lbl">${S.pnlLbl}</span>
+          </div>
+        </div>
+        ${footerCentered}
+      </div>`;
+  }
+
+  // ── BADGE PRESET — P&L in glass pill ───────────────
+  else if (preset === 'badge') {
+    const rrTx  = S.rr      || '—';
+    const ptsTx = S.points  || '—';
+    const acTx  = S.accounts !== null ? S.accounts : '—';
+
+    const badgeStats = showStats ? (layout === 'story' ? `
+      <div class="c-div" style="margin:0 52px"></div>
+      <div class="c-stats">
+        <div class="c-stat-row"><span class="c-stat-lbl"${sStyle}>RR</span><span class="c-stat-val"${sStyle}>${rrTx}</span></div>
+        <div class="c-stat-row"><span class="c-stat-lbl"${sStyle}>Points</span><span class="c-stat-val"${sStyle}>${ptsTx}</span></div>
+        <div class="c-stat-row" style="border-bottom:none"><span class="c-stat-lbl"${sStyle}>Accounts Copied</span><span class="c-stat-val"${sStyle}>${acTx}</span></div>
+      </div>` : `
+      <div class="c-div"></div>
+      <div class="c-stats">
+        <div class="c-stat"><span class="c-stat-lbl"${sStyle}>RR</span><span class="c-stat-val"${sStyle}>${rrTx}</span></div>
+        <div class="c-stat"><span class="c-stat-lbl"${sStyle}>Points</span><span class="c-stat-val"${sStyle}>${ptsTx}</span></div>
+        <div class="c-stat"><span class="c-stat-lbl"${sStyle}>Accounts Copied</span><span class="c-stat-val"${sStyle}>${acTx}</span></div>
+      </div>`) : '';
+
+    card.innerHTML = `
+      <div class="c-overlay" style="background:rgba(0,0,0,${S.bgDim})"></div>
+      <div class="c-noise"></div>
+      <div class="c-inner">
+        ${header}
+        <div class="c-body">
+          ${instrHtml}
+          <div class="c-badge-wrap">
+            <div class="c-pnl-badge">
+              <span class="c-pnl-num" style="color:${col}">${pnlTx}</span>
+            </div>
+          </div>
+          <div class="c-pnl-lbl" style="margin-top:14px">${S.pnlLbl}</div>
+        </div>
+        ${badgeStats}
+        ${footerHtml}
+      </div>`;
+  }
+
+  // ── GRID PRESET — stats in highlighted panel ────────
+  else if (preset === 'grid') {
+    const rrTx  = S.rr      || '—';
+    const ptsTx = S.points  || '—';
+    const acTx  = S.accounts !== null ? S.accounts : '—';
+
+    const gridPanel = showStats ? `
+      <div class="c-grid-panel">
+        <div class="c-grid-stat">
+          <span class="c-stat-lbl"${sStyle}>RR</span>
+          <span class="c-stat-val"${sStyle}>${rrTx}</span>
+        </div>
+        <div class="c-grid-vdiv"></div>
+        <div class="c-grid-stat">
+          <span class="c-stat-lbl"${sStyle}>Points</span>
+          <span class="c-stat-val"${sStyle}>${ptsTx}</span>
+        </div>
+        <div class="c-grid-vdiv"></div>
+        <div class="c-grid-stat">
+          <span class="c-stat-lbl"${sStyle}>Accounts</span>
+          <span class="c-stat-val"${sStyle}>${acTx}</span>
+        </div>
+      </div>` : '';
+
+    card.innerHTML = `
+      <div class="c-overlay" style="background:rgba(0,0,0,${S.bgDim})"></div>
+      <div class="c-noise"></div>
+      <div class="c-inner">
+        ${header}
+        <div class="c-body">
+          ${instrHtml}
+          <div class="c-pnl-num" style="color:${col}">${pnlTx}</div>
+          <div class="c-pnl-lbl">${S.pnlLbl}</div>
+        </div>
+        ${gridPanel}
+        ${footerHtml}
+      </div>`;
+  }
+}
+
+// ── Scale preview ──────────────────────────────────────
+function updateScale() {
+  const { w, h, label } = DIMS[S.layout];
+  const card   = document.getElementById('pnl-card');
+  const outer  = document.getElementById('card-outer');
+  const scaler = document.getElementById('card-scaler');
+  const area   = document.getElementById('preview-area');
+  card.style.width  = w + 'px';
+  card.style.height = h + 'px';
+  const avW = area.clientWidth  - 64;
+  const avH = area.clientHeight - 80;
+  const sc  = Math.min(avW / w, avH / h, 1);
+  outer.style.transform = `scale(${sc})`;
+  outer.style.transformOrigin = 'top left';
+  outer.style.width  = w + 'px';
+  outer.style.height = h + 'px';
+  scaler.style.width  = Math.round(w * sc) + 'px';
+  scaler.style.height = Math.round(h * sc) + 'px';
+  document.getElementById('preview-label').textContent = `Preview — ${label}`;
+}
+
+function refresh() { renderCard(); updateScale(); }
+
+// ── Export ─────────────────────────────────────────────
+async function exportCard() {
+  const btn = document.getElementById('export-btn');
+  btn.textContent = 'Exporting…'; btn.disabled = true;
+  try {
+    await document.fonts.ready;
+    const card = document.getElementById('pnl-card');
+    const canvas = await html2canvas(card, {
+      scale:2, useCORS:true, allowTaint:true,
+      backgroundColor:null, logging:false,
+    });
+    const a = document.createElement('a');
+    const d = (S.date || todayStr()).replace(/[^a-z0-9]/gi,'-').replace(/-+/g,'-');
+    a.download = `aw-pnl-${S.preset}-${S.layout}-${d}.png`;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  } finally {
+    btn.textContent = 'Export PNG'; btn.disabled = false;
+  }
+}
+
+// ── Wire: preset ───────────────────────────────────────
+document.querySelectorAll('[data-preset]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-preset]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    S.preset = btn.dataset.preset;
+    document.getElementById('data-summary').style.display = S.preset !== 'detail' ? '' : 'none';
+    document.getElementById('data-detail').style.display  = S.preset === 'detail' ? '' : 'none';
+    refresh();
+  });
+});
+
+// ── Wire: layout ───────────────────────────────────────
+document.getElementById('layout-picker').addEventListener('click', e => {
+  const btn = e.target.closest('[data-layout]'); if (!btn) return;
+  document.querySelectorAll('[data-layout]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  S.layout = btn.dataset.layout;
+  document.getElementById('pnl-card').className = `layout-${S.layout}`;
+  refresh();
+});
+
+// ── Wire: theme ────────────────────────────────────────
+document.getElementById('theme-picker').addEventListener('click', e => {
+  const btn = e.target.closest('[data-theme]'); if (!btn) return;
+  document.querySelectorAll('[data-theme]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  S.theme = btn.dataset.theme;
+  refresh();
+});
+
+// ── Wire: background image upload ─────────────────────
+function handleBgImage(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  const r = new FileReader();
+  r.onload = e => {
+    S.bgImage = e.target.result;
+    document.getElementById('bg-preview').src = S.bgImage;
+    document.getElementById('bg-thumb').style.display = 'block';
+    refresh();
+  };
+  r.readAsDataURL(file);
+}
+const imgDz = document.getElementById('img-dz');
+document.getElementById('img-input').addEventListener('change', e => handleBgImage(e.target.files[0]));
+imgDz.addEventListener('dragover',  e => { e.preventDefault(); imgDz.classList.add('over'); });
+imgDz.addEventListener('dragleave', () => imgDz.classList.remove('over'));
+imgDz.addEventListener('drop',      e => { e.preventDefault(); imgDz.classList.remove('over'); handleBgImage(e.dataTransfer.files[0]); });
+document.getElementById('bg-clear').addEventListener('click', e => {
+  e.stopPropagation();
+  S.bgImage = null;
+  document.getElementById('bg-thumb').style.display = 'none';
+  document.getElementById('img-input').value = '';
+  refresh();
+});
+
+// ── Wire: CSV upload ───────────────────────────────────
+const csvDz  = document.getElementById('csv-dz');
+const csvMsg = document.getElementById('csv-msg');
+function handleCSV(file) {
+  if (!file || !/\.(csv|txt)$/i.test(file.name)) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const res = parseCSV(e.target.result);
+    if (!res) { csvMsg.style.color='#EF4444'; csvMsg.textContent='✕ Could not detect P&L column'; return; }
+    csvMsg.style.color='#22C55E';
+    csvMsg.textContent=`✓ ${res.count} trades | ${fmtMoney(res.total)} | ${res.winRate}% win rate`;
+    S.pnl=res.total; document.getElementById('m-pnl').value=fmtMoney(res.total)||'';
+    if (res.rr)     { S.rr=res.rr;         document.getElementById('m-rr').value=res.rr; }
+    if (res.points) { S.points=res.points;  document.getElementById('m-pts').value=res.points; }
+    S.dpnl=res.best; document.getElementById('d-pnl').value=fmtMoney(res.best)||'';
+    if (res.contracts)  { S.contracts=res.contracts;   document.getElementById('d-contracts').value=res.contracts; }
+    if (res.entryPrice) { S.entryPrice=res.entryPrice; document.getElementById('d-entry').value=res.entryPrice; }
+    if (res.exitPrice)  { S.exitPrice=res.exitPrice;   document.getElementById('d-exit').value=res.exitPrice; }
+    // use raw imported symbol as-is
+    if (res.symbols && res.symbols.length) {
+      const raw = res.symbols[0].toUpperCase();
+      S.instr = raw;
+      document.getElementById('c-instr').value = 'custom';
+      document.getElementById('c-instr-custom-wrap').style.display = '';
+      document.getElementById('c-instr-custom').value = raw;
+    }
+    refresh();
+  };
+  r.readAsText(file);
+}
+document.getElementById('csv-input').addEventListener('change', e => handleCSV(e.target.files[0]));
+csvDz.addEventListener('dragover',  e => { e.preventDefault(); csvDz.classList.add('over'); });
+csvDz.addEventListener('dragleave', () => csvDz.classList.remove('over'));
+csvDz.addEventListener('drop',      e => { e.preventDefault(); csvDz.classList.remove('over'); handleCSV(e.dataTransfer.files[0]); });
+
+// ── Wire: ticker dropdown ──────────────────────────────
+document.getElementById('c-instr').addEventListener('change', e => {
+  const val = e.target.value;
+  const customWrap = document.getElementById('c-instr-custom-wrap');
+  if (val === 'custom') {
+    customWrap.style.display = '';
+    S.instr = document.getElementById('c-instr-custom').value;
+  } else {
+    customWrap.style.display = 'none';
+    S.instr = val;
+  }
+  refresh();
+});
+document.getElementById('c-instr-custom').addEventListener('input', e => {
+  S.instr = e.target.value; refresh();
+});
+
+// ── Wire: color pickers ────────────────────────────────
+document.getElementById('c-stats-color').addEventListener('input', e => { S.statsColor = e.target.value; refresh(); });
+document.getElementById('c-url-color').addEventListener('input',   e => { S.urlColor   = e.target.value; refresh(); });
+
+// ── Wire: text inputs ──────────────────────────────────
+[
+  ['c-pnl-lbl',  'pnlLbl',    v=>v],
+  ['c-domain',   'domain',     v=>v],
+  ['m-pnl',      'pnl',        parseMoney],
+  ['m-rr',       'rr',         v=>v],
+  ['m-pts',      'points',     v=>v],
+  ['m-accts',    'accounts',   v=>v?parseInt(v):null],
+  ['d-pnl',      'dpnl',       parseMoney],
+  ['d-contracts','contracts',  v=>v],
+  ['d-entry',    'entryPrice', v=>v],
+  ['d-exit',     'exitPrice',  v=>v],
+].forEach(([id,key,fn])=>{
+  document.getElementById(id).addEventListener('input', e=>{
+    S[key]=fn(e.target.value); refresh();
+  });
+});
+
+// ── Wire: toggles ──────────────────────────────────────
+document.getElementById('tog-stats').addEventListener('change',  e=>{S.showStats =e.target.checked;refresh();});
+document.getElementById('tog-instr').addEventListener('change',  e=>{S.showInstr =e.target.checked;refresh();});
+document.getElementById('tog-footer').addEventListener('change', e=>{S.showFooter=e.target.checked;refresh();});
+
+window.addEventListener('resize', updateScale);
+
+// ── Init ───────────────────────────────────────────────
+loadLogo().then(refresh);
+</script>
+</body>
+</html>
