@@ -1,0 +1,61 @@
+# Vercel Web Analytics Installation Report
+
+## Summary
+Successfully installed and configured Vercel Web Analytics for the AW Trading static website following the latest official Vercel documentation.
+
+## Changes Made
+
+### 1. Package Installation
+- **Added**: `@vercel/analytics` version 2.0.1 to dependencies
+- **Files Modified**: 
+  - `package.json` - Added @vercel/analytics dependency
+  - `package-lock.json` - Updated with package installation metadata
+
+### 2. Analytics Script Integration
+Added the Vercel Web Analytics script tag to all production HTML pages:
+
+**Script Added**: `<script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>`
+
+**Pages Updated** (8 files):
+- `index.html` - Main homepage
+- `404.html` - Error page
+- `indicator.html` - Indicator product page
+- `prop-firms.html` - Prop firms page
+- `giveaways.html` - Giveaways page
+- `privacy.html` - Privacy policy
+- `terms.html` - Terms of service
+- `pnl-card.html` - PnL card tool
+
+### 3. Implementation Method
+For this **static HTML website**, I used the vanilla JavaScript/CDN approach as documented in the official Vercel Web Analytics quickstart guide:
+
+- The analytics script is loaded via CDN from `https://cdn.vercel-insights.com/v1/script.js`
+- Used the `defer` attribute for optimal page load performance
+- Script is placed just before the closing `</body>` tag on all pages
+- No framework-specific integration needed (this is not a React/Next.js app)
+
+## Why This Approach?
+
+1. **Static Site Architecture**: This project uses plain HTML/CSS/JS without a framework like React or Next.js, so the CDN script injection method is the correct implementation pattern.
+
+2. **Performance**: The `defer` attribute ensures the script loads asynchronously without blocking page rendering.
+
+3. **Universal Coverage**: Added to all user-facing pages to capture complete analytics across the entire site.
+
+4. **Documentation-Driven**: Fetched and followed the latest official Vercel documentation (https://vercel.com/docs/analytics/quickstart and https://vercel.com/docs/analytics/package) to ensure correct implementation.
+
+## Next Steps
+
+Once deployed to Vercel:
+1. Enable Web Analytics in the Vercel dashboard (Analytics → Enable)
+2. Verify analytics are being collected by checking browser Network tab for requests to `/<unique-path>/view`
+3. View analytics data in the Vercel dashboard (data appears after a few days of traffic)
+
+## Files Not Modified
+- Draft HTML files in `/drafts/` folder were not modified as they appear to be development/prototype files not used in production
+- `node_modules/` folder added but correctly excluded from git (as per .gitignore)
+
+## Technical Notes
+- Package manager: npm (using package-lock.json)
+- Node version requirement: >=22 (as specified in package.json)
+- Analytics package version: 2.0.1 (latest stable at time of installation)
