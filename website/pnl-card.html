@@ -174,10 +174,10 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 .c-footer-txt{font-family:'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
 
 /* RR pill */
-.c-rr-pill{display:inline-flex;align-items:center;padding:6px 16px;background:rgba(0,0,0,.35);border:1.5px solid var(--accent);border-radius:999px;font-family:'IBM Plex Mono',monospace;font-weight:600;letter-spacing:.07em;color:var(--accent);margin-top:14px}
-.layout-banner .c-rr-pill{font-size:.82rem}
-.layout-square .c-rr-pill{font-size:.88rem;margin-top:16px}
-.layout-story  .c-rr-pill{font-size:.8rem;margin-top:14px}
+.c-rr-pill{display:inline-flex;align-items:center;padding:5px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:999px;font-family:'IBM Plex Mono',monospace;font-weight:600;letter-spacing:.07em;margin-top:10px}
+.layout-banner .c-rr-pill{font-size:.8rem}
+.layout-square .c-rr-pill{font-size:.85rem;margin-top:12px}
+.layout-story  .c-rr-pill{font-size:.78rem;margin-top:10px}
 
 /* color picker rows */
 .color-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
@@ -689,7 +689,7 @@ function renderCard() {
 
   const instrHtml = (showInstr && S.instr)
     ? `<div class="c-instr">${S.instr}</div>` : '';
-  const rrPill = S.rr ? `<div class="c-rr-pill">${S.rr}</div>` : '';
+  const rrPill = S.rr ? `<div class="c-rr-pill" style="color:${col}">${S.rr}</div>` : '';
 
   const footerHtml = showFooter ? `
     <div class="c-footer-wrap" style="border-top:1px solid var(--row-div)">
@@ -708,11 +708,14 @@ function renderCard() {
 
     let statsHtml = '';
     if (showStats) {
+      const rrRow = S.rr ? '' : (layout === 'story'
+        ? `<div class="c-stat-row"><span class="c-stat-lbl"${sStyle}>RR</span><span class="c-stat-val"${sStyle}>${rrTx}</span></div>`
+        : `<div class="c-stat"><span class="c-stat-lbl"${sStyle}>RR</span><span class="c-stat-val"${sStyle}>${rrTx}</span></div>`);
       if (layout === 'story') {
         statsHtml = `
           <div class="c-div" style="margin:0 52px"></div>
           <div class="c-stats">
-            <div class="c-stat-row"><span class="c-stat-lbl"${sStyle}>RR</span><span class="c-stat-val"${sStyle}>${rrTx}</span></div>
+            ${rrRow}
             <div class="c-stat-row"><span class="c-stat-lbl"${sStyle}>Points</span><span class="c-stat-val"${sStyle}>${ptsTx}</span></div>
             <div class="c-stat-row" style="border-bottom:none"><span class="c-stat-lbl"${sStyle}>Accounts Copied</span><span class="c-stat-val"${sStyle}>${acTx}</span></div>
           </div>`;
@@ -720,7 +723,7 @@ function renderCard() {
         statsHtml = `
           <div class="c-div"></div>
           <div class="c-stats">
-            <div class="c-stat"><span class="c-stat-lbl"${sStyle}>RR</span><span class="c-stat-val"${sStyle}>${rrTx}</span></div>
+            ${rrRow}
             <div class="c-stat"><span class="c-stat-lbl"${sStyle}>Points</span><span class="c-stat-val"${sStyle}>${ptsTx}</span></div>
             <div class="c-stat"><span class="c-stat-lbl"${sStyle}>Accounts Copied</span><span class="c-stat-val"${sStyle}>${acTx}</span></div>
           </div>`;
@@ -824,16 +827,19 @@ function renderCard() {
     const ptsTx = S.points  || '—';
     const acTx  = S.accounts !== null ? S.accounts : '—';
 
+    const bRrRow = S.rr ? '' : (layout === 'story'
+      ? `<div class="c-stat-row"><span class="c-stat-lbl"${sStyle}>RR</span><span class="c-stat-val"${sStyle}>${rrTx}</span></div>`
+      : `<div class="c-stat"><span class="c-stat-lbl"${sStyle}>RR</span><span class="c-stat-val"${sStyle}>${rrTx}</span></div>`);
     const badgeStats = showStats ? (layout === 'story' ? `
       <div class="c-div" style="margin:0 52px"></div>
       <div class="c-stats">
-        <div class="c-stat-row"><span class="c-stat-lbl"${sStyle}>RR</span><span class="c-stat-val"${sStyle}>${rrTx}</span></div>
+        ${bRrRow}
         <div class="c-stat-row"><span class="c-stat-lbl"${sStyle}>Points</span><span class="c-stat-val"${sStyle}>${ptsTx}</span></div>
         <div class="c-stat-row" style="border-bottom:none"><span class="c-stat-lbl"${sStyle}>Accounts Copied</span><span class="c-stat-val"${sStyle}>${acTx}</span></div>
       </div>` : `
       <div class="c-div"></div>
       <div class="c-stats">
-        <div class="c-stat"><span class="c-stat-lbl"${sStyle}>RR</span><span class="c-stat-val"${sStyle}>${rrTx}</span></div>
+        ${bRrRow}
         <div class="c-stat"><span class="c-stat-lbl"${sStyle}>Points</span><span class="c-stat-val"${sStyle}>${ptsTx}</span></div>
         <div class="c-stat"><span class="c-stat-lbl"${sStyle}>Accounts Copied</span><span class="c-stat-val"${sStyle}>${acTx}</span></div>
       </div>`) : '';
@@ -864,13 +870,15 @@ function renderCard() {
     const ptsTx = S.points  || '—';
     const acTx  = S.accounts !== null ? S.accounts : '—';
 
-    const gridPanel = showStats ? `
-      <div class="c-grid-panel">
+    const gRrStat = S.rr ? '' : `
         <div class="c-grid-stat">
           <span class="c-stat-lbl"${sStyle}>RR</span>
           <span class="c-stat-val"${sStyle}>${rrTx}</span>
         </div>
-        <div class="c-grid-vdiv"></div>
+        <div class="c-grid-vdiv"></div>`;
+    const gridPanel = showStats ? `
+      <div class="c-grid-panel">
+        ${gRrStat}
         <div class="c-grid-stat">
           <span class="c-stat-lbl"${sStyle}>Points</span>
           <span class="c-stat-val"${sStyle}>${ptsTx}</span>
