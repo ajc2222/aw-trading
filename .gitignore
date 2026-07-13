@@ -6,3 +6,4 @@ ruvector.db
 .vercel
 .env*
 website/.superpowers/
+node_modules/
