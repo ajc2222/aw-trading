@@ -585,11 +585,6 @@ function parseCSV(text) {
   const losers  = trades.filter(t=>t.pnl<0);
   const best    = trades.reduce((a,b)=>b.pnl>a.pnl?b:a);
 
-  // RR: avg winner / avg loser (absolute), formatted as "1.8R"
-  const avgWin  = winners.length ? winners.reduce((s,t)=>s+t.pnl,0)/winners.length : 0;
-  const avgLoss = losers.length  ? losers.reduce((s,t)=>s+Math.abs(t.pnl),0)/losers.length : 0;
-  const rr = avgLoss > 0 ? (avgWin/avgLoss).toFixed(2)+'R' : winners.length ? '∞R' : '—';
-
   // Points: sum of (sellPrice - buyPrice) per trade — works for longs in Tradovate format
   let totalPts = null;
   if (entI >= 0 && exiI >= 0) {
@@ -604,7 +599,7 @@ function parseCSV(text) {
   return {
     total, count: trades.length,
     winRate: Math.round(winners.length/trades.length*100),
-    rr, points: totalPts !== null ? totalPts+' pts' : null,
+    points: totalPts !== null ? totalPts+' pts' : null,
     best: best.pnl,
     symbols: [...new Set(trades.map(t=>t.sym).filter(Boolean))],
     contracts: best.qty, entryPrice: best.entry, exitPrice: best.exit,
@@ -1080,7 +1075,6 @@ function handleCSV(file) {
     csvMsg.style.color='#22C55E';
     csvMsg.textContent=`✓ ${res.count} trades | ${fmtMoney(res.total)} | ${res.winRate}% win rate`;
     S.pnl=res.total; document.getElementById('m-pnl').value=fmtMoney(res.total)||'';
-    if (res.rr)     { S.rr=res.rr;         document.getElementById('m-rr').value=res.rr; }
     if (res.points) { S.points=res.points;  document.getElementById('m-pts').value=res.points; }
     S.dpnl=res.total; document.getElementById('d-pnl').value=fmtMoney(res.total)||'';
     if (res.contracts)  { S.contracts=res.contracts;   document.getElementById('d-contracts').value=res.contracts; }
