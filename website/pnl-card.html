@@ -159,7 +159,7 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 /* shared text elements */
 .c-logo{display:flex;align-items:center;gap:10px}
 .c-logo-mark{display:flex;align-items:center;flex-shrink:0}
-.c-logo-txt{font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase}
+.c-logo-txt{font-family:'IBM Plex Mono',monospace;font-size:.88rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase}
 .c-date{font-family:'IBM Plex Mono',monospace;font-size:.76rem;letter-spacing:.04em}
 .c-instr{font-family:'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase}
 .c-pnl-lbl{font-family:'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
@@ -172,6 +172,12 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 .c-footer-sep{width:1px;height:12px;background:currentColor;opacity:.25;flex-shrink:0}
 .c-footer-logo{display:flex;align-items:center;flex-shrink:0}
 .c-footer-txt{font-family:'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
+
+/* RR pill */
+.c-rr-pill{display:inline-flex;align-items:center;padding:6px 16px;background:rgba(0,0,0,.35);border:1.5px solid var(--accent);border-radius:999px;font-family:'IBM Plex Mono',monospace;font-weight:600;letter-spacing:.07em;color:var(--accent);margin-top:14px}
+.layout-banner .c-rr-pill{font-size:.82rem}
+.layout-square .c-rr-pill{font-size:.88rem;margin-top:16px}
+.layout-story  .c-rr-pill{font-size:.8rem;margin-top:14px}
 
 /* color picker rows */
 .color-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
@@ -674,7 +680,8 @@ function renderCard() {
   const header = `
     <div class="c-header">
       <div class="c-logo">
-        <div class="c-logo-mark">${LOGO_IMG(36)}</div>
+        <div class="c-logo-mark">${LOGO_IMG(48)}</div>
+        <span class="c-logo-txt">AW Trading</span>
       </div>
       <span class="c-date">${dateTx}</span>
     </div>
@@ -682,6 +689,7 @@ function renderCard() {
 
   const instrHtml = (showInstr && S.instr)
     ? `<div class="c-instr">${S.instr}</div>` : '';
+  const rrPill = S.rr ? `<div class="c-rr-pill">${S.rr}</div>` : '';
 
   const footerHtml = showFooter ? `
     <div class="c-footer-wrap" style="border-top:1px solid var(--row-div)">
@@ -727,7 +735,8 @@ function renderCard() {
         <div class="c-body">
           ${instrHtml}
           <div class="c-pnl-num" style="color:${col}">${pnlTx}</div>
-          <div class="c-pnl-lbl">${S.pnlLbl}</div>
+          ${rrPill}
+          <div class="c-pnl-lbl" style="margin-top:14px">${S.pnlLbl}</div>
         </div>
         ${statsHtml}
         ${footerHtml}
@@ -773,7 +782,8 @@ function renderCard() {
         <div class="c-body">
           ${instrHtml}
           <div class="c-pnl-num" style="color:${col}">${pnlTx}</div>
-          <div class="c-pnl-lbl">${S.pnlLbl}</div>
+          ${rrPill}
+          <div class="c-pnl-lbl" style="margin-top:14px">${S.pnlLbl}</div>
         </div>
         ${detailHtml}
         ${footerHtml}
@@ -798,6 +808,7 @@ function renderCard() {
         ${header}
         <div class="c-body-flex">
           <div class="c-pnl-num" style="color:${col}">${pnlTx}</div>
+          ${rrPill}
           <div class="c-flex-sub">
             ${showInstr && S.instr ? `<span class="c-instr" style="margin:0">${S.instr}</span><span class="c-flex-dot">·</span>` : ''}
             <span class="c-pnl-lbl">${S.pnlLbl}</span>
@@ -839,6 +850,7 @@ function renderCard() {
               <span class="c-pnl-num" style="color:${col}">${pnlTx}</span>
             </div>
           </div>
+          ${rrPill}
           <div class="c-pnl-lbl" style="margin-top:14px">${S.pnlLbl}</div>
         </div>
         ${badgeStats}
@@ -878,7 +890,8 @@ function renderCard() {
         <div class="c-body">
           ${instrHtml}
           <div class="c-pnl-num" style="color:${col}">${pnlTx}</div>
-          <div class="c-pnl-lbl">${S.pnlLbl}</div>
+          ${rrPill}
+          <div class="c-pnl-lbl" style="margin-top:14px">${S.pnlLbl}</div>
         </div>
         ${gridPanel}
         ${footerHtml}
