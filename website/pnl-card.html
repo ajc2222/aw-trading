@@ -174,7 +174,7 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 .c-footer-txt{font-family:'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
 
 /* RR pill */
-.c-rr-pill{display:inline-flex;align-items:center;padding:5px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:999px;font-family:'IBM Plex Mono',monospace;font-weight:600;letter-spacing:.07em;margin-top:10px}
+.c-rr-pill{display:inline-flex;align-items:center;padding:5px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:999px;font-family:'IBM Plex Mono',monospace;font-weight:600;letter-spacing:.07em;margin-top:10px;color:var(--logo-txt)}
 .layout-banner .c-rr-pill{font-size:.8rem}
 .layout-square .c-rr-pill{font-size:.85rem;margin-top:12px}
 .layout-story  .c-rr-pill{font-size:.78rem;margin-top:10px}
@@ -585,7 +585,7 @@ function parseCSV(text) {
   // RR: avg winner / avg loser (absolute), formatted as "1.8R"
   const avgWin  = winners.length ? winners.reduce((s,t)=>s+t.pnl,0)/winners.length : 0;
   const avgLoss = losers.length  ? losers.reduce((s,t)=>s+Math.abs(t.pnl),0)/losers.length : 0;
-  const rr = avgLoss > 0 ? (avgWin/avgLoss).toFixed(1)+'R' : winners.length ? '∞R' : '—';
+  const rr = avgLoss > 0 ? (avgWin/avgLoss).toFixed(2)+'R' : winners.length ? '∞R' : '—';
 
   // Points: sum of (sellPrice - buyPrice) per trade — works for longs in Tradovate format
   let totalPts = null;
@@ -689,7 +689,8 @@ function renderCard() {
 
   const instrHtml = (showInstr && S.instr)
     ? `<div class="c-instr">${S.instr}</div>` : '';
-  const rrPill = S.rr ? `<div class="c-rr-pill" style="color:${col}">${S.rr}</div>` : '';
+  const rrPillTx = (() => { const n = parseFloat(String(S.rr).replace(/[^\d.]/g,'')); return isNaN(n) ? S.rr : n.toFixed(2)+'R'; })();
+  const rrPill = S.rr ? `<div class="c-rr-pill">${rrPillTx}</div>` : '';
 
   const footerHtml = showFooter ? `
     <div class="c-footer-wrap" style="border-top:1px solid var(--row-div)">
