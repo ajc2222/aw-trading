@@ -1,0 +1,14 @@
+[Unit]
+Description=AW Trading Discord Bot
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/aw-trading/rag-agent
+ExecStart=/home/ubuntu/aw-trading/rag-agent/venv/bin/python bot.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

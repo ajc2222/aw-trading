@@ -7,7 +7,7 @@ load_dotenv()
 
 _client: genai.Client | None = None
 
-EMBEDDING_MODEL = "text-embedding-004"
+EMBEDDING_MODEL = "gemini-embedding-001"
 COLLECTION_NAME = "trading_content"
 
 
@@ -33,14 +33,12 @@ def embed_text(text: str, task_type: str = "RETRIEVAL_DOCUMENT") -> list[float]:
     return result.embeddings[0].values
 
 
-def query_creator(
+def query_all(
     collection: chromadb.Collection,
-    source: str,
     question: str,
     n_results: int = 5,
 ) -> list[dict]:
-    existing = collection.get(where={"source": source})
-    available = len(existing["ids"])
+    available = len(collection.get()["ids"])
     if available == 0:
         return []
 
@@ -48,7 +46,6 @@ def query_creator(
     results = collection.query(
         query_embeddings=[query_embedding],
         n_results=min(n_results, available),
-        where={"source": source},
     )
 
     return [
@@ -59,6 +56,7 @@ def query_creator(
             "video_id": results["metadatas"][0][i]["video_id"],
             "title": results["metadatas"][0][i]["title"],
             "url": results["metadatas"][0][i]["url"],
+            "timestamp": results["metadatas"][0][i].get("timestamp", 0),
         }
         for i in range(len(results["ids"][0]))
     ]
@@ -77,6 +75,7 @@ def upsert_chunks(collection: chromadb.Collection, chunks: list[dict]) -> None:
                 "video_id": c["video_id"],
                 "title": c["title"],
                 "url": c["url"],
+                "timestamp": c.get("timestamp", 0),
             }
             for c in chunks
         ],
