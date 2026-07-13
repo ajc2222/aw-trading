@@ -167,7 +167,7 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 .c-logo{display:flex;align-items:center;gap:10px}
 .c-logo-mark{display:flex;align-items:center;flex-shrink:0}
 .c-logo-txt{font-family:'IBM Plex Mono',monospace;font-size:1.05rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase}
-.c-date{font-family:'IBM Plex Mono',monospace;font-size:.76rem;letter-spacing:.04em}
+.c-date{font-family:'IBM Plex Mono',monospace;font-size:1.05rem;letter-spacing:.04em}
 .c-instr{font-family:'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase}
 .c-pnl-lbl{font-family:'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
 .c-stat{display:flex;flex-direction:column;gap:7px}
@@ -381,7 +381,6 @@ function checkPw(){
       <div class="field" id="c-instr-custom-wrap" style="display:none">
         <input type="text" id="c-instr-custom" placeholder="e.g. CL1!, RTY1!">
       </div>
-      <div class="field"><label>P&amp;L Label</label><input type="text" id="c-pnl-lbl" value="Daily P&L"></div>
       <div class="field"><label>Domain</label><input type="text" id="c-domain" value="joinawtrading.com"></div>
     </div>
 
@@ -722,7 +721,6 @@ function renderCard() {
           ${instrHtml}
           <div class="c-pnl-num" style="color:${col}">${pnlTx}</div>
           ${rrPill}
-          <div class="c-pnl-lbl" style="margin-top:14px">${S.pnlLbl}</div>
         </div>
         ${statsHtml}
         ${footerHtml}
@@ -757,7 +755,6 @@ function renderCard() {
           ${instrHtml}
           <div class="c-pnl-num" style="color:${col}">${pnlTx}</div>
           ${rrPill}
-          <div class="c-pnl-lbl" style="margin-top:14px">${S.pnlLbl}</div>
         </div>
         ${detailHtml}
         ${footerHtml}
@@ -785,7 +782,6 @@ function renderCard() {
           ${rrPill}
           <div class="c-flex-sub">
             ${showInstr && S.instr ? `<span class="c-instr" style="margin:0">${S.instr}</span><span class="c-flex-dot">·</span>` : ''}
-            <span class="c-pnl-lbl">${S.pnlLbl}</span>
           </div>
         </div>
         ${footerCentered}
@@ -828,7 +824,6 @@ function renderCard() {
             </div>
           </div>
           ${rrPill}
-          <div class="c-pnl-lbl" style="margin-top:14px">${S.pnlLbl}</div>
         </div>
         ${badgeStats}
         ${footerHtml}
@@ -870,7 +865,6 @@ function renderCard() {
           ${instrHtml}
           <div class="c-pnl-num" style="color:${col}">${pnlTx}</div>
           ${rrPill}
-          <div class="c-pnl-lbl" style="margin-top:14px">${S.pnlLbl}</div>
         </div>
         ${gridPanel}
         ${footerHtml}
@@ -1062,7 +1056,6 @@ document.getElementById('c-url-color').addEventListener('input',   e => { S.urlC
 
 // ── Wire: text inputs ──────────────────────────────────
 [
-  ['c-pnl-lbl',  'pnlLbl',    v=>v],
   ['c-domain',   'domain',     v=>v],
   ['m-pnl',      'pnl',        parseMoney],
   ['m-rr',       'rr',         v=>v],
