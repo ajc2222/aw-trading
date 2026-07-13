@@ -137,7 +137,6 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
   font-family:'Archivo',sans-serif;-webkit-font-smoothing:antialiased;
   background-size:cover !important;background-position:center !important;
 }
-#pnl-card.layout-banner{width:1200px;height:630px}
 #pnl-card.layout-square{width:1080px;height:1080px}
 #pnl-card.layout-story {width:675px; height:1200px}
 
@@ -175,7 +174,6 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 
 /* RR pill */
 .c-rr-pill{display:inline-flex;align-items:center;padding:5px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:999px;font-family:'IBM Plex Mono',monospace;font-weight:600;letter-spacing:.07em;margin-top:10px;color:var(--logo-txt)}
-.layout-banner .c-rr-pill{font-size:.8rem}
 .layout-square .c-rr-pill{font-size:.85rem;margin-top:12px}
 .layout-story  .c-rr-pill{font-size:.78rem;margin-top:10px}
 
@@ -186,7 +184,6 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 
 /* ── Template: Flex ── */
 .c-body-flex{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.layout-banner .c-body-flex{padding:20px 64px}
 .layout-square .c-body-flex{padding:28px 72px}
 .layout-story  .c-body-flex{padding:28px 52px}
 .c-flex-sub{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:10px;flex-wrap:wrap}
@@ -201,21 +198,17 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
   border:1.5px solid rgba(255,255,255,.12);
   border-radius:16px;
 }
-.layout-banner .c-pnl-badge{padding:20px 44px;border-radius:14px}
 .layout-square .c-pnl-badge{padding:26px 52px;border-radius:18px}
 .layout-story  .c-pnl-badge{padding:18px 36px;border-radius:14px}
 
 /* ── Template: Grid ── */
 .c-grid-panel{display:flex;border-top:1px solid var(--row-div);border-bottom:1px solid var(--row-div);background:rgba(255,255,255,.03)}
-.layout-banner .c-grid-panel{padding:0 64px}
 .layout-square .c-grid-panel{padding:0 72px}
 .layout-story  .c-grid-panel{padding:0 52px}
 .c-grid-stat{display:flex;flex-direction:column;gap:6px;flex:1}
-.layout-banner .c-grid-stat{padding:18px 0}
 .layout-square .c-grid-stat{padding:24px 0}
 .layout-story  .c-grid-stat{padding:18px 0}
 .c-grid-vdiv{width:1px;background:var(--row-div);flex-shrink:0}
-.layout-banner .c-grid-vdiv{margin:14px 32px}
 .layout-square .c-grid-vdiv{margin:18px 40px}
 .layout-story  .c-grid-vdiv{margin:12px 24px}
 
@@ -243,24 +236,6 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 .c-stat-val{color:var(--stat-val-c)}
 .c-footer-txt{color:var(--footer-c)}
 .c-det-row{border-bottom-color:var(--row-div)}
-
-/* ── Banner layout ── */
-.layout-banner .c-header{display:flex;justify-content:space-between;align-items:center;padding:42px 64px 26px}
-.layout-banner .c-body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:20px 64px}
-.layout-banner .c-instr{font-size:.88rem;margin-bottom:8px}
-.layout-banner .c-pnl-num{font-size:90px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-bottom:6px}
-.layout-banner .c-pnl-lbl{font-size:.74rem}
-.layout-banner .c-stats{display:flex;gap:52px;padding:20px 64px}
-.layout-banner .c-stat-lbl{font-size:.66rem}
-.layout-banner .c-stat-val{font-size:.96rem}
-.layout-banner .c-footer-wrap{padding:14px 64px}
-.layout-banner .c-footer-logo{width:18px;height:18px}
-.layout-banner .c-footer-txt{font-size:.6rem}
-/* detail */
-.layout-banner .c-det-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:16px 64px}
-.layout-banner .c-det-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid}
-.layout-banner .c-det-lbl{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--stat-lbl-c)}
-.layout-banner .c-det-val{font-family:'IBM Plex Mono',monospace;font-size:.9rem;font-weight:600;color:var(--stat-val-c)}
 
 /* ── Square layout ── */
 .layout-square .c-header{display:flex;justify-content:space-between;align-items:center;padding:58px 72px 32px}
@@ -421,10 +396,7 @@ function checkPw(){
     <div>
       <div class="s-label">Layout</div>
       <div class="picker" id="layout-picker">
-        <button class="pick-btn active" data-layout="banner">
-          <div class="lay-ico" style="width:36px;height:18px"></div>Banner
-        </button>
-        <button class="pick-btn" data-layout="square">
+        <button class="pick-btn active" data-layout="square">
           <div class="lay-ico" style="width:22px;height:22px"></div>Square
         </button>
         <button class="pick-btn" data-layout="story">
@@ -488,7 +460,7 @@ function checkPw(){
       <span id="preview-label" style="font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Preview — 1200 × 630</span>
       <div class="card-scaler" id="card-scaler">
         <div id="card-outer">
-          <div id="pnl-card" class="layout-banner"></div>
+          <div id="pnl-card" class="layout-square"></div>
         </div>
       </div>
     </div>
@@ -500,7 +472,7 @@ function checkPw(){
 const S = {
   preset: 'summary',
   theme: 'aw',
-  layout: 'banner',
+  layout: 'square',
   bgImage: null,
   bgDim: 0.5,
   // summary
@@ -515,7 +487,6 @@ const S = {
 };
 
 const DIMS = {
-  banner: { w:1200, h:630,  label:'1200 × 630'  },
   square: { w:1080, h:1080, label:'1080 × 1080' },
   story:  { w:675,  h:1200, label:'675 × 1200'  },
 };
@@ -756,18 +727,7 @@ function renderCard() {
 
     let detailHtml = '';
     if (showStats) {
-      // banner gets a 2-col grid, others get stacked rows
-      if (layout === 'banner') {
-        detailHtml = `
-          <div class="c-div"></div>
-          <div class="c-det-grid">
-            <div class="c-det-row"><span class="c-det-lbl"${sStyle}>Contracts</span><span class="c-det-val"${sStyle}>${conTx}</span></div>
-            <div class="c-det-row"><span class="c-det-lbl"${sStyle}>Entry Price</span><span class="c-det-val"${sStyle}>${entTx}</span></div>
-            <div class="c-det-row" style="border-bottom:none"><span class="c-det-lbl"${sStyle}>Exit Price</span><span class="c-det-val"${sStyle}>${exTx}</span></div>
-            <div class="c-det-row" style="border-bottom:none"><span class="c-det-lbl"${sStyle}>Total P&amp;L</span><span class="c-det-val" style="color:${col}">${totalTx}</span></div>
-          </div>`;
-      } else {
-        detailHtml = `
+      detailHtml = `
           <div class="c-div" style="${layout==='story'?'margin:0 52px':''}"></div>
           <div class="c-det-grid">
             <div class="c-det-row"><span class="c-det-lbl"${sStyle}>Contracts</span><span class="c-det-val"${sStyle}>${conTx}</span></div>
@@ -775,7 +735,6 @@ function renderCard() {
             <div class="c-det-row"><span class="c-det-lbl"${sStyle}>Exit Price</span><span class="c-det-val"${sStyle}>${exTx}</span></div>
             <div class="c-det-row" style="border-bottom:none"><span class="c-det-lbl"${sStyle}>Total P&amp;L</span><span class="c-det-val" style="color:${col}">${totalTx}</span></div>
           </div>`;
-      }
     }
 
     card.innerHTML = `
