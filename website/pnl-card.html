@@ -479,6 +479,7 @@ function checkPw(){
       <div class="tog-row"><span>Stats bar</span><label class="tog"><input type="checkbox" id="tog-stats" checked><span class="tog-sl"></span></label></div>
       <div class="tog-row"><span>Ticker label</span><label class="tog"><input type="checkbox" id="tog-instr" checked><span class="tog-sl"></span></label></div>
       <div class="tog-row"><span>Logo &amp; domain</span><label class="tog"><input type="checkbox" id="tog-footer" checked><span class="tog-sl"></span></label></div>
+      <div class="tog-row"><span>P&amp;L colors (red/green)</span><label class="tog"><input type="checkbox" id="tog-pnl-colors"><span class="tog-sl"></span></label></div>
     </div>
 
     <div class="btn-row">
@@ -514,7 +515,7 @@ const S = {
   dpnl: null, contracts: '', entryPrice: '', exitPrice: '',
   // shared
   instr: 'NQ1!', pnlLbl: 'Daily P&L', domain: 'joinawtrading.com',
-  showStats: true, showInstr: true, showFooter: true,
+  showStats: true, showInstr: true, showFooter: true, pnlColors: false,
   // color overrides
   statsColor: '', urlColor: '',
 };
@@ -549,7 +550,7 @@ function fmtMoney(n, force) {
   return (n >= 0 ? '+' : '−') + '$' + abs;
 }
 function pnlColor(n) {
-  if (n !== null && !isNaN(n) && n < 0) return THEMES[S.theme].lossC;
+  if (S.pnlColors && n !== null && !isNaN(n)) return n < 0 ? '#EF4444' : '#22C55E';
   return THEMES[S.theme].accent;
 }
 function todayStr() {
@@ -1136,9 +1137,10 @@ document.getElementById('c-url-color').addEventListener('input',   e => { S.urlC
 });
 
 // ── Wire: toggles ──────────────────────────────────────
-document.getElementById('tog-stats').addEventListener('change',  e=>{S.showStats =e.target.checked;refresh();});
-document.getElementById('tog-instr').addEventListener('change',  e=>{S.showInstr =e.target.checked;refresh();});
-document.getElementById('tog-footer').addEventListener('change', e=>{S.showFooter=e.target.checked;refresh();});
+document.getElementById('tog-stats').addEventListener('change',      e=>{S.showStats  =e.target.checked;refresh();});
+document.getElementById('tog-instr').addEventListener('change',      e=>{S.showInstr  =e.target.checked;refresh();});
+document.getElementById('tog-footer').addEventListener('change',     e=>{S.showFooter =e.target.checked;refresh();});
+document.getElementById('tog-pnl-colors').addEventListener('change', e=>{S.pnlColors  =e.target.checked;refresh();});
 
 window.addEventListener('resize', updateScale);
 
