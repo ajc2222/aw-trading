@@ -692,8 +692,13 @@ function renderCard() {
 
   const instrHtml = (showInstr && S.instr)
     ? `<div class="c-instr">${S.instr}</div>` : '';
-  const rrPillTx = (() => { const n = parseFloat(String(S.rr).replace(/[^\d.]/g,'')); return isNaN(n) ? S.rr : n.toFixed(2)+'R'; })();
-  const rrPill = S.rr ? `<div class="c-rr-pill">${rrPillTx}</div>` : '';
+  const rrDisplay = (() => {
+    const n = parseFloat(String(S.rr).replace(/[^\d.]/g,''));
+    if (isNaN(n)) return S.rr;
+    const signed = (preset !== 'summary' && pnlVal < 0 && n > 0) ? -n : n;
+    return signed.toFixed(2)+'R';
+  })();
+  const rrPill = S.rr ? `<div class="c-rr-pill">${rrDisplay}</div>` : '';
 
   const footerHtml = showFooter ? `
     <div class="c-footer-wrap" style="border-top:1px solid var(--row-div)">
@@ -706,7 +711,7 @@ function renderCard() {
 
   // ── SUMMARY PRESET ─────────────────────────────────
   if (preset === 'summary') {
-    const rrTx  = S.rr      || '—';
+    const rrTx  = rrDisplay || '—';
     const ptsTx = S.points   || '—';
     const acTx  = S.accounts !== null ? S.accounts : '—';
 
@@ -812,7 +817,7 @@ function renderCard() {
 
   // ── BADGE PRESET — P&L in glass pill ───────────────
   else if (preset === 'badge') {
-    const rrTx  = S.rr      || '—';
+    const rrTx  = rrDisplay || '—';
     const ptsTx = S.points  || '—';
     const acTx  = S.accounts !== null ? S.accounts : '—';
 
@@ -854,7 +859,7 @@ function renderCard() {
 
   // ── GRID PRESET — stats in highlighted panel ────────
   else if (preset === 'grid') {
-    const rrTx  = S.rr      || '—';
+    const rrTx  = rrDisplay || '—';
     const ptsTx = S.points  || '—';
     const acTx  = S.accounts !== null ? S.accounts : '—';
 
@@ -1077,7 +1082,7 @@ function handleCSV(file) {
     S.pnl=res.total; document.getElementById('m-pnl').value=fmtMoney(res.total)||'';
     if (res.rr)     { S.rr=res.rr;         document.getElementById('m-rr').value=res.rr; }
     if (res.points) { S.points=res.points;  document.getElementById('m-pts').value=res.points; }
-    S.dpnl=res.best; document.getElementById('d-pnl').value=fmtMoney(res.best)||'';
+    S.dpnl=res.total; document.getElementById('d-pnl').value=fmtMoney(res.total)||'';
     if (res.contracts)  { S.contracts=res.contracts;   document.getElementById('d-contracts').value=res.contracts; }
     if (res.entryPrice) { S.entryPrice=res.entryPrice; document.getElementById('d-entry').value=res.entryPrice; }
     if (res.exitPrice)  { S.exitPrice=res.exitPrice;   document.getElementById('d-exit').value=res.exitPrice; }
