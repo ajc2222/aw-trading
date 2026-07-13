@@ -690,7 +690,7 @@ function renderCard() {
   const rrDisplay = (() => {
     const n = parseFloat(String(S.rr).replace(/[^\d.]/g,''));
     if (isNaN(n)) return S.rr;
-    const signed = (preset !== 'summary' && pnlVal < 0 && n > 0) ? -n : n;
+    const signed = (pnlVal < 0 && n > 0) ? -n : n;
     return signed.toFixed(2)+'R';
   })();
   const rrPill = S.rr ? `<div class="c-rr-pill">${rrDisplay}</div>` : '';
