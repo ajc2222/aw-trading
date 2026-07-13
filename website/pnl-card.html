@@ -90,6 +90,24 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
   color:var(--muted);transition:border-color .2s,color .2s;background:transparent;
 }
 
+/* Preset background grid */
+.bg-preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.bg-preset-btn{
+  position:relative;padding:0;border:1.5px solid var(--border-s);border-radius:6px;
+  cursor:pointer;background:var(--panel);overflow:hidden;aspect-ratio:1/1;
+  transition:border-color .2s;
+}
+.bg-preset-btn.story-thumb{aspect-ratio:9/16}
+.bg-preset-btn:hover{border-color:rgba(255,255,255,.3)}
+.bg-preset-btn.active{border-color:var(--blue)}
+.bg-preset-btn img{width:100%;height:100%;object-fit:cover;display:block}
+.bg-preset-name{
+  position:absolute;bottom:0;left:0;right:0;
+  font-family:'IBM Plex Mono',monospace;font-size:.52rem;letter-spacing:.06em;
+  text-align:center;padding:3px 2px;background:rgba(0,0,0,.6);color:rgba(255,255,255,.7);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
 /* Image thumb */
 #bg-thumb{display:none;position:relative;margin-top:6px}
 #bg-thumb img{width:100%;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--border-s)}
@@ -397,7 +415,11 @@ function checkPw(){
         <img id="bg-preview" src="" alt="">
         <button id="bg-clear">✕ Remove</button>
       </div>
-
+      <!-- preset backgrounds -->
+      <div style="margin-top:10px">
+        <div class="s-label" style="margin-bottom:6px">Preset Backgrounds</div>
+        <div class="bg-preset-grid" id="bg-preset-grid"></div>
+      </div>
     </div>
 
     <!-- LAYOUT -->
@@ -961,6 +983,7 @@ document.getElementById('layout-picker').addEventListener('click', e => {
   btn.classList.add('active');
   S.layout = btn.dataset.layout;
   document.getElementById('pnl-card').className = `layout-${S.layout}`;
+  buildBgPresetGrid();
   refresh();
 });
 
@@ -995,8 +1018,50 @@ document.getElementById('bg-clear').addEventListener('click', e => {
   S.bgImage = null;
   document.getElementById('bg-thumb').style.display = 'none';
   document.getElementById('img-input').value = '';
+  document.querySelectorAll('.bg-preset-btn').forEach(b=>b.classList.remove('active'));
   refresh();
 });
+
+// ── Preset backgrounds ─────────────────────────────────
+// To add images: drop files into assets/pnl-backgrounds/square/ or /story/
+// then add the filename to the array below.
+const PRESET_BG = {
+  square: ['placeholder-1.svg','placeholder-2.svg','placeholder-3.svg'],
+  story:  ['placeholder-1.svg','placeholder-2.svg','placeholder-3.svg'],
+};
+
+function buildBgPresetGrid() {
+  const grid = document.getElementById('bg-preset-grid');
+  const layout = S.layout;
+  const files = PRESET_BG[layout] || [];
+  const isStory = layout === 'story';
+  grid.innerHTML = files.map((f,i) => {
+    const src = `./assets/pnl-backgrounds/${layout}/${f}`;
+    const name = f.replace(/\.[^.]+$/,'');
+    return `<button class="bg-preset-btn${isStory?' story-thumb':''}" data-preset-src="${src}" title="${name}">
+      <img src="${src}" alt="${name}" loading="lazy">
+      <span class="bg-preset-name">${name}</span>
+    </button>`;
+  }).join('');
+  grid.querySelectorAll('.bg-preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const src = btn.dataset.presetSrc;
+      fetch(src).then(r=>r.blob()).then(blob => {
+        const fr = new FileReader();
+        fr.onload = e => {
+          S.bgImage = e.target.result;
+          document.getElementById('bg-preview').src = S.bgImage;
+          document.getElementById('bg-thumb').style.display = 'block';
+          document.querySelectorAll('.bg-preset-btn').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          refresh();
+        };
+        fr.readAsDataURL(blob);
+      });
+    });
+  });
+}
+buildBgPresetGrid();
 
 // ── Wire: CSV upload ───────────────────────────────────
 const csvDz  = document.getElementById('csv-dz');
