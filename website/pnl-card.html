@@ -7,9 +7,9 @@
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-@font-face{font-family:'Archivo';font-weight:300 900;font-display:swap;src:url('/assets/fonts/archivo-variable.woff2') format('woff2')}
-@font-face{font-family:'IBM Plex Mono';font-weight:400;font-display:swap;src:url('/assets/fonts/ibm-plex-mono-400.woff2') format('woff2')}
-@font-face{font-family:'IBM Plex Mono';font-weight:600;font-display:swap;src:url('/assets/fonts/ibm-plex-mono-600.woff2') format('woff2')}
+@font-face{font-family:'Archivo';font-weight:300 900;font-display:swap;src:url('./assets/fonts/archivo-variable.woff2') format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-weight:400;font-display:swap;src:url('./assets/fonts/ibm-plex-mono-400.woff2') format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-weight:600;font-display:swap;src:url('./assets/fonts/ibm-plex-mono-600.woff2') format('woff2')}
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -607,7 +607,7 @@ let LOGO_DATA = '';
 
 async function loadLogo() {
   try {
-    const res = await fetch('/assets/aw_logo-removebg-preview.png');
+    const res = await fetch('./assets/aw_logo-removebg-preview.png');
     if (!res.ok) throw new Error('404');
     const blob = await res.blob();
     LOGO_DATA = await new Promise((ok, fail) => {
@@ -917,7 +917,7 @@ async function exportCard() {
     await document.fonts.ready;
     const card = document.getElementById('pnl-card');
     const canvas = await html2canvas(card, {
-      scale:2, useCORS:true, allowTaint:true,
+      scale:2, useCORS:true,
       backgroundColor:null, logging:false,
     });
     const a = document.createElement('a');
