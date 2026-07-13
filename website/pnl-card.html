@@ -517,9 +517,8 @@ function fmtMoney(n, force) {
   return (n >= 0 ? '+' : '−') + '$' + abs;
 }
 function pnlColor(n) {
-  if (S.theme === 'neon') return '#00FF7F';
   if (n !== null && !isNaN(n) && n < 0) return '#EF4444';
-  return '#22C55E';
+  return THEMES[S.theme].accent;
 }
 function todayStr() {
   return new Date().toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'});
