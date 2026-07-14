@@ -722,7 +722,7 @@ function renderCard() {
   applyCardBg();
 
   const dateTx  = S.date || todayStr();
-  const pnlVal  = preset === 'summary' ? S.pnl : S.dpnl;
+  const pnlVal  = preset === 'detail' ? S.dpnl : S.pnl;
   const col     = pnlColor(pnlVal);
   const pnlTx   = fmtMoney(pnlVal, true);
   const sStyle  = S.statsColor ? ` style="color:${S.statsColor}"` : '';
