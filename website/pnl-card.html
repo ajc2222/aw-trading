@@ -236,6 +236,19 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 #share-nudge .sn-btn-discord{background:var(--blue);color:#fff}
 #share-nudge .sn-btn-ig{background:transparent;border:1px solid var(--border-s);color:var(--white)}
 
+/* Image save/copy fallback modal */
+#img-modal{
+  position:fixed;inset:0;z-index:300;background:rgba(4,4,6,.92);
+  display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px;
+}
+#img-modal.show{display:flex}
+#img-modal img{max-width:100%;max-height:70vh;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.6);-webkit-touch-callout:default}
+#img-modal-hint{font-family:var(--mono);font-size:.72rem;color:var(--muted);text-align:center;letter-spacing:.02em}
+#img-modal-close{
+  position:absolute;top:18px;right:18px;background:rgba(255,255,255,.08);border:1px solid var(--border-s);
+  color:var(--white);border-radius:50%;width:34px;height:34px;font-size:.9rem;cursor:pointer;
+}
+
 /* ── Preview area ── */
 .preview-area{
   display:flex;align-items:center;justify-content:center;overflow:hidden;padding:32px;
@@ -646,6 +659,13 @@ function unlockGate(){
       <a class="sn-btn sn-btn-discord" href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener">Discord</a>
       <a class="sn-btn sn-btn-ig" href="https://www.instagram.com/_awtrading/" target="_blank" rel="noopener">Instagram</a>
     </div>
+  </div>
+
+  <!-- ── Image save/copy fallback modal (mobile) ── -->
+  <div id="img-modal">
+    <button id="img-modal-close" aria-label="Close">✕</button>
+    <img id="img-modal-img" alt="Your P&L card">
+    <div id="img-modal-hint">Press and hold the image to save or copy</div>
   </div>
 
 </div><!-- .app -->
@@ -1086,19 +1106,40 @@ function setCopyState(label, disabled) {
   });
 }
 
+// iOS Safari doesn't support the <a download> attribute reliably.
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+function showImageModal(dataUrl) {
+  document.getElementById('img-modal-img').src = dataUrl;
+  document.getElementById('img-modal').classList.add('show');
+}
+function hideImageModal() {
+  document.getElementById('img-modal').classList.remove('show');
+}
+document.getElementById('img-modal-close').addEventListener('click', hideImageModal);
+document.getElementById('img-modal').addEventListener('click', e => {
+  if (e.target.id === 'img-modal') hideImageModal();
+});
+
 async function exportCard() {
   setExportState('Exporting…', true);
+  let canvas;
   try {
-    const canvas = await renderToCanvas();
-    const a = document.createElement('a');
-    const d = (S.date || todayStr()).replace(/[^a-z0-9]/gi,'-').replace(/-+/g,'-');
-    a.download = `aw-pnl-${S.preset}-${S.layout}-${d}.png`;
-    a.href = canvas.toDataURL('image/png');
-    a.click();
+    canvas = await renderToCanvas();
   } catch(err) {
     setExportState('✕ Failed', false);
     setTimeout(()=>setExportState('Export PNG',false),3000);
     console.error('Export error:', err); return;
+  }
+  const dataUrl = canvas.toDataURL('image/png');
+  if (isIOS) {
+    showImageModal(dataUrl);
+  } else {
+    const a = document.createElement('a');
+    const d = (S.date || todayStr()).replace(/[^a-z0-9]/gi,'-').replace(/-+/g,'-');
+    a.download = `aw-pnl-${S.preset}-${S.layout}-${d}.png`;
+    a.href = dataUrl;
+    a.click();
   }
   setExportState('Export PNG', false);
   showShareNudge();
@@ -1106,18 +1147,29 @@ async function exportCard() {
 
 async function copyCard() {
   setCopyState('Copying…', true);
+  let canvas;
   try {
-    const canvas = await renderToCanvas();
-    const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
-    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-    setCopyState('✓ Copied!', false);
-    setTimeout(() => setCopyState('Copy Image', false), 2000);
-    showShareNudge();
+    canvas = await renderToCanvas();
   } catch(err) {
     setCopyState('✕ Failed', false);
     setTimeout(()=>setCopyState('Copy Image',false),3000);
-    console.error('Copy error:', err);
+    console.error('Copy error:', err); return;
   }
+  if (navigator.clipboard && window.ClipboardItem) {
+    try {
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      setCopyState('✓ Copied!', false);
+      setTimeout(() => setCopyState('Copy Image', false), 2000);
+      showShareNudge();
+      return;
+    } catch(err) {
+      console.error('Clipboard write failed, falling back to image modal:', err);
+    }
+  }
+  setCopyState('Copy Image', false);
+  showImageModal(canvas.toDataURL('image/png'));
+  showShareNudge();
 }
 
 // ── Wire: preset ───────────────────────────────────────
