@@ -278,6 +278,13 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 .c-logo-mark{display:flex;align-items:center;flex-shrink:0}
 .c-logo-txt{font-family:'IBM Plex Mono',monospace;font-size:1.05rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase}
 .c-date{font-family:'IBM Plex Mono',monospace;font-size:1.05rem;letter-spacing:.04em}
+.c-verified{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:'IBM Plex Mono',monospace;font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:#22C55E;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.35);
+  border-radius:999px;padding:4px 10px 4px 8px;white-space:nowrap;
+}
+.c-verified svg{flex-shrink:0}
 .c-instr{font-family:'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase}
 .c-pnl-lbl{font-family:'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
 .c-stat{display:flex;flex-direction:column;gap:7px}
@@ -644,7 +651,7 @@ const S = {
   dpnl: null, contracts: '', entryPrice: '', exitPrice: '',
   instr: 'NQ1!', pnlLbl: 'Daily P&L', domain: 'joinawtrading.com',
   showStats: true, showInstr: true, pnlColors: false,
-  statsColor: '', urlColor: '',
+  statsColor: '', urlColor: '', csvVerified: false,
 };
 
 const DIMS = {
@@ -801,13 +808,22 @@ function renderCard() {
   const sStyle  = S.statsColor ? ` style="color:${S.statsColor}"` : '';
   const uStyle  = S.urlColor   ? ` style="color:${S.urlColor}"`   : '';
 
+  const verifiedBadge = S.csvVerified ? `
+      <div class="c-verified">
+        <svg viewBox="0 0 14 14" fill="none" width="11" height="11"><path d="M2.5 7.2l3 3L11.5 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Verified from CSV
+      </div>` : '';
+
   const header = `
     <div class="c-header">
       <div class="c-logo">
         <div class="c-logo-mark">${LOGO_IMG(48)}</div>
         <span class="c-logo-txt">AW Trading</span>
       </div>
-      <span class="c-date">${dateTx}</span>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <span class="c-date">${dateTx}</span>
+        ${verifiedBadge}
+      </div>
     </div>
     <div class="c-accent"></div>`;
 
@@ -1236,6 +1252,7 @@ function handleCSV(file) {
     if (!res) { csvMsg.style.color='#EF4444'; csvMsg.textContent='✕ Could not detect P&L column'; return; }
     csvMsg.style.color='#22C55E';
     csvMsg.textContent=`✓ ${res.count} trades · ${fmtMoney(res.total)} · ${res.winRate}% wins`;
+    S.csvVerified = true;
     S.pnl=res.total; document.getElementById('m-pnl').value=fmtMoney(res.total)||'';
     if (res.points) { S.points=res.points; document.getElementById('m-pts').value=res.points; }
     S.dpnl=res.total; document.getElementById('d-pnl').value=fmtMoney(res.total)||'';
@@ -1280,6 +1297,7 @@ document.getElementById('c-stats-color').addEventListener('input', e => { S.stat
 document.getElementById('c-url-color').addEventListener('input',   e => { S.urlColor   = e.target.value; refresh(); });
 
 // ── Wire: text inputs ──────────────────────────────────
+const CSV_FILLED_KEYS = new Set(['pnl','points','dpnl','contracts','entryPrice','exitPrice']);
 [
   ['m-pnl',      'pnl',        parseMoney],
   ['m-rr',       'rr',         v=>v],
@@ -1291,7 +1309,9 @@ document.getElementById('c-url-color').addEventListener('input',   e => { S.urlC
   ['d-exit',     'exitPrice',  v=>v],
 ].forEach(([id,key,fn])=>{
   document.getElementById(id).addEventListener('input', e=>{
-    S[key]=fn(e.target.value); refresh();
+    S[key]=fn(e.target.value);
+    if (CSV_FILLED_KEYS.has(key)) S.csvVerified = false;
+    refresh();
   });
 });
 
