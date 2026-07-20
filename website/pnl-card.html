@@ -403,7 +403,7 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 .layout-story  .c-grid-vdiv{margin:12px 24px}
 
 /* Fullscreen screenshot mode */
-#fullscreen-btn{display:none}
+#fullscreen-btn,#fullscreen-btn-nav{display:none}
 #fs-close{display:none}
 .preview-area.fullscreen-mode{
   position:fixed;inset:0;z-index:500;background:var(--bg);padding:20px;
@@ -419,6 +419,8 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 /* ── Mobile layout ── */
 @media (max-width:860px){
   #fullscreen-btn{display:block}
+  #fullscreen-btn-nav{display:inline-block}
+  #export-btn,#copy-btn,#export-btn-nav,#copy-btn-nav{display:none}
   html,body{overflow:auto;height:auto}
   .app{height:auto;min-height:100vh}
   .topnav{flex-wrap:wrap;height:auto;min-height:52px;padding:10px 14px;gap:8px}
@@ -474,6 +476,7 @@ function unlockGate(){
     <div class="tn-actions">
       <button class="tn-btn-copy" id="copy-btn-nav" onclick="copyCard()">Copy Image</button>
       <button class="tn-btn-exp" id="export-btn-nav" onclick="exportCard()">↓ Export PNG</button>
+      <button class="tn-btn-exp" id="fullscreen-btn-nav" onclick="openFullscreen()">View Fullscreen</button>
     </div>
   </header>
 
