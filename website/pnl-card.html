@@ -191,6 +191,32 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 .btn-copy:hover{border-color:rgba(255,255,255,.35);transform:translateY(-1px)}
 .btn-copy:disabled{opacity:.4;cursor:default;transform:none}
 
+/* Share nudge toast */
+#share-nudge{
+  position:fixed;right:20px;bottom:20px;z-index:100;
+  width:280px;background:var(--panel);border:1px solid var(--border-s);
+  border-radius:12px;padding:16px 16px 14px;box-shadow:0 12px 32px rgba(0,0,0,.45);
+  font-family:var(--disp);
+  opacity:0;transform:translateY(12px);pointer-events:none;
+  transition:opacity .25s ease,transform .25s ease;
+}
+#share-nudge.show{opacity:1;transform:translateY(0);pointer-events:auto}
+#share-nudge .sn-close{
+  position:absolute;top:8px;right:9px;background:none;border:none;color:var(--dim);
+  font-size:.85rem;cursor:pointer;line-height:1;padding:4px;
+}
+#share-nudge .sn-close:hover{color:var(--white)}
+#share-nudge .sn-title{font-weight:700;font-size:.82rem;color:var(--white);margin-bottom:4px}
+#share-nudge .sn-body{font-size:.72rem;color:var(--muted);line-height:1.45;margin-bottom:12px}
+#share-nudge .sn-actions{display:flex;gap:8px}
+#share-nudge .sn-btn{
+  flex:1;text-align:center;padding:8px 10px;border-radius:7px;font-family:var(--mono);
+  font-size:.65rem;letter-spacing:.04em;text-decoration:none;transition:opacity .2s;
+}
+#share-nudge .sn-btn:hover{opacity:.85}
+#share-nudge .sn-btn-discord{background:var(--blue);color:#fff}
+#share-nudge .sn-btn-ig{background:transparent;border:1px solid var(--border-s);color:var(--white)}
+
 /* ── Preview area ── */
 .preview-area{
   display:flex;align-items:center;justify-content:center;overflow:hidden;padding:32px;
@@ -458,7 +484,6 @@ function checkPw(){
         <div class="field" id="c-instr-custom-wrap" style="display:none">
           <input type="text" id="c-instr-custom" placeholder="e.g. CL1!, RTY1!">
         </div>
-        <div class="field"><label>Domain</label><input type="text" id="c-domain" value="joinawtrading.com"></div>
       </div>
 
       <!-- BACKGROUND -->
@@ -530,7 +555,6 @@ function checkPw(){
         <div style="height:8px"></div>
         <div class="tog-row"><span>Stats bar</span><label class="tog"><input type="checkbox" id="tog-stats" checked><span class="tog-sl"></span></label></div>
         <div class="tog-row"><span>Ticker label</span><label class="tog"><input type="checkbox" id="tog-instr" checked><span class="tog-sl"></span></label></div>
-        <div class="tog-row"><span>Logo &amp; domain</span><label class="tog"><input type="checkbox" id="tog-footer" checked><span class="tog-sl"></span></label></div>
         <div class="tog-row"><span>P&amp;L colors (red/green)</span><label class="tog"><input type="checkbox" id="tog-pnl-colors"><span class="tog-sl"></span></label></div>
       </div>
 
@@ -557,6 +581,18 @@ function checkPw(){
     </main>
 
   </div><!-- .app-body -->
+
+  <!-- ── Share nudge ── -->
+  <div id="share-nudge">
+    <button class="sn-close" id="sn-close" aria-label="Dismiss">✕</button>
+    <div class="sn-title">Card saved 🔥</div>
+    <div class="sn-body">Post it and tag us — we repost the best ones.</div>
+    <div class="sn-actions">
+      <a class="sn-btn sn-btn-discord" href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener">Discord</a>
+      <a class="sn-btn sn-btn-ig" href="https://www.instagram.com/_awtrading/" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+
 </div><!-- .app -->
 
 <script>
@@ -570,7 +606,7 @@ const S = {
   pnl: null, rr: '', points: '', accounts: null,
   dpnl: null, contracts: '', entryPrice: '', exitPrice: '',
   instr: 'NQ1!', pnlLbl: 'Daily P&L', domain: 'joinawtrading.com',
-  showStats: true, showInstr: true, showFooter: true, pnlColors: false,
+  showStats: true, showInstr: true, pnlColors: false,
   statsColor: '', urlColor: '',
 };
 
@@ -716,7 +752,7 @@ function applyTheme() {
 // ── Render card ────────────────────────────────────────
 function renderCard() {
   const card = document.getElementById('pnl-card');
-  const { preset, layout, showStats, showInstr, showFooter } = S;
+  const { preset, layout, showStats, showInstr } = S;
 
   applyTheme();
   applyCardBg();
@@ -748,14 +784,14 @@ function renderCard() {
   })();
   const rrPill = S.rr ? `<div class="c-rr-pill">${rrDisplay}</div>` : '';
 
-  const footerHtml = showFooter ? `
+  const footerHtml = `
     <div class="c-footer-wrap" style="border-top:1px solid var(--row-div)">
       <div class="c-footer-inner">
         <div class="c-footer-logo">${LOGO_IMG(18)}</div>
         <span class="c-footer-sep"></span>
         <span class="c-footer-txt"${uStyle}>${S.domain}</span>
       </div>
-    </div>` : '';
+    </div>`;
 
   if (preset === 'summary') {
     const rrTx  = rrDisplay || '—';
@@ -831,14 +867,14 @@ function renderCard() {
   }
 
   else if (preset === 'flex') {
-    const footerCentered = showFooter ? `
+    const footerCentered = `
       <div class="c-footer-wrap c-footer-center" style="border-top:1px solid var(--row-div)">
         <div class="c-footer-inner">
           <div class="c-footer-logo">${LOGO_IMG(18)}</div>
           <span class="c-footer-sep"></span>
           <span class="c-footer-txt"${uStyle}>${S.domain}</span>
         </div>
-      </div>` : '';
+      </div>`;
     card.innerHTML = `
       <div class="c-overlay" style="background:rgba(0,0,0,${S.bgDim})"></div>
       <div class="c-noise"></div>
@@ -1001,6 +1037,7 @@ async function exportCard() {
     console.error('Export error:', err); return;
   }
   setExportState('Export PNG', false);
+  showShareNudge();
 }
 
 async function copyCard() {
@@ -1078,8 +1115,8 @@ document.getElementById('bg-clear').addEventListener('click', e => {
 
 // ── Preset backgrounds ─────────────────────────────────
 const PRESET_BG = {
-  square: ['placeholder-1.svg','placeholder-2.svg','placeholder-3.svg'],
-  story:  ['placeholder-1.svg','placeholder-2.svg','placeholder-3.svg'],
+  square: ['blue.jpg','eyes.jpg','knight.jpg'],
+  story:  ['berserk.jpg','man.jpg','roman.jpg'],
 };
 
 function buildBgPresetGrid() {
@@ -1171,7 +1208,6 @@ document.getElementById('c-url-color').addEventListener('input',   e => { S.urlC
 
 // ── Wire: text inputs ──────────────────────────────────
 [
-  ['c-domain',   'domain',     v=>v],
   ['m-pnl',      'pnl',        parseMoney],
   ['m-rr',       'rr',         v=>v],
   ['m-pts',      'points',     v=>v],
@@ -1189,8 +1225,20 @@ document.getElementById('c-url-color').addEventListener('input',   e => { S.urlC
 // ── Wire: toggles ──────────────────────────────────────
 document.getElementById('tog-stats').addEventListener('change',      e=>{S.showStats  =e.target.checked;refresh();});
 document.getElementById('tog-instr').addEventListener('change',      e=>{S.showInstr  =e.target.checked;refresh();});
-document.getElementById('tog-footer').addEventListener('change',     e=>{S.showFooter =e.target.checked;refresh();});
 document.getElementById('tog-pnl-colors').addEventListener('change', e=>{S.pnlColors  =e.target.checked;refresh();});
+
+// ── Share nudge ─────────────────────────────────────────
+let shareNudgeTimer = null;
+function showShareNudge() {
+  const el = document.getElementById('share-nudge');
+  clearTimeout(shareNudgeTimer);
+  el.classList.add('show');
+  shareNudgeTimer = setTimeout(() => el.classList.remove('show'), 9000);
+}
+document.getElementById('sn-close').addEventListener('click', () => {
+  clearTimeout(shareNudgeTimer);
+  document.getElementById('share-nudge').classList.remove('show');
+});
 
 window.addEventListener('resize', updateScale);
 
