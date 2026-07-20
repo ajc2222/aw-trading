@@ -402,8 +402,23 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 .layout-square .c-grid-vdiv{margin:18px 40px}
 .layout-story  .c-grid-vdiv{margin:12px 24px}
 
+/* Fullscreen screenshot mode */
+#fullscreen-btn{display:none}
+#fs-close{display:none}
+.preview-area.fullscreen-mode{
+  position:fixed;inset:0;z-index:500;background:var(--bg);padding:20px;
+}
+.preview-area.fullscreen-mode::before{display:none}
+.preview-area.fullscreen-mode #preview-label{display:none}
+.preview-area.fullscreen-mode #fs-close{
+  display:block;position:absolute;top:16px;right:16px;z-index:501;
+  background:var(--panel-2);border:1px solid var(--border-s);color:var(--white);
+  border-radius:8px;padding:9px 16px;font-family:var(--disp);font-weight:700;font-size:.75rem;cursor:pointer;
+}
+
 /* ── Mobile layout ── */
 @media (max-width:860px){
+  #fullscreen-btn{display:block}
   html,body{overflow:auto;height:auto}
   .app{height:auto;min-height:100vh}
   .topnav{flex-wrap:wrap;height:auto;min-height:52px;padding:10px 14px;gap:8px}
@@ -645,6 +660,7 @@ function unlockGate(){
           <button class="btn-exp" id="export-btn" onclick="exportCard()">Export PNG</button>
           <button class="btn-copy" id="copy-btn" onclick="copyCard()">Copy Image</button>
         </div>
+        <button class="btn-copy" id="fullscreen-btn" onclick="openFullscreen()" style="width:100%;margin-top:8px">View Fullscreen to Screenshot</button>
         <div class="dz-msg" id="export-err-msg" style="text-align:center;margin-top:8px"></div>
       </div>
 
@@ -652,6 +668,7 @@ function unlockGate(){
 
     <!-- ═══ PREVIEW ═══ -->
     <main class="preview-area" id="preview-area">
+      <button id="fs-close" onclick="closeFullscreen()">✕ Done — Exit Fullscreen</button>
       <div class="preview-stack">
         <span id="preview-label">Preview — 1080 × 1080</span>
         <div class="card-scaler" id="card-scaler">
@@ -1095,6 +1112,16 @@ function updateScale() {
 }
 
 function refresh() { renderCard(); updateScale(); }
+
+// ── Fullscreen screenshot mode (mobile export/copy fallback) ───
+function openFullscreen() {
+  document.getElementById('preview-area').classList.add('fullscreen-mode');
+  updateScale();
+}
+function closeFullscreen() {
+  document.getElementById('preview-area').classList.remove('fullscreen-mode');
+  updateScale();
+}
 
 // ── Export / Copy ──────────────────────────────────────
 async function renderToCanvas() {
