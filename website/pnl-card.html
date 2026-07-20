@@ -375,6 +375,21 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 .c-grid-vdiv{width:1px;background:var(--row-div);flex-shrink:0}
 .layout-square .c-grid-vdiv{margin:18px 40px}
 .layout-story  .c-grid-vdiv{margin:12px 24px}
+
+/* ── Mobile layout ── */
+@media (max-width:860px){
+  html,body{overflow:auto;height:auto}
+  .app{height:auto;min-height:100vh}
+  .topnav{flex-wrap:wrap;height:auto;min-height:52px;padding:10px 14px;gap:8px}
+  .tn-back{font-size:0}
+  .tn-sep,.tn-divider,.tn-title{display:none}
+  .tn-actions{gap:6px}
+  .tn-btn-copy,.tn-btn-exp{padding:7px 10px;font-size:.7rem}
+  .app-body{grid-template-columns:1fr;height:auto;overflow:visible}
+  .preview-area{order:-1;height:60vh;min-height:340px}
+  .sidebar{order:2;height:auto;max-height:none;overflow-y:visible;border-right:none;border-bottom:1px solid var(--border)}
+  #share-nudge{left:16px;right:16px;width:auto;bottom:16px}
+}
 </style>
   <script defer src="/_vercel/insights/script.js"></script>
   <script defer src="/_vercel/speed-insights/script.js"></script>
