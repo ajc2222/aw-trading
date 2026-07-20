@@ -1097,6 +1097,7 @@ async function copyCard() {
     await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
     setCopyState('✓ Copied!', false);
     setTimeout(() => setCopyState('Copy Image', false), 2000);
+    showShareNudge();
   } catch(err) {
     setCopyState('✕ Failed', false);
     setTimeout(()=>setCopyState('Copy Image',false),3000);
