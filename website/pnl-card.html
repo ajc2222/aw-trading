@@ -632,6 +632,7 @@ function unlockGate(){
           <button class="btn-exp" id="export-btn" onclick="exportCard()">Export PNG</button>
           <button class="btn-copy" id="copy-btn" onclick="copyCard()">Copy Image</button>
         </div>
+        <div class="dz-msg" id="export-err-msg" style="text-align:center;margin-top:8px"></div>
       </div>
 
     </aside>
@@ -1078,7 +1079,12 @@ function refresh() { renderCard(); updateScale(); }
 
 // ── Export / Copy ──────────────────────────────────────
 async function renderToCanvas() {
-  await document.fonts.ready;
+  // document.fonts.ready can hang indefinitely on some mobile Safari
+  // versions with custom @font-face fonts — don't let it block forever.
+  await Promise.race([
+    document.fonts.ready,
+    new Promise(resolve => setTimeout(resolve, 3000)),
+  ]);
   const outer = document.getElementById('card-outer');
   const prev = outer.style.transform;
   outer.style.transform = 'scale(1)';
@@ -1121,25 +1127,35 @@ document.getElementById('img-modal').addEventListener('click', e => {
   if (e.target.id === 'img-modal') hideImageModal();
 });
 
+function showExportErr(msg) {
+  const el = document.getElementById('export-err-msg');
+  el.style.color = '#EF4444';
+  el.textContent = msg;
+}
+function clearExportErr() {
+  document.getElementById('export-err-msg').textContent = '';
+}
+
 async function exportCard() {
   setExportState('Exporting…', true);
-  let canvas;
+  clearExportErr();
   try {
-    canvas = await renderToCanvas();
+    const canvas = await renderToCanvas();
+    const dataUrl = canvas.toDataURL('image/png');
+    if (isIOS) {
+      showImageModal(dataUrl);
+    } else {
+      const a = document.createElement('a');
+      const d = (S.date || todayStr()).replace(/[^a-z0-9]/gi,'-').replace(/-+/g,'-');
+      a.download = `aw-pnl-${S.preset}-${S.layout}-${d}.png`;
+      a.href = dataUrl;
+      a.click();
+    }
   } catch(err) {
     setExportState('✕ Failed', false);
     setTimeout(()=>setExportState('Export PNG',false),3000);
+    showExportErr((err && err.message) ? err.message : String(err));
     console.error('Export error:', err); return;
-  }
-  const dataUrl = canvas.toDataURL('image/png');
-  if (isIOS) {
-    showImageModal(dataUrl);
-  } else {
-    const a = document.createElement('a');
-    const d = (S.date || todayStr()).replace(/[^a-z0-9]/gi,'-').replace(/-+/g,'-');
-    a.download = `aw-pnl-${S.preset}-${S.layout}-${d}.png`;
-    a.href = dataUrl;
-    a.click();
   }
   setExportState('Export PNG', false);
   showShareNudge();
@@ -1147,12 +1163,14 @@ async function exportCard() {
 
 async function copyCard() {
   setCopyState('Copying…', true);
+  clearExportErr();
   let canvas;
   try {
     canvas = await renderToCanvas();
   } catch(err) {
     setCopyState('✕ Failed', false);
     setTimeout(()=>setCopyState('Copy Image',false),3000);
+    showExportErr((err && err.message) ? err.message : String(err));
     console.error('Copy error:', err); return;
   }
   if (navigator.clipboard && window.ClipboardItem) {
@@ -1168,8 +1186,13 @@ async function copyCard() {
     }
   }
   setCopyState('Copy Image', false);
-  showImageModal(canvas.toDataURL('image/png'));
-  showShareNudge();
+  try {
+    showImageModal(canvas.toDataURL('image/png'));
+    showShareNudge();
+  } catch(err) {
+    showExportErr((err && err.message) ? err.message : String(err));
+    console.error('Image modal error:', err);
+  }
 }
 
 // ── Wire: preset ───────────────────────────────────────
