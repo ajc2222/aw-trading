@@ -83,6 +83,25 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 }
 .s-label::after{content:'';flex:1;height:1px;background:var(--border)}
 
+.help-wrap{position:relative;display:inline-flex;align-items:center;flex-shrink:0}
+.help-btn{
+  width:14px;height:14px;border-radius:50%;border:1px solid var(--border-s);background:transparent;
+  color:var(--dim);font-family:var(--mono);font-size:.55rem;line-height:1;
+  display:flex;align-items:center;justify-content:center;cursor:help;padding:0;flex-shrink:0;
+  transition:color .2s,border-color .2s;
+}
+.help-btn:hover,.help-btn:focus-visible{color:var(--white);border-color:var(--blue);outline:none}
+.help-tip{
+  position:absolute;top:calc(100% + 8px);left:-16px;width:200px;max-width:calc(100vw - 48px);
+  background:var(--panel-2);border:1px solid var(--border-s);border-radius:8px;
+  padding:10px 12px;font-family:var(--disp);font-size:.66rem;line-height:1.6;color:var(--muted);
+  text-transform:none;letter-spacing:normal;font-weight:400;
+  opacity:0;visibility:hidden;transform:translateY(-4px);pointer-events:none;
+  transition:opacity .15s ease,transform .15s ease;z-index:20;box-shadow:0 10px 24px rgba(0,0,0,.4);
+}
+.help-btn:hover+.help-tip,.help-btn:focus-visible+.help-tip{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
+.help-tip strong{color:var(--white);font-weight:600}
+
 .field{margin-bottom:9px}
 .field:last-child{margin-bottom:0}
 .field label{display:block;font-size:.68rem;color:var(--muted);font-family:var(--mono);margin-bottom:4px}
@@ -439,7 +458,17 @@ function checkPw(){
 
       <!-- TRADE DATA -->
       <div class="s-section">
-        <div class="s-label">Trade Data</div>
+        <div class="s-label">
+          <span>Trade Data</span>
+          <span class="help-wrap">
+            <button type="button" class="help-btn" aria-label="How to export your trades CSV">?</button>
+            <div class="help-tip">
+              <strong>Tradovate</strong> — Reports tab → Trades → Export → CSV.<br><br>
+              <strong>Prop firm dashboard</strong> (Apex, TopStep, Tradeify, etc.) — look for "Trade History" or "Performance" on your account, then Export / Download CSV.<br><br>
+              Drop the file above — P&amp;L, RR, and points fill in automatically.
+            </div>
+          </span>
+        </div>
 
         <!-- CSV -->
         <div class="dz" id="csv-dz" style="margin-bottom:10px">
