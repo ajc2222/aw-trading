@@ -381,25 +381,21 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 </head>
 <body>
 
-<!-- ── Password gate ── -->
-<div id="pw-gate" style="position:fixed;inset:0;z-index:9999;background:#070709;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;font-family:'IBM Plex Mono',monospace">
+<!-- ── Discord-join gate ── -->
+<div id="pw-gate" style="position:fixed;inset:0;z-index:9999;background:#070709;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;font-family:'IBM Plex Mono',monospace;padding:24px;text-align:center">
   <div style="font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:#6A6F7C">AW Trading</div>
-  <div style="font-size:1.05rem;font-weight:600;color:#F5F6F8;font-family:'Archivo',sans-serif;letter-spacing:-.01em">P&amp;L Card Generator</div>
+  <div style="font-size:1.3rem;font-weight:600;color:#F5F6F8;font-family:'Archivo',sans-serif;letter-spacing:-.01em">Free P&amp;L Card Generator</div>
+  <div style="font-size:.78rem;color:#9298A6;font-family:'Archivo',sans-serif;max-width:280px;line-height:1.5">Turn your trades into a branded flex card in seconds.</div>
   <div style="height:1px;width:180px;background:rgba(255,255,255,.07);margin:4px 0"></div>
-  <input id="pw-input" type="password" placeholder="Enter password" autocomplete="current-password"
-    style="background:#111116;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 16px;color:#F5F6F8;font-family:inherit;font-size:.82rem;outline:none;width:220px;text-align:center;transition:border-color .2s"
-    onfocus="this.style.borderColor='#2E6BFF'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
-    onkeydown="if(event.key==='Enter')checkPw()">
-  <button onclick="checkPw()" style="background:#2E6BFF;color:#fff;border:none;border-radius:8px;padding:9px 28px;font-family:inherit;font-size:.78rem;cursor:pointer;letter-spacing:.06em;font-weight:600">Enter</button>
-  <div id="pw-err" style="color:#EF4444;font-size:.65rem;min-height:1em;letter-spacing:.04em"></div>
+  <a href="https://discord.gg/fn2qjH7MW4" target="_blank" rel="noopener"
+    style="background:#2E6BFF;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:inherit;font-size:.78rem;cursor:pointer;letter-spacing:.06em;font-weight:600;text-decoration:none;display:inline-block">Join Discord to unlock</a>
+  <button onclick="unlockGate()" style="background:transparent;color:#9298A6;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 22px;font-family:inherit;font-size:.72rem;cursor:pointer;letter-spacing:.04em">I've already joined — Continue</button>
 </div>
 <script>
-const PW = 'awtrading2026';
-(function(){if(sessionStorage.getItem('aw-auth')===PW)document.getElementById('pw-gate').style.display='none';})();
-function checkPw(){
-  const v=document.getElementById('pw-input').value;
-  if(v===PW){sessionStorage.setItem('aw-auth',PW);document.getElementById('pw-gate').style.display='none';}
-  else{document.getElementById('pw-err').textContent='Incorrect password';document.getElementById('pw-input').value='';}
+(function(){if(sessionStorage.getItem('aw-pnl-unlocked')==='1')document.getElementById('pw-gate').style.display='none';})();
+function unlockGate(){
+  sessionStorage.setItem('aw-pnl-unlocked','1');
+  document.getElementById('pw-gate').style.display='none';
 }
 </script>
 
