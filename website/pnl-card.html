@@ -525,6 +525,14 @@ function checkPw(){
           </div>
           <div class="dz-txt">Upload background image or <strong>browse</strong></div>
         </div>
+        <div class="field" style="margin-top:8px">
+          <label>Or paste image URL</label>
+          <div style="display:flex;gap:6px">
+            <input type="text" id="bg-url-input" placeholder="https://…" style="flex:1">
+            <button id="bg-url-btn" class="btn-copy" style="width:auto;padding:8px 12px;font-size:.7rem">Add</button>
+          </div>
+          <div class="dz-msg" id="bg-url-msg"></div>
+        </div>
         <div id="bg-thumb">
           <img id="bg-preview" src="" alt="">
           <button id="bg-clear">✕ Remove</button>
@@ -1140,6 +1148,42 @@ document.getElementById('bg-clear').addEventListener('click', e => {
   document.getElementById('img-input').value = '';
   document.querySelectorAll('.bg-preset-btn').forEach(b=>b.classList.remove('active'));
   refresh();
+});
+
+// ── Wire: background image URL ─────────────────────────
+function loadBgFromUrl(url) {
+  const msg = document.getElementById('bg-url-msg');
+  const btn = document.getElementById('bg-url-btn');
+  if (!url) return;
+  msg.style.color = 'var(--muted)'; msg.textContent = 'Loading…';
+  btn.disabled = true;
+  fetch(url, { mode: 'cors' })
+    .then(r => { if (!r.ok) throw new Error('fetch failed'); return r.blob(); })
+    .then(blob => {
+      if (!blob.type.startsWith('image/')) throw new Error('not an image');
+      const fr = new FileReader();
+      fr.onload = e => {
+        S.bgImage = e.target.result;
+        document.getElementById('bg-preview').src = S.bgImage;
+        document.getElementById('bg-thumb').style.display = 'block';
+        document.querySelectorAll('.bg-preset-btn').forEach(b=>b.classList.remove('active'));
+        msg.style.color = '#22C55E'; msg.textContent = '✓ Background loaded';
+        btn.disabled = false;
+        refresh();
+      };
+      fr.readAsDataURL(blob);
+    })
+    .catch(() => {
+      msg.style.color = '#EF4444';
+      msg.textContent = "✕ Couldn't load that link — try downloading the image and uploading it instead";
+      btn.disabled = false;
+    });
+}
+document.getElementById('bg-url-btn').addEventListener('click', () => {
+  loadBgFromUrl(document.getElementById('bg-url-input').value.trim());
+});
+document.getElementById('bg-url-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') loadBgFromUrl(e.target.value.trim());
 });
 
 // ── Preset backgrounds ─────────────────────────────────
