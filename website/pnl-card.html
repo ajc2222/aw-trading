@@ -1089,9 +1089,13 @@ async function renderToCanvas() {
   const prev = outer.style.transform;
   outer.style.transform = 'scale(1)';
   try {
-    return await html2canvas(document.getElementById('pnl-card'), {
+    const renderPromise = html2canvas(document.getElementById('pnl-card'), {
       scale:2, useCORS:true, backgroundColor:null, logging:false,
     });
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Rendering timed out — this browser may not support exporting this card. Try a different browser or device.')), 15000)
+    );
+    return await Promise.race([renderPromise, timeoutPromise]);
   } finally {
     outer.style.transform = prev;
   }
