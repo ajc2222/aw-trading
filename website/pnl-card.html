@@ -249,6 +249,19 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
   color:var(--white);border-radius:50%;width:34px;height:34px;font-size:.9rem;cursor:pointer;
 }
 
+/* Error toast — fixed so it's visible no matter where the page is scrolled */
+#err-toast{
+  position:fixed;top:16px;left:16px;right:16px;z-index:400;margin:0 auto;max-width:420px;
+  background:#2a0e10;border:1px solid rgba(239,68,68,.5);border-radius:10px;
+  padding:12px 40px 12px 14px;font-family:var(--mono);font-size:.72rem;color:#FFD9D9;line-height:1.5;
+  display:none;box-shadow:0 12px 32px rgba(0,0,0,.5);
+}
+#err-toast.show{display:block}
+#err-toast-close{
+  position:absolute;top:8px;right:8px;background:none;border:none;color:#FFD9D9;
+  font-size:.8rem;cursor:pointer;padding:6px;line-height:1;
+}
+
 /* ── Preview area ── */
 .preview-area{
   display:flex;align-items:center;justify-content:center;overflow:hidden;padding:32px;
@@ -667,6 +680,12 @@ function unlockGate(){
     <button id="img-modal-close" aria-label="Close">✕</button>
     <img id="img-modal-img" alt="Your P&L card">
     <div id="img-modal-hint">Press and hold the image to save or copy</div>
+  </div>
+
+  <!-- ── Error toast (always visible regardless of scroll) ── -->
+  <div id="err-toast">
+    <div id="err-toast-text"></div>
+    <button id="err-toast-close" aria-label="Dismiss">✕</button>
   </div>
 
 </div><!-- .app -->
@@ -1132,13 +1151,15 @@ document.getElementById('img-modal').addEventListener('click', e => {
 });
 
 function showExportErr(msg) {
-  const el = document.getElementById('export-err-msg');
-  el.style.color = '#EF4444';
-  el.textContent = msg;
+  document.getElementById('export-err-msg').textContent = msg;
+  document.getElementById('err-toast-text').textContent = msg;
+  document.getElementById('err-toast').classList.add('show');
 }
 function clearExportErr() {
   document.getElementById('export-err-msg').textContent = '';
+  document.getElementById('err-toast').classList.remove('show');
 }
+document.getElementById('err-toast-close').addEventListener('click', clearExportErr);
 
 async function exportCard() {
   setExportState('Exporting…', true);
