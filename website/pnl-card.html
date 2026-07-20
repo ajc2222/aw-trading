@@ -1108,11 +1108,16 @@ async function renderToCanvas() {
   const prev = outer.style.transform;
   outer.style.transform = 'scale(1)';
   try {
+    // iOS Safari is known to be extremely slow (sometimes effectively
+    // stuck) rendering this card's variable-weight fonts via html2canvas
+    // at full resolution — render smaller there to cut the workload.
+    const renderScale = isIOS ? 1 : 2;
+    const renderTimeoutMs = isIOS ? 25000 : 15000;
     const renderPromise = html2canvas(document.getElementById('pnl-card'), {
-      scale:2, useCORS:true, backgroundColor:null, logging:false,
+      scale:renderScale, useCORS:true, backgroundColor:null, logging:false,
     });
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Rendering timed out — this browser may not support exporting this card. Try a different browser or device.')), 15000)
+      setTimeout(() => reject(new Error('Rendering timed out — this browser may not support exporting this card. Try a different browser or device.')), renderTimeoutMs)
     );
     return await Promise.race([renderPromise, timeoutPromise]);
   } finally {
