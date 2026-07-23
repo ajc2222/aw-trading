@@ -120,7 +120,7 @@ async function sendConfirmationEmail(app) {
 
 export default async function handler(req, res) {
   // CORS headers: set before any early return so preflight OPTIONS sees them.
-  res.setHeader('Access-Control-Allow-Origin', 'https://awtrading.com');
+  res.setHeader('Access-Control-Allow-Origin', 'https://joinawtrading.com');
   res.setHeader('Access-Control-Allow-Methods', 'POST');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -136,7 +136,7 @@ export default async function handler(req, res) {
 
   // Origin/Referer sanity check to mitigate cross-origin abuse.
   const origin = req.headers.origin || req.headers.referer || '';
-  if (origin && !origin.startsWith('https://awtrading.com')) {
+  if (origin && !origin.startsWith('https://joinawtrading.com')) {
     return res.status(403).json({ ok: false, error: 'forbidden' });
   }
 
