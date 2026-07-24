@@ -127,7 +127,7 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 .dz-msg{font-family:var(--mono);font-size:.62rem;margin-top:6px;min-height:14px}
 
 /* Preset toggle */
-.preset-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
 .preset-btn{
   border:1.5px solid var(--border-s);border-radius:var(--radius-sm);padding:9px 4px 8px;
   cursor:pointer;text-align:center;font-size:.58rem;font-family:var(--mono);
@@ -402,6 +402,29 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 .layout-square .c-grid-vdiv{margin:18px 40px}
 .layout-story  .c-grid-vdiv{margin:12px 24px}
 
+/* ── Chart preset ── */
+.c-chart-nick{font-family:'IBM Plex Mono',monospace;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--logo-txt)}
+.layout-square .c-chart-nick{font-size:1.1rem}
+.layout-story  .c-chart-nick{font-size:.95rem}
+.c-chart-sep{color:var(--logo-txt);opacity:.55;margin:0 10px;font-family:'IBM Plex Mono',monospace}
+.c-chart-instr-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.c-chart-instr-name{font-family:'IBM Plex Mono',monospace;font-weight:600;letter-spacing:.08em;color:var(--stat-val-c)}
+.layout-square .c-chart-instr-name{font-size:1.6rem}
+.layout-story  .c-chart-instr-name{font-size:1.35rem}
+.c-chart-pnl-pill{display:inline-block;border-radius:12px;font-family:'IBM Plex Mono',monospace;font-weight:700;letter-spacing:-.01em;color:#fff;margin-bottom:16px}
+.layout-square .c-chart-pnl-pill{font-size:3.6rem;padding:10px 24px;border-radius:14px;margin-bottom:20px}
+.layout-story  .c-chart-pnl-pill{font-size:2.9rem;padding:8px 20px;border-radius:12px;margin-bottom:16px}
+.c-chart-stats{display:flex;flex-direction:column;gap:0;margin-bottom:14px}
+.c-chart-stat-row{display:flex;justify-content:space-between;align-items:center}
+.layout-square .c-chart-stat-row{padding:9px 0}
+.layout-story  .c-chart-stat-row{padding:7px 0}
+.c-chart-stat-lbl{font-family:'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--stat-lbl-c)}
+.layout-square .c-chart-stat-lbl{font-size:.82rem}
+.layout-story  .c-chart-stat-lbl{font-size:.75rem}
+.c-chart-stat-val{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--stat-val-c)}
+.layout-square .c-chart-stat-val{font-size:1rem}
+.layout-story  .c-chart-stat-val{font-size:.9rem}
+
 /* Fullscreen screenshot mode */
 #fullscreen-btn,#fullscreen-btn-nav{display:none}
 #fs-close{display:none}
@@ -517,6 +540,11 @@ function unlockGate(){
             <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor" opacity=".65"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor" opacity=".65"/></svg>
             Grid
           </button>
+          <button class="preset-btn" data-preset="chart">
+            <!-- line chart -->
+            <svg viewBox="0 0 16 16" fill="none"><polyline points="1,12 4,8 7,10 10,4 15,2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="10" r="1.5" fill="#22C55E"/><circle cx="10" cy="4" r="1.5" fill="#EF4444"/></svg>
+            Chart
+          </button>
         </div>
       </div>
 
@@ -527,9 +555,10 @@ function unlockGate(){
           <span class="help-wrap">
             <button type="button" class="help-btn" aria-label="How to export your trades CSV">?</button>
             <div class="help-tip">
-              <strong>Tradovate</strong> — Reports tab → Trades → Export → CSV.<br><br>
-              <strong>Prop firm dashboard</strong> (Apex, TopStep, Tradeify, etc.) — look for "Trade History" or "Performance" on your account, then Export / Download CSV.<br><br>
-              Drop the file above — P&amp;L and points fill in automatically. RR still needs to be entered manually.
+              <strong>Tradovate Orders</strong> — Orders tab → Export → CSV. P&amp;L calculated automatically from fills.<br><br>
+              <strong>Tradovate Performance</strong> — Reports tab → Trades → Export → CSV.<br><br>
+              <strong>Prop firms</strong> (Apex, TopStep, etc.) — "Trade History" or "Performance" → Export CSV.<br><br>
+              Drop either format — the card detects it automatically.
             </div>
           </span>
         </div>
@@ -564,6 +593,10 @@ function unlockGate(){
       <!-- CARD SETTINGS -->
       <div class="s-section">
         <div class="s-label">Card Settings</div>
+        <div class="field">
+          <label>Nickname <span style="color:var(--dim);font-size:.6rem">(shown as: Trading × nickname)</span></label>
+          <input type="text" id="c-nickname" placeholder="-aj-, trader1, etc." maxlength="24">
+        </div>
         <div class="field">
           <label>Ticker</label>
           <select id="c-instr">
@@ -725,6 +758,8 @@ const S = {
   instr: 'NQ1!', pnlLbl: 'Daily P&L', domain: 'joinjoinawtrading.com',
   showStats: true, showInstr: true, pnlColors: false,
   statsColor: '', urlColor: '', csvVerified: false,
+  nickname: '',
+  chartEntry: null, chartExit: null, chartSide: 'long',
 };
 
 const DIMS = {
@@ -810,6 +845,76 @@ function parseCSV(text) {
   };
 }
 
+// ── Orders CSV parse (Tradovate Orders export) ─────────
+function parseOrdersCSV(text) {
+  const lines = text.trim().replace(/\r\n|\r/g, '\n').split('\n').filter(l => l.trim());
+  if (lines.length < 2) return null;
+  const hdrs = splitRow(lines[0]).map(h => h.toLowerCase().replace(/"/g, '').trim());
+  const bsI = hdrs.indexOf('b/s');
+  if (bsI < 0) return null;
+  const contractI  = hdrs.indexOf('contract');
+  const statusI    = hdrs.indexOf('status');
+  const fillPriceI = hdrs.indexOf('avg fill price');
+  const fillQtyI   = hdrs.indexOf('filled qty');
+  const fillTimeI  = hdrs.indexOf('fill time');
+  if (contractI < 0 || statusI < 0 || fillPriceI < 0 || fillQtyI < 0) return null;
+
+  const MULT = {MES:5,ES:50,MNQ:2,NQ:20,YM:5,MYM:0.5,RTY:50,M2K:10,CL:1000,GC:100};
+  const orders = [];
+  for (let i = 1; i < lines.length; i++) {
+    const r = splitRow(lines[i]);
+    if (!( r[statusI]||'').trim().toLowerCase().includes('filled')) continue;
+    const price = parseFloat((r[fillPriceI]||'').replace(/[$,]/g,''));
+    const qty   = parseInt((r[fillQtyI]||'0').replace(/[$,]/g,''));
+    if (isNaN(price)||!qty) continue;
+    orders.push({ bs:(r[bsI]||'').trim(), contract:(r[contractI]||'').trim(), price, qty, time:(r[fillTimeI]||'').trim() });
+  }
+  if (!orders.length) return null;
+
+  const byContract = {};
+  for (const o of orders) (byContract[o.contract]=byContract[o.contract]||[]).push(o);
+
+  const trades = [];
+  for (const [contract, ords] of Object.entries(byContract)) {
+    ords.sort((a,b)=>a.time.localeCompare(b.time));
+    const base = Object.keys(MULT).find(k=>contract.startsWith(k))||'';
+    const mult = MULT[base]||0;
+    let pos=0,entryTotal=0,entryQty=0,entrySide=null;
+    for (const o of ords) {
+      const isBuy = o.bs.toLowerCase().includes('buy');
+      const sign  = isBuy ? 1 : -1;
+      if (pos===0) {
+        pos=sign*o.qty; entryTotal=o.price*o.qty; entryQty=o.qty; entrySide=isBuy?'long':'short';
+      } else if (Math.sign(sign)!==Math.sign(pos)) {
+        const closeQty=Math.min(o.qty,Math.abs(pos));
+        const entryAvg=entryTotal/entryQty;
+        const pnl=entrySide==='long'?(o.price-entryAvg)*closeQty*mult:(entryAvg-o.price)*closeQty*mult;
+        trades.push({contract,pnl,entryAvg,exitAvg:o.price,qty:closeQty,side:entrySide});
+        pos+=sign*o.qty;
+        if(pos===0){entryQty=0;entryTotal=0;entrySide=null;}
+      } else {
+        pos+=sign*o.qty; entryQty+=o.qty; entryTotal+=o.price*o.qty;
+      }
+    }
+  }
+  if (!trades.length) return null;
+
+  const total   = trades.reduce((s,t)=>s+t.pnl,0);
+  const winners = trades.filter(t=>t.pnl>0);
+  const last    = trades[trades.length-1];
+  const fmt2    = n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  return {
+    total, count:trades.length, winRate:Math.round(winners.length/trades.length*100),
+    points:null, best:last.pnl,
+    symbols:[...new Set(trades.map(t=>t.contract))],
+    contracts:String(last.qty),
+    entryPrice:`$${fmt2(last.entryAvg)}`,
+    exitPrice:`$${fmt2(last.exitAvg)}`,
+    dpnl:last.pnl,
+    chartEntry:last.entryAvg, chartExit:last.exitAvg, chartSide:last.side,
+  };
+}
+
 // ── Logo ───────────────────────────────────────────────
 let LOGO_DATA = '';
 
@@ -835,6 +940,40 @@ async function loadLogo() {
 const LOGO_IMG = (h) => LOGO_DATA
   ? `<img src="${LOGO_DATA}" alt="AW" style="height:${h}px;width:auto;display:block">`
   : `<span style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:${Math.round(h*.55)}px;letter-spacing:.05em;color:#F5F6F8">AW</span>`;
+
+// ── Chart helpers ──────────────────────────────────────
+function seededRand(seed) {
+  let s = (seed ^ 0xDEADBEEF) >>> 0;
+  return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+}
+
+function buildChartSVG(entry, exit, side, w, h) {
+  const N = 100;
+  const seed = Math.round(Math.abs(entry + exit) * 97 + Math.abs(exit - entry) * 53) || 42;
+  const rand = seededRand(seed);
+  const prices = [entry];
+  const vol = Math.max(Math.abs(exit - entry), Math.abs(entry) * 0.002);
+  for (let i = 1; i < N - 1; i++) {
+    const t = i / (N - 1);
+    const target = entry + (exit - entry) * t;
+    const prev = prices[i - 1];
+    prices.push(prev + (target - prev) * 0.12 + (rand() - 0.49) * vol * 0.38);
+  }
+  prices.push(exit);
+  const padX = w * 0.04, padY = h * 0.1;
+  const minP = Math.min(...prices), maxP = Math.max(...prices);
+  const pRange = maxP - minP || 1;
+  const toXY = (p, i) => [
+    padX + (i / (N - 1)) * (w - padX * 2),
+    padY + ((maxP - p) / pRange) * (h - padY * 2)
+  ];
+  const pts = prices.map((p, i) => toXY(p, i).map(v => v.toFixed(1)).join(',')).join(' ');
+  const [ex, ey] = toXY(entry, 0);
+  const [xx, xy] = toXY(exit, N - 1);
+  const entC = side === 'long' ? '#22C55E' : '#EF4444';
+  const exiC = side === 'long' ? '#EF4444' : '#22C55E';
+  return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:${w}px;height:${h}px;pointer-events:none;z-index:2"><polyline points="${pts}" fill="none" stroke="rgba(255,255,255,.88)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="7" fill="${entC}" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/><circle cx="${xx.toFixed(1)}" cy="${xy.toFixed(1)}" r="7" fill="${exiC}" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/></svg>`;
+}
 
 // ── Apply background to card ───────────────────────────
 function applyCardBg() {
@@ -1093,6 +1232,68 @@ function renderCard() {
         ${footerHtml}
       </div>`;
   }
+
+  else if (preset === 'chart') {
+    const cW = DIMS[layout].w;
+    const cH = DIMS[layout].h;
+    const chartH = Math.round(cH * 0.63);
+    const cEntry = S.chartEntry != null ? S.chartEntry : parseFloat(String(S.entryPrice||'').replace(/[$,]/g,''));
+    const cExit  = S.chartExit  != null ? S.chartExit  : parseFloat(String(S.exitPrice||'').replace(/[$,]/g,''));
+    const cSide  = S.chartSide  || 'long';
+    const conTx  = S.contracts  || '—';
+    const fmt2   = n => isNaN(n) ? '—' : `$${Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+    const entTx  = S.entryPrice || fmt2(cEntry);
+    const exTx   = S.exitPrice  || fmt2(cExit);
+    const totalTx = fmtMoney(S.dpnl, true);
+    const pnlVal  = S.dpnl;
+    const col     = pnlColor(pnlVal);
+    const pnlTx   = fmtMoney(pnlVal, true);
+    const hPad    = layout === 'story' ? '52px' : '72px';
+    const chartSvg = (!isNaN(cEntry) && !isNaN(cExit))
+      ? buildChartSVG(cEntry||cExit, cExit||cEntry, cSide, cW, chartH) : '';
+    const nickStr  = S.nickname ? ` × ${S.nickname}` : '';
+    const instrLine = (showInstr && S.instr) ? `
+      <div class="c-chart-instr-row">
+        <span style="font-size:${layout==='story'?'1.5rem':'1.8rem'}">🇺🇸</span>
+        <span class="c-chart-instr-name">${S.instr}</span>
+      </div>` : '';
+    const statsHtml = showStats ? `
+      <div class="c-chart-stats">
+        ${[['Contracts',conTx],['Entry Price',entTx],['Exit Price',exTx]].map(([l,v])=>`
+        <div class="c-chart-stat-row">
+          <span class="c-chart-stat-lbl">${l}</span>
+          <span class="c-chart-stat-val">${v}</span>
+        </div>`).join('')}
+        <div class="c-chart-stat-row">
+          <span class="c-chart-stat-lbl">Total PnL</span>
+          <span class="c-chart-stat-val" style="color:${col}">${totalTx}</span>
+        </div>
+      </div>` : '';
+    const logoSz = layout === 'story' ? 28 : 36;
+    const nickFz  = layout === 'story' ? '1rem' : '1.15rem';
+    card.innerHTML = `
+      <div class="c-overlay" style="background:linear-gradient(to top,rgba(0,0,0,.92) 44%,rgba(0,0,0,.08) 100%)"></div>
+      ${chartSvg}
+      <div class="c-noise"></div>
+      <div class="c-inner" style="z-index:3;justify-content:space-between">
+        <div style="padding:${layout==='story'?'28px':'40px'} ${hPad} 0;display:flex;align-items:center;flex-shrink:0">
+          <div class="c-logo-mark" style="margin-right:8px">${LOGO_IMG(logoSz)}</div>
+          <span class="c-chart-nick" style="font-size:${nickFz}">Trading${nickStr}</span>
+        </div>
+        <div style="padding:0 ${hPad} ${layout==='story'?'28px':'36px'};display:flex;flex-direction:column">
+          ${instrLine}
+          <div class="c-chart-pnl-pill" style="background:${col}">${pnlTx}</div>
+          ${statsHtml}
+          <div style="padding-top:12px;margin-top:4px">
+            <div class="c-footer-inner">
+              <div class="c-footer-logo">${LOGO_IMG(16)}</div>
+              <span class="c-footer-sep"></span>
+              <span class="c-footer-txt"${uStyle}>${S.domain}</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
 }
 
 // ── Scale preview ──────────────────────────────────────
@@ -1263,8 +1464,9 @@ document.querySelectorAll('[data-preset]').forEach(btn => {
     document.querySelectorAll('[data-preset]').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     S.preset = btn.dataset.preset;
-    document.getElementById('data-summary').style.display = S.preset !== 'detail' ? '' : 'none';
-    document.getElementById('data-detail').style.display  = S.preset === 'detail' ? '' : 'none';
+    const isDetailLike = S.preset === 'detail' || S.preset === 'chart';
+    document.getElementById('data-summary').style.display = isDetailLike ? 'none' : '';
+    document.getElementById('data-detail').style.display  = isDetailLike ? '' : 'none';
     refresh();
   });
 });
@@ -1397,17 +1599,22 @@ function handleCSV(file) {
   if (!file || !/\.(csv|txt)$/i.test(file.name)) return;
   const r = new FileReader();
   r.onload = e => {
-    const res = parseCSV(e.target.result);
-    if (!res) { csvMsg.style.color='#EF4444'; csvMsg.textContent='✕ Could not detect P&L column'; return; }
+    const text = e.target.result;
+    const res = parseOrdersCSV(text) || parseCSV(text);
+    if (!res) { csvMsg.style.color='#EF4444'; csvMsg.textContent='✕ Could not parse CSV — try Orders or Performance export'; return; }
     csvMsg.style.color='#22C55E';
-    csvMsg.textContent=`✓ ${res.count} trades · ${fmtMoney(res.total)} · ${res.winRate}% wins`;
+    csvMsg.textContent=`✓ ${res.count} trade${res.count!==1?'s':''} · ${fmtMoney(res.total)} · ${res.winRate}% wins`;
     S.csvVerified = true;
     S.pnl=res.total; document.getElementById('m-pnl').value=fmtMoney(res.total)||'';
     if (res.points) { S.points=res.points; document.getElementById('m-pts').value=res.points; }
-    S.dpnl=res.total; document.getElementById('d-pnl').value=fmtMoney(res.total)||'';
+    const dpnl = res.dpnl !== undefined ? res.dpnl : res.total;
+    S.dpnl=dpnl; document.getElementById('d-pnl').value=fmtMoney(dpnl)||'';
     if (res.contracts)  { S.contracts=res.contracts;   document.getElementById('d-contracts').value=res.contracts; }
     if (res.entryPrice) { S.entryPrice=res.entryPrice; document.getElementById('d-entry').value=res.entryPrice; }
     if (res.exitPrice)  { S.exitPrice=res.exitPrice;   document.getElementById('d-exit').value=res.exitPrice; }
+    if (res.chartEntry != null) S.chartEntry = res.chartEntry;
+    if (res.chartExit  != null) S.chartExit  = res.chartExit;
+    if (res.chartSide)          S.chartSide  = res.chartSide;
     if (res.symbols && res.symbols.length) {
       const raw = res.symbols[0].toUpperCase();
       S.instr = raw;
@@ -1463,6 +1670,13 @@ const CSV_FILLED_KEYS = new Set(['pnl','points','dpnl','contracts','entryPrice',
     refresh();
   });
 });
+
+// Clear chart cache when user manually edits entry/exit
+document.getElementById('d-entry').addEventListener('input', () => { S.chartEntry = null; });
+document.getElementById('d-exit').addEventListener('input',  () => { S.chartExit  = null; });
+
+// ── Wire: nickname ─────────────────────────────────────
+document.getElementById('c-nickname').addEventListener('input', e => { S.nickname = e.target.value.trim(); refresh(); });
 
 // ── Wire: toggles ──────────────────────────────────────
 document.getElementById('tog-stats').addEventListener('change',      e=>{S.showStats  =e.target.checked;refresh();});
