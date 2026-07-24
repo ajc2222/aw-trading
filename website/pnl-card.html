@@ -915,13 +915,27 @@ function parseOrdersCSV(text) {
   const fillPriceI = hdrs.indexOf('avg fill price');
   const fillQtyI   = hdrs.indexOf('filled qty');
   const fillTimeI  = hdrs.indexOf('fill time');
+  const typeI      = hdrs.indexOf('type');
+  const stopPriceI = hdrs.indexOf('stop price');
+  const tsI        = hdrs.indexOf('timestamp');
   if (contractI < 0 || statusI < 0 || fillPriceI < 0 || fillQtyI < 0) return null;
 
   const MULT = {MES:5,ES:50,MNQ:2,NQ:20,YM:5,MYM:0.5,RTY:50,M2K:10,CL:1000,GC:100};
   const orders = [];
+  const stopOrders = [];
   for (let i = 1; i < lines.length; i++) {
     const r = splitRow(lines[i]);
-    if (!( r[statusI]||'').trim().toLowerCase().includes('filled')) continue;
+    // collect stop orders regardless of fill status (to find initial stop price)
+    if (typeI >= 0 && stopPriceI >= 0 && (r[typeI]||'').trim().toLowerCase() === 'stop') {
+      const sp = parseFloat((r[stopPriceI]||'').replace(/[$,]/g,''));
+      if (!isNaN(sp)) stopOrders.push({
+        bs: (r[bsI]||'').trim().toLowerCase(),
+        contract: (r[contractI]||'').trim(),
+        stopPrice: sp,
+        ts: (r[tsI >= 0 ? tsI : fillTimeI]||'').trim(),
+      });
+    }
+    if (!(r[statusI]||'').trim().toLowerCase().includes('filled')) continue;
     const price = parseFloat((r[fillPriceI]||'').replace(/[$,]/g,''));
     const qty   = parseInt((r[fillQtyI]||'0').replace(/[$,]/g,''));
     if (isNaN(price)||!qty) continue;
@@ -957,15 +971,34 @@ function parseOrdersCSV(text) {
   }
   if (!trades.length) return null;
 
+  // ── Realized RR: aggregate across all trades ──────────
+  // For each trade find its initial stop order, then sum risk vs profit in points
+  let totalRiskPts = 0, totalProfitPts = 0, rrCount = 0;
+  for (const t of trades) {
+    const closingDir = t.side === 'long' ? 'sell' : 'buy';
+    const candidates = stopOrders
+      .filter(s => s.contract === t.contract && s.bs.includes(closingDir))
+      .sort((a,b) => a.ts.localeCompare(b.ts));
+    if (!candidates.length) continue;
+    const initialStop = candidates[0].stopPrice;
+    const riskPts = Math.abs(t.entryAvg - initialStop);
+    if (!riskPts) continue;
+    const profitPts = t.side === 'long' ? t.exitAvg - t.entryAvg : t.entryAvg - t.exitAvg;
+    totalRiskPts   += riskPts * t.qty;
+    totalProfitPts += profitPts * t.qty;
+    rrCount++;
+  }
+  const rrVal = rrCount > 0 && totalRiskPts > 0 ? totalProfitPts / totalRiskPts : null;
+  const rrStr = rrVal != null ? `${rrVal.toFixed(2)}R` : null;
+
   const total   = trades.reduce((s,t)=>s+t.pnl,0);
   const winners = trades.filter(t=>t.pnl>0);
   const last    = trades[trades.length-1];
   const fmt2    = n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-  // All fills across all trades for the chart
   const fills = orders.map(o => ({ time: o.time, bs: o.bs.toLowerCase().includes('buy') ? 'B' : 'S', price: o.price }));
   return {
     total, count:trades.length, winRate:Math.round(winners.length/trades.length*100),
-    points:null, best:last.pnl,
+    points:null, best:last.pnl, rr:rrStr,
     symbols:[...new Set(trades.map(t=>t.contract))],
     contracts:String(last.qty),
     entryPrice:`$${fmt2(last.entryAvg)}`,
@@ -1766,6 +1799,7 @@ function handleCSV(file) {
     csvMsg.textContent=`✓ ${res.count} trade${res.count!==1?'s':''} · ${fmtMoney(res.total)} · ${res.winRate}% wins`;
     S.csvVerified = true;
     S.pnl=res.total; document.getElementById('m-pnl').value=fmtMoney(res.total)||'';
+    if (res.rr)     { S.rr=res.rr;         document.getElementById('m-rr').value=res.rr; }
     if (res.points) { S.points=res.points; document.getElementById('m-pts').value=res.points; }
     const dpnl = res.dpnl !== undefined ? res.dpnl : res.total;
     S.dpnl=dpnl; document.getElementById('d-pnl').value=fmtMoney(dpnl)||'';
