@@ -958,13 +958,13 @@ function toYahooSym(contract) {
 }
 
 function parseFillTs(timeStr) {
-  // Tradovate times are US/Central: "07/24/2026 10:17:11"
-  // CDT (Mar-Nov) = UTC-5, CST (Nov-Mar) = UTC-6
+  // Tradovate times are US/Eastern: "07/24/2026 10:17:11"
+  // EDT (Mar-Nov) = UTC-4, EST (Nov-Mar) = UTC-5
   if (!timeStr) return null;
   const [datePart, timePart] = timeStr.trim().split(' ');
   if (!datePart || !timePart) return null;
   const [mo, dy, yr] = datePart.split('/');
-  const offset = parseInt(mo) >= 3 && parseInt(mo) <= 11 ? '-05:00' : '-06:00';
+  const offset = parseInt(mo) >= 3 && parseInt(mo) <= 11 ? '-04:00' : '-05:00';
   const d = new Date(`${yr}-${mo.padStart(2,'0')}-${dy.padStart(2,'0')}T${timePart}${offset}`);
   return isNaN(d.getTime()) ? null : Math.floor(d.getTime() / 1000);
 }
@@ -973,8 +973,8 @@ async function fetchChartPrices() {
   if (!S.entryTs || !S.exitTs || !S.instr) return;
   S.chartLoading = true; S.chartPrices = null;
   const sym = toYahooSym(S.instr);
-  const p1  = S.entryTs - 1800;  // 30 min buffer before entry
-  const p2  = S.exitTs  + 1800;  // 30 min buffer after exit
+  const p1  = S.entryTs - 7200;  // 2 hr buffer before entry
+  const p2  = S.exitTs  + 7200;  // 2 hr buffer after exit
   try {
     const r    = await fetch(`/api/chart?symbol=${encodeURIComponent(sym)}&period1=${p1}&period2=${p2}`);
     const json = await r.json();
