@@ -973,8 +973,8 @@ async function fetchChartPrices() {
   if (!S.entryTs || !S.exitTs || !S.instr) return;
   S.chartLoading = true; S.chartPrices = null;
   const sym = toYahooSym(S.instr);
-  const p1  = S.entryTs - 5400;  // 1.5 hr buffer before entry
-  const p2  = S.exitTs  + 5400;  // 1.5 hr buffer after exit
+  const p1  = S.entryTs - 3600;  // 1 hr buffer before entry
+  const p2  = S.exitTs  + 3600;  // 1 hr buffer after exit
   try {
     const r    = await fetch(`/api/chart?symbol=${encodeURIComponent(sym)}&period1=${p1}&period2=${p2}`);
     const json = await r.json();
@@ -1104,8 +1104,8 @@ function renderCard() {
   const header = `
     <div class="c-header">
       <div class="c-logo">
-        <div class="c-logo-mark">${LOGO_IMG(48)}</div>
-        <span class="c-logo-txt">AW Trading${nickStr}</span>
+        <div class="c-logo-mark">${LOGO_IMG(layout === 'story' ? 36 : 48)}</div>
+        <span class="c-logo-txt" style="font-size:${layout === 'story' ? '1.3rem' : '1.8rem'}">AW Trading${nickStr}</span>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
         <span class="c-date">${dateTx}</span>
