@@ -944,6 +944,9 @@ const LOGO_IMG = (h) => LOGO_DATA
   ? `<img src="${LOGO_DATA}" alt="AW" style="height:${h}px;width:auto;display:block;">`
   : `<span style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:${Math.round(h*.55)}px;letter-spacing:.05em;color:#F5F6F8">AW</span>`;
 
+// ── US flag circle SVG ────────────────────────────────
+const usFlagCircle = h => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="${h}" height="${h}" style="flex-shrink:0;display:inline-block;border-radius:50%;overflow:hidden"><defs><clipPath id="usflag-clip"><circle cx="15" cy="15" r="15"/></clipPath></defs><g clip-path="url(#usflag-clip)"><rect width="30" height="30" fill="#B22234"/><rect y="2.31" width="30" height="2.31" fill="#fff"/><rect y="6.92" width="30" height="2.31" fill="#fff"/><rect y="11.54" width="30" height="2.31" fill="#fff"/><rect y="16.15" width="30" height="2.31" fill="#fff"/><rect y="20.77" width="30" height="2.31" fill="#fff"/><rect y="25.38" width="30" height="2.31" fill="#fff"/><rect width="12" height="16.15" fill="#3C3B6E"/></g></svg>`;
+
 // ── Yahoo Finance helpers ──────────────────────────────
 function toYahooSym(contract) {
   // MESU6 → MES=F  |  MNQU6 → MNQ=F  |  ESU6 → ES=F
@@ -1308,8 +1311,10 @@ function renderCard() {
     const hPad    = layout === 'story' ? '52px' : '72px';
     const chartSvg = (!isNaN(cEntry) && !isNaN(cExit))
       ? buildChartSVG(cEntry||cExit, cExit||cEntry, cSide, cW, chartH, S.chartPrices, S.entryTs, S.exitTs) : '';
+    const flagH    = layout === 'story' ? 24 : 30;
     const instrLine = (showInstr && S.instr) ? `
       <div class="c-chart-instr-row">
+        ${usFlagCircle(flagH)}
         <span class="c-chart-instr-name">${S.instr}</span>
       </div>` : '';
     const statsHtml = showStats ? `
@@ -1657,6 +1662,7 @@ function handleCSV(file) {
     const text = e.target.result;
     const res = parseOrdersCSV(text) || parseCSV(text);
     if (!res) { csvMsg.style.color='#EF4444'; csvMsg.textContent='✕ Could not parse CSV — try Orders or Performance export'; return; }
+    S.entryTs = null; S.exitTs = null; S.chartPrices = null;
     csvMsg.style.color='#22C55E';
     csvMsg.textContent=`✓ ${res.count} trade${res.count!==1?'s':''} · ${fmtMoney(res.total)} · ${res.winRate}% wins`;
     S.csvVerified = true;
