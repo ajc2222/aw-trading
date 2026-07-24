@@ -973,7 +973,7 @@ async function fetchChartPrices() {
   const sym    = toYahooSym(S.instr);
   const now    = Math.floor(Date.now() / 1000);
   const useHr  = (now - S.entryTs) > 7 * 24 * 3600;  // >7 days old → 1h bars
-  const buf    = useHr ? 18000 : 3600;                 // 5h buffer for 1h, 1h for 1m
+  const buf    = useHr ? 18000 : 1800;                 // 5h buffer for 1h, 30m for 1m
   const intv   = useHr ? '1h' : '1m';
   const p1  = S.entryTs - buf;
   const p2  = S.exitTs  + buf;
