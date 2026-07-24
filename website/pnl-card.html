@@ -1325,7 +1325,6 @@ function renderCard() {
   else if (preset === 'chart') {
     const cW = DIMS[layout].w;
     const cH = DIMS[layout].h;
-    const chartH = Math.round(cH * 0.63);
     const cEntry = S.chartEntry != null ? S.chartEntry : parseFloat(String(S.entryPrice||'').replace(/[$,]/g,''));
     const cExit  = S.chartExit  != null ? S.chartExit  : parseFloat(String(S.exitPrice||'').replace(/[$,]/g,''));
     const cSide  = S.chartSide  || 'long';
@@ -1338,10 +1337,8 @@ function renderCard() {
     const pnlVal  = S.dpnl != null ? S.dpnl * acMult2 : null;
     const col     = pnlColor(pnlVal);
     const pnlTx   = fmtMoney(pnlVal, true);
-    const hPad    = layout === 'story' ? '52px' : '72px';
-    const chartSvg = (!isNaN(cEntry) && !isNaN(cExit))
-      ? buildChartSVG(cEntry||cExit, cExit||cEntry, cSide, cW, chartH, S.chartPrices, S.chartFills) : '';
-    const flagH    = layout === 'story' ? 24 : 30;
+    const canChart = !isNaN(cEntry) && !isNaN(cExit);
+    const flagH   = layout === 'story' ? 24 : 30;
     const instrLine = (showInstr && S.instr) ? `
       <div class="c-chart-instr-row">
         ${usFlagCircle(flagH)}
@@ -1351,38 +1348,72 @@ function renderCard() {
       <div class="c-chart-stats">
         ${[['Contracts',conTx],['Entry Price',entTx],['Exit Price',exTx]].map(([l,v])=>`
         <div class="c-chart-stat-row">
-          <span class="c-chart-stat-lbl">${l}</span>
-          <span class="c-chart-stat-val">${v}</span>
+          <span class="c-chart-stat-lbl"${sStyle}>${l}</span>
+          <span class="c-chart-stat-val"${sStyle}>${v}</span>
         </div>`).join('')}
         <div class="c-chart-stat-row">
-          <span class="c-chart-stat-lbl">Total PnL</span>
-          <span class="c-chart-stat-val" style="color:${col}">${totalTx}</span>
+          <span class="c-chart-stat-lbl"${sStyle}>Total PnL</span>
+          <span class="c-chart-stat-val" style="color:${S.statsColor||col}">${totalTx}</span>
         </div>
       </div>` : '';
-    const logoSz = layout === 'story' ? 36 : 36;
-    const nickFz  = layout === 'story' ? '1.3rem' : '1.3rem';
-    card.innerHTML = `
-      <div class="c-overlay" style="background:linear-gradient(to top,rgba(0,0,0,.92) 44%,rgba(0,0,0,.08) 100%)"></div>
-      ${chartSvg}
-      <div class="c-noise"></div>
-      <div class="c-inner" style="z-index:3;justify-content:space-between">
-        <div style="padding:${layout==='story'?'28px':'40px'} ${hPad} 0;display:flex;align-items:center;flex-shrink:0">
-          <div class="c-logo-mark" style="margin-right:8px">${LOGO_IMG(logoSz)}</div>
-          <span class="c-chart-nick" style="font-size:${nickFz}">AW Trading${nickStr}</span>
-        </div>
-        <div style="padding:0 ${hPad} ${layout==='story'?'28px':'36px'};display:flex;flex-direction:column">
-          ${instrLine}
-          <div class="c-chart-pnl-pill" style="background:${col}">${pnlTx}</div>
-          ${statsHtml}
-          <div style="padding-top:12px;margin-top:4px">
+
+    if (layout === 'square') {
+      // ── Square: left content / right chart split ──────
+      const leftW  = Math.round(cW * 0.54);
+      const rightW = cW - leftW;
+      const sqChart = canChart
+        ? buildChartSVG(cEntry||cExit, cExit||cEntry, cSide, rightW, cH, S.chartPrices, S.chartFills) : '';
+      card.innerHTML = `
+        <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.9) 0%,rgba(0,0,0,.9) ${leftW-100}px,rgba(0,0,0,.18) 100%);z-index:1"></div>
+        <div style="position:absolute;top:0;left:${leftW}px;width:${rightW}px;height:${cH}px;z-index:2">${sqChart}</div>
+        <div class="c-noise"></div>
+        <div style="position:absolute;inset:0;z-index:3;display:flex;flex-direction:column">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:44px 56px 0;flex-shrink:0">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="c-logo-mark">${LOGO_IMG(36)}</div>
+              <span class="c-chart-nick" style="font-size:1.3rem">AW Trading${nickStr}</span>
+            </div>
             <div class="c-footer-inner">
               <div class="c-footer-logo">${LOGO_IMG(16)}</div>
               <span class="c-footer-sep"></span>
               <span class="c-footer-txt"${uStyle}>${S.domain}</span>
             </div>
           </div>
-        </div>
-      </div>`;
+          <div style="width:${leftW}px;padding:44px 56px 52px;display:flex;flex-direction:column;flex:1;justify-content:flex-end">
+            ${instrLine}
+            <div class="c-chart-pnl-pill" style="background:${col};margin-bottom:28px">${pnlTx}</div>
+            ${statsHtml}
+          </div>
+        </div>`;
+
+    } else {
+      // ── Story: chart at top, content below ────────────
+      const chartH  = Math.round(cH * 0.63);
+      const stChart = canChart
+        ? buildChartSVG(cEntry||cExit, cExit||cEntry, cSide, cW, chartH, S.chartPrices, S.chartFills) : '';
+      card.innerHTML = `
+        <div class="c-overlay" style="background:linear-gradient(to top,rgba(0,0,0,.92) 44%,rgba(0,0,0,.08) 100%)"></div>
+        ${stChart}
+        <div class="c-noise"></div>
+        <div class="c-inner" style="z-index:3;justify-content:space-between">
+          <div style="padding:28px 52px 0;display:flex;align-items:center;flex-shrink:0">
+            <div class="c-logo-mark" style="margin-right:8px">${LOGO_IMG(36)}</div>
+            <span class="c-chart-nick" style="font-size:1.3rem">AW Trading${nickStr}</span>
+          </div>
+          <div style="padding:0 52px 28px;display:flex;flex-direction:column">
+            ${instrLine}
+            <div class="c-chart-pnl-pill" style="background:${col}">${pnlTx}</div>
+            ${statsHtml}
+            <div style="padding-top:12px;margin-top:4px">
+              <div class="c-footer-inner">
+                <div class="c-footer-logo">${LOGO_IMG(16)}</div>
+                <span class="c-footer-sep"></span>
+                <span class="c-footer-txt"${uStyle}>${S.domain}</span>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
   }
 }
 
