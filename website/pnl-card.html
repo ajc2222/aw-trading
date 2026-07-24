@@ -761,7 +761,7 @@ const S = {
   nickname: '',
   chartEntry: null, chartExit: null, chartSide: 'long',
   entryTs: null, exitTs: null,
-  chartPrices: null, chartLoading: false,
+  chartPrices: null, chartFills: null, chartLoading: false,
 };
 
 const DIMS = {
@@ -905,6 +905,10 @@ function parseOrdersCSV(text) {
   const winners = trades.filter(t=>t.pnl>0);
   const last    = trades[trades.length-1];
   const fmt2    = n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  // Collect all individual fills for the last trade's contract within its time window
+  const fills = orders
+    .filter(o => o.contract === last.contract && o.time >= last.entryFillTime && o.time <= last.exitFillTime)
+    .map(o => ({ time: o.time, bs: o.bs.toLowerCase().includes('buy') ? 'B' : 'S', price: o.price }));
   return {
     total, count:trades.length, winRate:Math.round(winners.length/trades.length*100),
     points:null, best:last.pnl,
@@ -914,7 +918,7 @@ function parseOrdersCSV(text) {
     exitPrice:`$${fmt2(last.exitAvg)}`,
     dpnl:last.pnl,
     chartEntry:last.entryAvg, chartExit:last.exitAvg, chartSide:last.side,
-    entryFillTime:last.entryFillTime, exitFillTime:last.exitFillTime,
+    entryFillTime:last.entryFillTime, exitFillTime:last.exitFillTime, fills,
   };
 }
 
@@ -969,8 +973,8 @@ async function fetchChartPrices() {
   if (!S.entryTs || !S.exitTs || !S.instr) return;
   S.chartLoading = true; S.chartPrices = null;
   const sym = toYahooSym(S.instr);
-  const p1  = S.entryTs - 3600;  // 1 hr buffer before entry
-  const p2  = S.exitTs  + 3600;  // 1 hr buffer after exit
+  const p1  = S.entryTs - 1800;  // 30 min buffer before entry
+  const p2  = S.exitTs  + 1800;  // 30 min buffer after exit
   try {
     const r    = await fetch(`/api/chart?symbol=${encodeURIComponent(sym)}&period1=${p1}&period2=${p2}`);
     const json = await r.json();
@@ -991,7 +995,7 @@ function seededRand(seed) {
   return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
 }
 
-function buildChartSVG(entry, exit, side, w, h, realPrices, entryTs, exitTs) {
+function buildChartSVG(entry, exit, side, w, h, realPrices, chartFills) {
   let prices, N;
   if (realPrices && realPrices.length >= 2) {
     prices = realPrices.map(p => p.price);
@@ -1019,22 +1023,28 @@ function buildChartSVG(entry, exit, side, w, h, realPrices, entryTs, exitTs) {
   ];
   const pts = prices.map((p, i) => toXY(p, i).map(v => v.toFixed(1)).join(',')).join(' ');
 
-  // Find closest timestamp indices for entry/exit markers
-  let entryIdx = 0, exitIdx = N - 1;
-  if (realPrices && entryTs && exitTs) {
-    const ts = realPrices.map(p => p.ts);
-    entryIdx = ts.reduce((bi,t,i) => Math.abs(t-entryTs) < Math.abs(ts[bi]-entryTs) ? i : bi, 0);
-    exitIdx  = ts.reduce((bi,t,i) => Math.abs(t-exitTs)  < Math.abs(ts[bi]-exitTs)  ? i : bi, 0);
-  }
+  const mkr = (cx, cy, color, lbl) => `<circle cx="${cx}" cy="${cy}" r="12" fill="${color}" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/><text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-family="Arial,sans-serif" font-size="11" font-weight="700" fill="#fff">${lbl}</text>`;
 
-  const [ex, ey] = toXY(prices[entryIdx], entryIdx);
-  const [xx, xy] = toXY(prices[exitIdx],  exitIdx);
-  const entC = side === 'long' ? '#22C55E' : '#EF4444';
-  const exiC = side === 'long' ? '#EF4444' : '#22C55E';
-  const entLbl = side === 'long' ? 'B' : 'S';
-  const exiLbl = side === 'long' ? 'S' : 'B';
-  const mkr = (cx, cy, fill, lbl) => `<circle cx="${cx}" cy="${cy}" r="12" fill="${fill}" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/><text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-family="Arial,sans-serif" font-size="11" font-weight="700" fill="#fff">${lbl}</text>`;
-  return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:${w}px;height:${h}px;pointer-events:none;z-index:2"><polyline points="${pts}" fill="none" stroke="rgba(255,255,255,.88)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${mkr(ex.toFixed(1),ey.toFixed(1),entC,entLbl)}${mkr(xx.toFixed(1),xy.toFixed(1),exiC,exiLbl)}</svg>`;
+  let markersSvg;
+  if (realPrices && chartFills && chartFills.length) {
+    // Place each fill using its timestamp for X and its fill price for Y
+    const ts = realPrices.map(p => p.ts);
+    markersSvg = chartFills.map(f => {
+      const idx = ts.reduce((bi,t,i) => Math.abs(t-f.ts) < Math.abs(ts[bi]-f.ts) ? i : bi, 0);
+      const [cx, cy] = toXY(f.price, idx);
+      const color = f.side === 'B' ? '#22C55E' : '#EF4444';
+      return mkr(cx.toFixed(1), cy.toFixed(1), color, f.side);
+    }).join('');
+  } else {
+    // Synthetic fallback: entry at start, exit at end
+    const [ex, ey] = toXY(entry, 0);
+    const [xx, xy] = toXY(exit,  N - 1);
+    const entC = side === 'long' ? '#22C55E' : '#EF4444';
+    const exiC = side === 'long' ? '#EF4444' : '#22C55E';
+    markersSvg = mkr(ex.toFixed(1), ey.toFixed(1), entC, side === 'long' ? 'B' : 'S')
+               + mkr(xx.toFixed(1), xy.toFixed(1), exiC, side === 'long' ? 'S' : 'B');
+  }
+  return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:${w}px;height:${h}px;pointer-events:none;z-index:2"><polyline points="${pts}" fill="none" stroke="rgba(255,255,255,.88)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${markersSvg}</svg>`;
 }
 
 // ── Apply background to card ───────────────────────────
@@ -1316,7 +1326,7 @@ function renderCard() {
     const pnlTx   = fmtMoney(pnlVal, true);
     const hPad    = layout === 'story' ? '52px' : '72px';
     const chartSvg = (!isNaN(cEntry) && !isNaN(cExit))
-      ? buildChartSVG(cEntry||cExit, cExit||cEntry, cSide, cW, chartH, S.chartPrices, S.entryTs, S.exitTs) : '';
+      ? buildChartSVG(cEntry||cExit, cExit||cEntry, cSide, cW, chartH, S.chartPrices, S.chartFills) : '';
     const flagH    = layout === 'story' ? 24 : 30;
     const instrLine = (showInstr && S.instr) ? `
       <div class="c-chart-instr-row">
@@ -1666,9 +1676,9 @@ function handleCSV(file) {
   const r = new FileReader();
   r.onload = e => {
     const text = e.target.result;
-    const res = parseOrdersCSV(text) || parseCSV(text);
-    if (!res) { csvMsg.style.color='#EF4444'; csvMsg.textContent='✕ Could not parse CSV — try Orders or Performance export'; return; }
-    S.entryTs = null; S.exitTs = null; S.chartPrices = null;
+    const res = parseOrdersCSV(text);
+    if (!res) { csvMsg.style.color='#EF4444'; csvMsg.textContent='✕ Could not parse CSV — use Tradovate Orders export'; return; }
+    S.entryTs = null; S.exitTs = null; S.chartPrices = null; S.chartFills = null;
     csvMsg.style.color='#22C55E';
     csvMsg.textContent=`✓ ${res.count} trade${res.count!==1?'s':''} · ${fmtMoney(res.total)} · ${res.winRate}% wins`;
     S.csvVerified = true;
@@ -1682,8 +1692,14 @@ function handleCSV(file) {
     if (res.chartEntry != null) S.chartEntry = res.chartEntry;
     if (res.chartExit  != null) S.chartExit  = res.chartExit;
     if (res.chartSide)          S.chartSide  = res.chartSide;
-    if (res.entryFillTime) S.entryTs = parseFillTs(res.entryFillTime);
-    if (res.exitFillTime)  S.exitTs  = parseFillTs(res.exitFillTime);
+    if (res.fills && res.fills.length) {
+      S.chartFills = res.fills.map(f => ({ ts: parseFillTs(f.time), side: f.bs, price: f.price })).filter(f => f.ts);
+      S.entryTs = Math.min(...S.chartFills.map(f => f.ts));
+      S.exitTs  = Math.max(...S.chartFills.map(f => f.ts));
+    } else {
+      if (res.entryFillTime) S.entryTs = parseFillTs(res.entryFillTime);
+      if (res.exitFillTime)  S.exitTs  = parseFillTs(res.exitFillTime);
+    }
     if (res.symbols && res.symbols.length) {
       const raw = res.symbols[0].toUpperCase();
       S.instr = raw;
