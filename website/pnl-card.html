@@ -320,7 +320,7 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 .c-div{height:1px;flex-shrink:0;margin-left:0;margin-right:0}
 .c-logo{display:flex;align-items:center;gap:10px}
 .c-logo-mark{display:flex;align-items:center;flex-shrink:0}
-.c-logo-txt{font-family:'IBM Plex Mono',monospace;font-size:1.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.c-logo-txt{font-family:'IBM Plex Mono',monospace;font-size:1.8rem;font-weight:700;letter-spacing:.12em}
 .c-date{font-family:'IBM Plex Mono',monospace;font-size:1.05rem;letter-spacing:.04em}
 .c-verified{
   display:inline-flex;align-items:center;gap:5px;
@@ -996,9 +996,12 @@ function parseOrdersCSV(text) {
   const last    = trades[trades.length-1];
   const fmt2    = n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
   const fills = orders.map(o => ({ time: o.time, bs: o.bs.toLowerCase().includes('buy') ? 'B' : 'S', price: o.price }));
+  // Net points: sum of price moves across all trades (per contract, unweighted by qty)
+  const netPts = trades.reduce((s,t) => s + (t.side==='long' ? t.exitAvg - t.entryAvg : t.entryAvg - t.exitAvg), 0);
+  const ptsStr = `${netPts >= 0 ? '+' : ''}${netPts.toFixed(2)} pts`;
   return {
     total, count:trades.length, winRate:Math.round(winners.length/trades.length*100),
-    points:null, best:last.pnl, rr:rrStr,
+    points:ptsStr, best:last.pnl, rr:rrStr,
     symbols:[...new Set(trades.map(t=>t.contract))],
     contracts:String(last.qty),
     entryPrice:`$${fmt2(last.entryAvg)}`,
@@ -1282,7 +1285,7 @@ function renderCard() {
     const conTx   = S.contracts  || '—';
     const entTx   = S.entryPrice || '—';
     const exTx    = S.exitPrice  || '—';
-    const totalTx = fmtMoney(S.dpnl, true);
+    const totalTx = fmtMoney(S.dpnl != null ? S.dpnl * acMult : null, true);
     let detailHtml = '';
     if (showStats) {
       detailHtml = `
