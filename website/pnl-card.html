@@ -973,7 +973,7 @@ async function fetchChartPrices() {
   const sym    = toYahooSym(S.instr);
   const now    = Math.floor(Date.now() / 1000);
   const useHr  = (now - S.entryTs) > 7 * 24 * 3600;  // >7 days old → 1h bars
-  const buf    = useHr ? 18000 : 1800;                 // 5h buffer for 1h, 30m for 1m
+  const buf    = useHr ? 18000 : 3600;                 // 5h buffer for 1h, 1h for 1m
   const intv   = useHr ? '1h' : '1m';
   const p1  = S.entryTs - buf;
   const p2  = S.exitTs  + buf;
@@ -1023,7 +1023,19 @@ function buildChartSVG(entry, exit, side, w, h, realPrices, chartFills) {
     padX + (i / (N - 1)) * (w - padX * 2),
     padY + ((maxP - p) / pRange) * (h - padY * 2)
   ];
-  const pts = prices.map((p, i) => toXY(p, i).map(v => v.toFixed(1)).join(',')).join(' ');
+  const xyPts = prices.map((p, i) => toXY(p, i));
+  // Smooth path: quadratic bezier through midpoints
+  const smoothD = (() => {
+    const p = xyPts;
+    let d = `M${p[0][0].toFixed(1)},${p[0][1].toFixed(1)}`;
+    for (let i = 0; i < p.length - 1; i++) {
+      const mx = ((p[i][0] + p[i+1][0]) / 2).toFixed(1);
+      const my = ((p[i][1] + p[i+1][1]) / 2).toFixed(1);
+      d += ` Q${p[i][0].toFixed(1)},${p[i][1].toFixed(1)} ${mx},${my}`;
+    }
+    d += ` L${p[p.length-1][0].toFixed(1)},${p[p.length-1][1].toFixed(1)}`;
+    return d;
+  })();
 
   const mkr = (cx, cy, color, lbl) => `<circle cx="${cx}" cy="${cy}" r="12" fill="${color}" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/><text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-family="Arial,sans-serif" font-size="11" font-weight="700" fill="#fff">${lbl}</text>`;
 
@@ -1033,20 +1045,20 @@ function buildChartSVG(entry, exit, side, w, h, realPrices, chartFills) {
     const ts = realPrices.map(p => p.ts);
     markersSvg = chartFills.map(f => {
       const idx = ts.reduce((bi,t,i) => Math.abs(t-f.ts) < Math.abs(ts[bi]-f.ts) ? i : bi, 0);
-      const [cx, cy] = toXY(prices[idx], idx);
+      const [cx, cy] = xyPts[idx];
       const color = f.side === 'B' ? '#22C55E' : '#EF4444';
       return mkr(cx.toFixed(1), cy.toFixed(1), color, f.side);
     }).join('');
   } else {
     // Synthetic fallback: entry at start, exit at end
-    const [ex, ey] = toXY(entry, 0);
-    const [xx, xy] = toXY(exit,  N - 1);
+    const [ex, ey] = xyPts[0];
+    const [xx, xy] = xyPts[N - 1];
     const entC = side === 'long' ? '#22C55E' : '#EF4444';
     const exiC = side === 'long' ? '#EF4444' : '#22C55E';
     markersSvg = mkr(ex.toFixed(1), ey.toFixed(1), entC, side === 'long' ? 'B' : 'S')
                + mkr(xx.toFixed(1), xy.toFixed(1), exiC, side === 'long' ? 'S' : 'B');
   }
-  return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:${w}px;height:${h}px;pointer-events:none;z-index:2"><polyline points="${pts}" fill="none" stroke="rgba(255,255,255,.88)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${markersSvg}</svg>`;
+  return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:${w}px;height:${h}px;pointer-events:none;z-index:2"><path d="${smoothD}" fill="none" stroke="rgba(255,255,255,.88)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${markersSvg}</svg>`;
 }
 
 // ── Apply background to card ───────────────────────────
