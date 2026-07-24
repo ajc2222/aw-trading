@@ -719,6 +719,22 @@ function unlockGate(){
             <input type="color" id="c-url-color" value="#A8ADB8">
           </label>
         </div>
+        <div class="color-row">
+          <span>Buy marker</span>
+          <label class="color-pick">
+            <span class="cp-swatch" id="cp-sw-buy" style="background:#4ade80"></span>
+            <span class="cp-hex" id="cp-hx-buy">4ADE80</span>
+            <input type="color" id="c-buy-color" value="#4ade80">
+          </label>
+        </div>
+        <div class="color-row">
+          <span>Sell marker</span>
+          <label class="color-pick">
+            <span class="cp-swatch" id="cp-sw-sell" style="background:#f87171"></span>
+            <span class="cp-hex" id="cp-hx-sell">F87171</span>
+            <input type="color" id="c-sell-color" value="#f87171">
+          </label>
+        </div>
         <div class="metrics-hdr">
           <span class="metrics-hdr-lbl">Display</span>
           <span class="metrics-badge" id="display-badge">2/3</span>
@@ -793,7 +809,7 @@ const S = {
   dpnl: null, contracts: '', entryPrice: '', exitPrice: '',
   instr: 'NQ1!', pnlLbl: 'Daily P&L', domain: 'joinawtrading.com',
   showStats: true, showInstr: true, pnlColors: false,
-  statsColor: '', urlColor: '', csvVerified: false,
+  statsColor: '', urlColor: '', buyColor: '#4ade80', sellColor: '#f87171', csvVerified: false,
   nickname: '',
   chartEntry: null, chartExit: null, chartSide: 'long',
   entryTs: null, exitTs: null,
@@ -1082,15 +1098,15 @@ function buildChartSVG(entry, exit, side, w, h, realPrices, chartFills) {
     markersSvg = chartFills.map(f => {
       const idx = ts.reduce((bi,t,i) => Math.abs(t-f.ts) < Math.abs(ts[bi]-f.ts) ? i : bi, 0);
       const [cx, cy] = xyPts[idx];
-      const color = f.side === 'B' ? '#4ade80' : '#f87171';
+      const color = f.side === 'B' ? S.buyColor : S.sellColor;
       return mkr(cx.toFixed(1), cy.toFixed(1), color, f.side);
     }).join('');
   } else {
     // Synthetic fallback: entry at start, exit at end
     const [ex, ey] = xyPts[0];
     const [xx, xy] = xyPts[N - 1];
-    const entC = side === 'long' ? '#4ade80' : '#f87171';
-    const exiC = side === 'long' ? '#f87171' : '#4ade80';
+    const entC = side === 'long' ? S.buyColor : S.sellColor;
+    const exiC = side === 'long' ? S.sellColor : S.buyColor;
     markersSvg = mkr(ex.toFixed(1), ey.toFixed(1), entC, side === 'long' ? 'B' : 'S')
                + mkr(xx.toFixed(1), xy.toFixed(1), exiC, side === 'long' ? 'S' : 'B');
   }
@@ -1796,6 +1812,8 @@ function syncColorPick(inputId, swId, hxId, stateKey) {
 }
 syncColorPick('c-stats-color','cp-sw-stats','cp-hx-stats','statsColor');
 syncColorPick('c-url-color',  'cp-sw-url',  'cp-hx-url',  'urlColor');
+syncColorPick('c-buy-color',  'cp-sw-buy',  'cp-hx-buy',  'buyColor');
+syncColorPick('c-sell-color', 'cp-sw-sell', 'cp-hx-sell', 'sellColor');
 
 // ── Wire: text inputs ──────────────────────────────────
 const CSV_FILLED_KEYS = new Set(['pnl','points','dpnl','contracts','entryPrice','exitPrice']);
