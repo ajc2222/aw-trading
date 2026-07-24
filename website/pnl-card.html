@@ -1019,6 +1019,7 @@ function renderCard() {
   const pnlTx   = fmtMoney(pnlVal, true);
   const sStyle  = S.statsColor ? ` style="color:${S.statsColor}"` : '';
   const uStyle  = S.urlColor   ? ` style="color:${S.urlColor}"`   : '';
+  const nickStr = S.nickname ? ` × ${S.nickname}` : '';
 
   const verifiedBadge = S.csvVerified ? `
       <div class="c-verified">
@@ -1030,7 +1031,7 @@ function renderCard() {
     <div class="c-header">
       <div class="c-logo">
         <div class="c-logo-mark">${LOGO_IMG(48)}</div>
-        <span class="c-logo-txt">AW Trading</span>
+        <span class="c-logo-txt">Trading${nickStr}</span>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
         <span class="c-date">${dateTx}</span>
@@ -1251,7 +1252,6 @@ function renderCard() {
     const hPad    = layout === 'story' ? '52px' : '72px';
     const chartSvg = (!isNaN(cEntry) && !isNaN(cExit))
       ? buildChartSVG(cEntry||cExit, cExit||cEntry, cSide, cW, chartH) : '';
-    const nickStr  = S.nickname ? ` × ${S.nickname}` : '';
     const instrLine = (showInstr && S.instr) ? `
       <div class="c-chart-instr-row">
         <span style="font-size:${layout==='story'?'1.5rem':'1.8rem'}">🇺🇸</span>
