@@ -1031,10 +1031,17 @@ function buildChartSVG(entry, exit, side, w, h, realPrices, entryTs, exitTs) {
   const [xx, xy] = toXY(prices[exitIdx],  exitIdx);
   const entC = side === 'long' ? '#22C55E' : '#EF4444';
   const exiC = side === 'long' ? '#EF4444' : '#22C55E';
-  const entLbl = side === 'long' ? 'B' : 'S';
-  const exiLbl = side === 'long' ? 'S' : 'B';
-  const mkr = (cx, cy, fill, lbl) => `<circle cx="${cx}" cy="${cy}" r="9" fill="${fill}" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/><text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-family="Arial,sans-serif" font-size="9" font-weight="700" fill="#fff">${lbl}</text>`;
-  return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:${w}px;height:${h}px;pointer-events:none;z-index:2"><polyline points="${pts}" fill="none" stroke="rgba(255,255,255,.88)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${mkr(ex.toFixed(1),ey.toFixed(1),entC,entLbl)}${mkr(xx.toFixed(1),xy.toFixed(1),exiC,exiLbl)}</svg>`;
+  // up arrow = buy, down arrow = sell
+  const entUp = side === 'long';
+  const exiUp = side !== 'long';
+  const arrow = (cx, cy, fill, up) => {
+    const s = 10; // half-size of arrow bounding box
+    const pts = up
+      ? `${cx},${cy-s} ${cx+s},${cy+s} ${cx},${cy+s*0.4} ${cx-s},${cy+s}`
+      : `${cx},${cy+s} ${cx+s},${cy-s} ${cx},${cy-s*0.4} ${cx-s},${cy-s}`;
+    return `<polygon points="${pts}" fill="${fill}" stroke="rgba(0,0,0,.35)" stroke-width="1.5" stroke-linejoin="round"/>`;
+  };
+  return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:${w}px;height:${h}px;pointer-events:none;z-index:2"><polyline points="${pts}" fill="none" stroke="rgba(255,255,255,.88)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${arrow(parseFloat(ex),parseFloat(ey),entC,entUp)}${arrow(parseFloat(xx),parseFloat(xy),exiC,exiUp)}</svg>`;
 }
 
 // ── Apply background to card ───────────────────────────
@@ -1076,7 +1083,9 @@ function renderCard() {
   applyCardBg();
 
   const dateTx  = S.date || todayStr();
-  const pnlVal  = preset === 'detail' ? S.dpnl : S.pnl;
+  const acMult  = S.accounts || 1;
+  const rawPnl  = preset === 'detail' ? S.dpnl : S.pnl;
+  const pnlVal  = rawPnl != null ? rawPnl * acMult : null;
   const col     = pnlColor(pnlVal);
   const pnlTx   = fmtMoney(pnlVal, true);
   const sStyle  = S.statsColor ? ` style="color:${S.statsColor}"` : '';
@@ -1307,8 +1316,9 @@ function renderCard() {
     const fmt2   = n => isNaN(n) ? '—' : `$${Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
     const entTx  = S.entryPrice || fmt2(cEntry);
     const exTx   = S.exitPrice  || fmt2(cExit);
-    const totalTx = fmtMoney(S.dpnl, true);
-    const pnlVal  = S.dpnl;
+    const acMult2 = S.accounts || 1;
+    const totalTx = fmtMoney(S.dpnl != null ? S.dpnl * acMult2 : null, true);
+    const pnlVal  = S.dpnl != null ? S.dpnl * acMult2 : null;
     const col     = pnlColor(pnlVal);
     const pnlTx   = fmtMoney(pnlVal, true);
     const hPad    = layout === 'story' ? '52px' : '72px';
