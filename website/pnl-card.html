@@ -1038,7 +1038,7 @@ function buildChartSVG(entry, exit, side, w, h, realPrices, chartFills) {
     return d;
   })();
 
-  const mkr = (cx, cy, color, lbl) => `<circle cx="${cx}" cy="${cy}" r="12" fill="${color}" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/><text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-family="Arial,sans-serif" font-size="11" font-weight="700" fill="#fff">${lbl}</text>`;
+  const mkr = (cx, cy, color, lbl) => `<circle cx="${cx}" cy="${cy}" r="12" fill="${color}" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/><text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-family="Arial,sans-serif" font-size="11" font-weight="700" fill="#000">${lbl}</text>`;
 
   let markersSvg;
   if (realPrices && chartFills && chartFills.length) {
@@ -1047,15 +1047,15 @@ function buildChartSVG(entry, exit, side, w, h, realPrices, chartFills) {
     markersSvg = chartFills.map(f => {
       const idx = ts.reduce((bi,t,i) => Math.abs(t-f.ts) < Math.abs(ts[bi]-f.ts) ? i : bi, 0);
       const [cx, cy] = xyPts[idx];
-      const color = f.side === 'B' ? '#22C55E' : '#EF4444';
+      const color = f.side === 'B' ? '#4ade80' : '#f87171';
       return mkr(cx.toFixed(1), cy.toFixed(1), color, f.side);
     }).join('');
   } else {
     // Synthetic fallback: entry at start, exit at end
     const [ex, ey] = xyPts[0];
     const [xx, xy] = xyPts[N - 1];
-    const entC = side === 'long' ? '#22C55E' : '#EF4444';
-    const exiC = side === 'long' ? '#EF4444' : '#22C55E';
+    const entC = side === 'long' ? '#4ade80' : '#f87171';
+    const exiC = side === 'long' ? '#f87171' : '#4ade80';
     markersSvg = mkr(ex.toFixed(1), ey.toFixed(1), entC, side === 'long' ? 'B' : 'S')
                + mkr(xx.toFixed(1), xy.toFixed(1), exiC, side === 'long' ? 'S' : 'B');
   }
