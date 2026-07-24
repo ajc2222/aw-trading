@@ -849,6 +849,10 @@ function pnlColor(n) {
   if (S.pnlColors && n !== null && !isNaN(n)) return n < 0 ? '#EF4444' : '#22C55E';
   return THEMES[S.theme].accent;
 }
+function pillTextColor(bg) {
+  // white accent (e.g. minimal theme, pnlColors off) needs dark text on the pill
+  return bg === '#ffffff' || bg === '#fff' ? '#0a0a0a' : '#fff';
+}
 function todayStr() {
   return new Date().toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'});
 }
@@ -1425,7 +1429,7 @@ function renderCard() {
         </div>
         <div style="padding:${padB};display:flex;flex-direction:column">
           ${instrLine}
-          <div class="c-chart-pnl-pill" style="background:${col}">${pnlTx}</div>
+          <div class="c-chart-pnl-pill" style="background:${col};color:${pillTextColor(col)}">${pnlTx}</div>
           ${statsHtml}
           <div style="padding-top:12px;margin-top:4px">
             <div class="c-footer-inner">
