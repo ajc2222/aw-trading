@@ -760,6 +760,8 @@ const S = {
   statsColor: '', urlColor: '', csvVerified: false,
   nickname: '',
   chartEntry: null, chartExit: null, chartSide: 'long',
+  entryTs: null, exitTs: null,
+  chartPrices: null, chartLoading: false,
 };
 
 const DIMS = {
@@ -879,19 +881,19 @@ function parseOrdersCSV(text) {
     ords.sort((a,b)=>a.time.localeCompare(b.time));
     const base = Object.keys(MULT).find(k=>contract.startsWith(k))||'';
     const mult = MULT[base]||0;
-    let pos=0,entryTotal=0,entryQty=0,entrySide=null;
+    let pos=0,entryTotal=0,entryQty=0,entrySide=null,entryFirstTime=null;
     for (const o of ords) {
       const isBuy = o.bs.toLowerCase().includes('buy');
       const sign  = isBuy ? 1 : -1;
       if (pos===0) {
-        pos=sign*o.qty; entryTotal=o.price*o.qty; entryQty=o.qty; entrySide=isBuy?'long':'short';
+        pos=sign*o.qty; entryTotal=o.price*o.qty; entryQty=o.qty; entrySide=isBuy?'long':'short'; entryFirstTime=o.time;
       } else if (Math.sign(sign)!==Math.sign(pos)) {
         const closeQty=Math.min(o.qty,Math.abs(pos));
         const entryAvg=entryTotal/entryQty;
         const pnl=entrySide==='long'?(o.price-entryAvg)*closeQty*mult:(entryAvg-o.price)*closeQty*mult;
-        trades.push({contract,pnl,entryAvg,exitAvg:o.price,qty:closeQty,side:entrySide});
+        trades.push({contract,pnl,entryAvg,exitAvg:o.price,qty:closeQty,side:entrySide,entryFillTime:entryFirstTime,exitFillTime:o.time});
         pos+=sign*o.qty;
-        if(pos===0){entryQty=0;entryTotal=0;entrySide=null;}
+        if(pos===0){entryQty=0;entryTotal=0;entrySide=null;entryFirstTime=null;}
       } else {
         pos+=sign*o.qty; entryQty+=o.qty; entryTotal+=o.price*o.qty;
       }
@@ -912,6 +914,7 @@ function parseOrdersCSV(text) {
     exitPrice:`$${fmt2(last.exitAvg)}`,
     dpnl:last.pnl,
     chartEntry:last.entryAvg, chartExit:last.exitAvg, chartSide:last.side,
+    entryFillTime:last.entryFillTime, exitFillTime:last.exitFillTime,
   };
 }
 
@@ -938,11 +941,46 @@ async function loadLogo() {
 }
 
 const LOGO_IMG = (h) => LOGO_DATA
-  ? `<img src="${LOGO_DATA}" alt="AW" style="height:${h}px;width:auto;display:block;filter:drop-shadow(0 0 1px #fff) drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 0.5px #fff)">`
+  ? `<img src="${LOGO_DATA}" alt="AW" style="height:${h}px;width:auto;display:block;">`
   : `<span style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:${Math.round(h*.55)}px;letter-spacing:.05em;color:#F5F6F8">AW</span>`;
 
-// ── US flag SVG (emoji doesn't render on Windows) ──────
-const usFlagSvg = h => { const w=Math.round(h*1.5); return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" width="${w}" height="${h}" style="border-radius:2px;flex-shrink:0;display:inline-block"><rect width="30" height="20" fill="#B22234"/><rect y="1.54" width="30" height="1.54" fill="#fff"/><rect y="4.62" width="30" height="1.54" fill="#fff"/><rect y="7.69" width="30" height="1.54" fill="#fff"/><rect y="10.77" width="30" height="1.54" fill="#fff"/><rect y="13.85" width="30" height="1.54" fill="#fff"/><rect y="16.92" width="30" height="1.54" fill="#fff"/><rect width="12" height="10.77" fill="#3C3B6E"/></svg>`; };
+// ── Yahoo Finance helpers ──────────────────────────────
+function toYahooSym(contract) {
+  // MESU6 → MES=F  |  MNQU6 → MNQ=F  |  ESU6 → ES=F
+  return contract.replace(/[FGHJKMNQUVXZ]\d$/, '') + '=F';
+}
+
+function parseFillTs(timeStr) {
+  // Tradovate times are US/Central: "07/24/2026 10:17:11"
+  // CDT (Mar-Nov) = UTC-5, CST (Nov-Mar) = UTC-6
+  if (!timeStr) return null;
+  const [datePart, timePart] = timeStr.trim().split(' ');
+  if (!datePart || !timePart) return null;
+  const [mo, dy, yr] = datePart.split('/');
+  const offset = parseInt(mo) >= 3 && parseInt(mo) <= 11 ? '-05:00' : '-06:00';
+  const d = new Date(`${yr}-${mo.padStart(2,'0')}-${dy.padStart(2,'0')}T${timePart}${offset}`);
+  return isNaN(d.getTime()) ? null : Math.floor(d.getTime() / 1000);
+}
+
+async function fetchChartPrices() {
+  if (!S.entryTs || !S.exitTs || !S.instr) return;
+  S.chartLoading = true; S.chartPrices = null;
+  const sym = toYahooSym(S.instr);
+  const p1  = S.entryTs - 900;   // 15 min buffer before entry
+  const p2  = S.exitTs  + 900;   // 15 min buffer after exit
+  try {
+    const r    = await fetch(`/api/chart?symbol=${encodeURIComponent(sym)}&period1=${p1}&period2=${p2}`);
+    const json = await r.json();
+    const res  = json?.chart?.result?.[0];
+    if (res) {
+      const ts     = res.timestamp;
+      const closes = res.indicators.quote[0].close;
+      S.chartPrices = ts.map((t,i) => ({ts:t, price:closes[i]})).filter(p => p.price != null);
+    }
+  } catch(e) { /* network error — fall back to synthetic */ }
+  S.chartLoading = false;
+  refresh();
+}
 
 // ── Chart helpers ──────────────────────────────────────
 function seededRand(seed) {
@@ -950,19 +988,25 @@ function seededRand(seed) {
   return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
 }
 
-function buildChartSVG(entry, exit, side, w, h) {
-  const N = 100;
-  const seed = Math.round(Math.abs(entry + exit) * 97 + Math.abs(exit - entry) * 53) || 42;
-  const rand = seededRand(seed);
-  const prices = [entry];
-  const vol = Math.max(Math.abs(exit - entry), Math.abs(entry) * 0.002);
-  for (let i = 1; i < N - 1; i++) {
-    const t = i / (N - 1);
-    const target = entry + (exit - entry) * t;
-    const prev = prices[i - 1];
-    prices.push(prev + (target - prev) * 0.12 + (rand() - 0.49) * vol * 0.38);
+function buildChartSVG(entry, exit, side, w, h, realPrices, entryTs, exitTs) {
+  let prices, N;
+  if (realPrices && realPrices.length >= 2) {
+    prices = realPrices.map(p => p.price);
+    N = prices.length;
+  } else {
+    // Synthetic fallback
+    N = 100;
+    const rand = seededRand(Math.round(Math.abs(entry + exit) * 97 + Math.abs(exit - entry) * 53) || 42);
+    prices = [entry];
+    const vol = Math.max(Math.abs(exit - entry), Math.abs(entry) * 0.002);
+    for (let i = 1; i < N - 1; i++) {
+      const target = entry + (exit - entry) * (i / (N - 1));
+      const prev = prices[i - 1];
+      prices.push(prev + (target - prev) * 0.12 + (rand() - 0.49) * vol * 0.38);
+    }
+    prices.push(exit);
   }
-  prices.push(exit);
+
   const padX = w * 0.04, padY = h * 0.1;
   const minP = Math.min(...prices), maxP = Math.max(...prices);
   const pRange = maxP - minP || 1;
@@ -971,8 +1015,17 @@ function buildChartSVG(entry, exit, side, w, h) {
     padY + ((maxP - p) / pRange) * (h - padY * 2)
   ];
   const pts = prices.map((p, i) => toXY(p, i).map(v => v.toFixed(1)).join(',')).join(' ');
-  const [ex, ey] = toXY(entry, 0);
-  const [xx, xy] = toXY(exit, N - 1);
+
+  // Find closest timestamp indices for entry/exit markers
+  let entryIdx = 0, exitIdx = N - 1;
+  if (realPrices && entryTs && exitTs) {
+    const ts = realPrices.map(p => p.ts);
+    entryIdx = ts.reduce((bi,t,i) => Math.abs(t-entryTs) < Math.abs(ts[bi]-entryTs) ? i : bi, 0);
+    exitIdx  = ts.reduce((bi,t,i) => Math.abs(t-exitTs)  < Math.abs(ts[bi]-exitTs)  ? i : bi, 0);
+  }
+
+  const [ex, ey] = toXY(prices[entryIdx], entryIdx);
+  const [xx, xy] = toXY(prices[exitIdx],  exitIdx);
   const entC = side === 'long' ? '#22C55E' : '#EF4444';
   const exiC = side === 'long' ? '#EF4444' : '#22C55E';
   return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:${w}px;height:${h}px;pointer-events:none;z-index:2"><polyline points="${pts}" fill="none" stroke="rgba(255,255,255,.88)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="7" fill="${entC}" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/><circle cx="${xx.toFixed(1)}" cy="${xy.toFixed(1)}" r="7" fill="${exiC}" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/></svg>`;
@@ -1254,7 +1307,7 @@ function renderCard() {
     const pnlTx   = fmtMoney(pnlVal, true);
     const hPad    = layout === 'story' ? '52px' : '72px';
     const chartSvg = (!isNaN(cEntry) && !isNaN(cExit))
-      ? buildChartSVG(cEntry||cExit, cExit||cEntry, cSide, cW, chartH) : '';
+      ? buildChartSVG(cEntry||cExit, cExit||cEntry, cSide, cW, chartH, S.chartPrices, S.entryTs, S.exitTs) : '';
     const instrLine = (showInstr && S.instr) ? `
       <div class="c-chart-instr-row">
         <span class="c-chart-instr-name">${S.instr}</span>
@@ -1617,6 +1670,8 @@ function handleCSV(file) {
     if (res.chartEntry != null) S.chartEntry = res.chartEntry;
     if (res.chartExit  != null) S.chartExit  = res.chartExit;
     if (res.chartSide)          S.chartSide  = res.chartSide;
+    if (res.entryFillTime) S.entryTs = parseFillTs(res.entryFillTime);
+    if (res.exitFillTime)  S.exitTs  = parseFillTs(res.exitFillTime);
     if (res.symbols && res.symbols.length) {
       const raw = res.symbols[0].toUpperCase();
       S.instr = raw;
@@ -1625,6 +1680,7 @@ function handleCSV(file) {
       document.getElementById('c-instr-custom').value = raw;
     }
     refresh();
+    if (S.entryTs && S.exitTs && S.instr) fetchChartPrices();
   };
   r.readAsText(file);
 }
