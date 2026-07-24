@@ -1255,10 +1255,8 @@ function renderCard() {
     const hPad    = layout === 'story' ? '52px' : '72px';
     const chartSvg = (!isNaN(cEntry) && !isNaN(cExit))
       ? buildChartSVG(cEntry||cExit, cExit||cEntry, cSide, cW, chartH) : '';
-    const flagH    = layout === 'story' ? 24 : 30;
     const instrLine = (showInstr && S.instr) ? `
       <div class="c-chart-instr-row">
-        ${usFlagSvg(flagH)}
         <span class="c-chart-instr-name">${S.instr}</span>
       </div>` : '';
     const statsHtml = showStats ? `
