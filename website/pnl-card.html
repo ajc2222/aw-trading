@@ -941,6 +941,9 @@ const LOGO_IMG = (h) => LOGO_DATA
   ? `<img src="${LOGO_DATA}" alt="AW" style="height:${h}px;width:auto;display:block;filter:drop-shadow(0 0 1px #fff) drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 0.5px #fff)">`
   : `<span style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:${Math.round(h*.55)}px;letter-spacing:.05em;color:#F5F6F8">AW</span>`;
 
+// ── US flag SVG (emoji doesn't render on Windows) ──────
+const usFlagSvg = h => { const w=Math.round(h*1.5); return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" width="${w}" height="${h}" style="border-radius:2px;flex-shrink:0;display:inline-block"><rect width="30" height="20" fill="#B22234"/><rect y="1.54" width="30" height="1.54" fill="#fff"/><rect y="4.62" width="30" height="1.54" fill="#fff"/><rect y="7.69" width="30" height="1.54" fill="#fff"/><rect y="10.77" width="30" height="1.54" fill="#fff"/><rect y="13.85" width="30" height="1.54" fill="#fff"/><rect y="16.92" width="30" height="1.54" fill="#fff"/><rect width="12" height="10.77" fill="#3C3B6E"/></svg>`; };
+
 // ── Chart helpers ──────────────────────────────────────
 function seededRand(seed) {
   let s = (seed ^ 0xDEADBEEF) >>> 0;
@@ -1252,9 +1255,10 @@ function renderCard() {
     const hPad    = layout === 'story' ? '52px' : '72px';
     const chartSvg = (!isNaN(cEntry) && !isNaN(cExit))
       ? buildChartSVG(cEntry||cExit, cExit||cEntry, cSide, cW, chartH) : '';
+    const flagH    = layout === 'story' ? 24 : 30;
     const instrLine = (showInstr && S.instr) ? `
       <div class="c-chart-instr-row">
-        <span style="font-size:${layout==='story'?'1.5rem':'1.8rem'}">🇺🇸</span>
+        ${usFlagSvg(flagH)}
         <span class="c-chart-instr-name">${S.instr}</span>
       </div>` : '';
     const statsHtml = showStats ? `
