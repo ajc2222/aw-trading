@@ -970,11 +970,15 @@ function parseFillTs(timeStr) {
 async function fetchChartPrices() {
   if (!S.entryTs || !S.exitTs || !S.instr) return;
   S.chartLoading = true; S.chartPrices = null;
-  const sym = toYahooSym(S.instr);
-  const p1  = S.entryTs - 3600;  // 1 hr buffer before entry
-  const p2  = S.exitTs  + 3600;  // 1 hr buffer after exit
+  const sym    = toYahooSym(S.instr);
+  const now    = Math.floor(Date.now() / 1000);
+  const useHr  = (now - S.entryTs) > 7 * 24 * 3600;  // >7 days old → 1h bars
+  const buf    = useHr ? 18000 : 3600;                 // 5h buffer for 1h, 1h for 1m
+  const intv   = useHr ? '1h' : '1m';
+  const p1  = S.entryTs - buf;
+  const p2  = S.exitTs  + buf;
   try {
-    const r    = await fetch(`/api/chart?symbol=${encodeURIComponent(sym)}&period1=${p1}&period2=${p2}`);
+    const r    = await fetch(`/api/chart?symbol=${encodeURIComponent(sym)}&period1=${p1}&period2=${p2}&interval=${intv}`);
     const json = await r.json();
     const res  = json?.chart?.result?.[0];
     if (res) {

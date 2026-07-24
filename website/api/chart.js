@@ -2,13 +2,13 @@
 // Proxies Yahoo Finance v8 chart API (CORS-blocked from browser directly)
 
 module.exports = async (req, res) => {
-  const { symbol, period1, period2 } = req.query;
+  const { symbol, period1, period2, interval = '1m' } = req.query;
   if (!symbol || !period1 || !period2) {
     return res.status(400).json({ error: 'Missing params: symbol, period1, period2' });
   }
 
   const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}` +
-    `?interval=1m&period1=${period1}&period2=${period2}&includePrePost=false`;
+    `?interval=${interval}&period1=${period1}&period2=${period2}&includePrePost=false`;
 
   try {
     const upstream = await fetch(url, {
