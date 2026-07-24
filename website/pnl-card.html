@@ -905,10 +905,8 @@ function parseOrdersCSV(text) {
   const winners = trades.filter(t=>t.pnl>0);
   const last    = trades[trades.length-1];
   const fmt2    = n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-  // Collect all individual fills for the last trade's contract within its time window
-  const fills = orders
-    .filter(o => o.contract === last.contract && o.time >= last.entryFillTime && o.time <= last.exitFillTime)
-    .map(o => ({ time: o.time, bs: o.bs.toLowerCase().includes('buy') ? 'B' : 'S', price: o.price }));
+  // All fills across all trades for the chart
+  const fills = orders.map(o => ({ time: o.time, bs: o.bs.toLowerCase().includes('buy') ? 'B' : 'S', price: o.price }));
   return {
     total, count:trades.length, winRate:Math.round(winners.length/trades.length*100),
     points:null, best:last.pnl,
@@ -916,9 +914,9 @@ function parseOrdersCSV(text) {
     contracts:String(last.qty),
     entryPrice:`$${fmt2(last.entryAvg)}`,
     exitPrice:`$${fmt2(last.exitAvg)}`,
-    dpnl:last.pnl,
+    dpnl:total,
     chartEntry:last.entryAvg, chartExit:last.exitAvg, chartSide:last.side,
-    entryFillTime:last.entryFillTime, exitFillTime:last.exitFillTime, fills,
+    fills,
   };
 }
 
