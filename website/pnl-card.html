@@ -938,7 +938,7 @@ async function loadLogo() {
 }
 
 const LOGO_IMG = (h) => LOGO_DATA
-  ? `<img src="${LOGO_DATA}" alt="AW" style="height:${h}px;width:auto;display:block">`
+  ? `<img src="${LOGO_DATA}" alt="AW" style="height:${h}px;width:auto;display:block;filter:drop-shadow(0 0 1px #fff) drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 0.5px #fff)">`
   : `<span style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:${Math.round(h*.55)}px;letter-spacing:.05em;color:#F5F6F8">AW</span>`;
 
 // ── Chart helpers ──────────────────────────────────────
