@@ -809,7 +809,7 @@ const S = {
   dpnl: null, contracts: '', entryPrice: '', exitPrice: '',
   instr: 'NQ1!', pnlLbl: 'Daily P&L', domain: 'joinawtrading.com',
   showStats: true, showInstr: true, pnlColors: false,
-  statsColor: '', urlColor: '', buyColor: '#4ade80', sellColor: '#f87171', csvVerified: false,
+  statsColor: '', urlColor: '', buyColor: '#4ade80', sellColor: '#EF4444', csvVerified: false,
   nickname: '',
   chartEntry: null, chartExit: null, chartSide: 'long',
   entryTs: null, exitTs: null,
@@ -822,14 +822,14 @@ const DIMS = {
 };
 
 const THEMES = {
-  aw:       { cardBg:'#070709',                                                          accent:'#2E6BFF', lossC:'#EF4444', divC:'rgba(255,255,255,.09)', logotxt:'#F5F6F8',  dateC:'#A8ADB8',               instrC:'#A8ADB8',               pnlLblC:'#A8ADB8',               statLblC:'#A8ADB8',              statValC:'#F5F6F8', footerC:'rgba(168,173,184,.45)',  rowDiv:'rgba(255,255,255,.08)' },
-  blueprint:{ cardBg:'linear-gradient(135deg,#030b1e 0%,#0a1640 100%)',                 accent:'#4D9FFF', lossC:'#FF4F7B', divC:'rgba(77,159,255,.18)',  logotxt:'#d0e4ff',   dateC:'rgba(77,159,255,.7)',   instrC:'rgba(77,159,255,.7)',   pnlLblC:'rgba(77,159,255,.65)',  statLblC:'rgba(77,159,255,.55)', statValC:'#d0e4ff', footerC:'rgba(77,159,255,.3)',    rowDiv:'rgba(77,159,255,.1)' },
-  neon:     { cardBg:'linear-gradient(135deg,#040d08 0%,#071a0e 100%)',                 accent:'#00FF7F', lossC:'#FF3CAC', divC:'rgba(0,255,127,.14)',   logotxt:'#ffffff',   dateC:'#00FF7F',               instrC:'rgba(0,255,127,.65)',   pnlLblC:'rgba(0,255,127,.6)',    statLblC:'rgba(0,255,127,.5)',   statValC:'#00FF7F', footerC:'rgba(0,255,127,.3)',     rowDiv:'rgba(0,255,127,.08)' },
-  ember:    { cardBg:'linear-gradient(135deg,#130400 0%,#2d0d00 100%)',                 accent:'#FF6B35', lossC:'#FF2D55', divC:'rgba(255,107,53,.18)',  logotxt:'#ffe0d0',   dateC:'rgba(255,107,53,.75)',  instrC:'rgba(255,107,53,.75)',  pnlLblC:'rgba(255,107,53,.65)',  statLblC:'rgba(255,107,53,.55)', statValC:'#ffe0d0', footerC:'rgba(255,107,53,.3)',    rowDiv:'rgba(255,107,53,.1)' },
-  gold:     { cardBg:'linear-gradient(135deg,#0d0900 0%,#1e1400 100%)',                 accent:'#F5A623', lossC:'#EF4444', divC:'rgba(245,166,35,.18)',  logotxt:'#fff3cc',   dateC:'rgba(245,166,35,.7)',   instrC:'rgba(245,166,35,.7)',   pnlLblC:'rgba(245,166,35,.65)',  statLblC:'rgba(245,166,35,.55)', statValC:'#fff3cc', footerC:'rgba(245,166,35,.3)',    rowDiv:'rgba(245,166,35,.1)' },
-  crimson:  { cardBg:'linear-gradient(135deg,#0f0005 0%,#200010 100%)',                 accent:'#FF3860', lossC:'#FF8A00', divC:'rgba(255,56,96,.18)',   logotxt:'#ffd0da',   dateC:'rgba(255,56,96,.7)',    instrC:'rgba(255,56,96,.7)',    pnlLblC:'rgba(255,56,96,.65)',   statLblC:'rgba(255,56,96,.55)',  statValC:'#ffd0da', footerC:'rgba(255,56,96,.3)',     rowDiv:'rgba(255,56,96,.1)' },
-  violet:   { cardBg:'linear-gradient(135deg,#0a0514 0%,#180a30 100%)',                 accent:'#A855F7', lossC:'#FF4F7B', divC:'rgba(168,85,247,.18)',  logotxt:'#ead6ff',   dateC:'rgba(168,85,247,.7)',   instrC:'rgba(168,85,247,.7)',   pnlLblC:'rgba(168,85,247,.65)',  statLblC:'rgba(168,85,247,.55)', statValC:'#ead6ff', footerC:'rgba(168,85,247,.3)',    rowDiv:'rgba(168,85,247,.1)' },
-  minimal:  { cardBg:'#0A0A0A',                                                          accent:'#ffffff', lossC:'#EF4444', divC:'rgba(255,255,255,.07)', logotxt:'#ffffff',   dateC:'rgba(255,255,255,.45)', instrC:'rgba(255,255,255,.45)', pnlLblC:'rgba(255,255,255,.42)', statLblC:'rgba(255,255,255,.4)', statValC:'#ffffff', footerC:'rgba(255,255,255,.22)',  rowDiv:'rgba(255,255,255,.06)' },
+  aw:       { cardBg:'#070709',                                                          accent:'#2E6BFF', lossC:'#EF4444', buyC:'#4ade80', sellC:'#EF4444', divC:'rgba(255,255,255,.09)', logotxt:'#F5F6F8',  dateC:'#A8ADB8',               instrC:'#A8ADB8',               pnlLblC:'#A8ADB8',               statLblC:'#A8ADB8',              statValC:'#F5F6F8', footerC:'rgba(168,173,184,.45)',  rowDiv:'rgba(255,255,255,.08)' },
+  blueprint:{ cardBg:'linear-gradient(135deg,#030b1e 0%,#0a1640 100%)',                 accent:'#4D9FFF', lossC:'#FF4F7B', buyC:'#4ade80', sellC:'#FF4F7B', divC:'rgba(77,159,255,.18)',  logotxt:'#d0e4ff',   dateC:'rgba(77,159,255,.7)',   instrC:'rgba(77,159,255,.7)',   pnlLblC:'rgba(77,159,255,.65)',  statLblC:'rgba(77,159,255,.55)', statValC:'#d0e4ff', footerC:'rgba(77,159,255,.3)',    rowDiv:'rgba(77,159,255,.1)' },
+  neon:     { cardBg:'linear-gradient(135deg,#040d08 0%,#071a0e 100%)',                 accent:'#00FF7F', lossC:'#FF3CAC', buyC:'#00FF7F', sellC:'#FF3CAC', divC:'rgba(0,255,127,.14)',   logotxt:'#ffffff',   dateC:'#00FF7F',               instrC:'rgba(0,255,127,.65)',   pnlLblC:'rgba(0,255,127,.6)',    statLblC:'rgba(0,255,127,.5)',   statValC:'#00FF7F', footerC:'rgba(0,255,127,.3)',     rowDiv:'rgba(0,255,127,.08)' },
+  ember:    { cardBg:'linear-gradient(135deg,#130400 0%,#2d0d00 100%)',                 accent:'#FF6B35', lossC:'#FF2D55', buyC:'#4ade80', sellC:'#FF2D55', divC:'rgba(255,107,53,.18)',  logotxt:'#ffe0d0',   dateC:'rgba(255,107,53,.75)',  instrC:'rgba(255,107,53,.75)',  pnlLblC:'rgba(255,107,53,.65)',  statLblC:'rgba(255,107,53,.55)', statValC:'#ffe0d0', footerC:'rgba(255,107,53,.3)',    rowDiv:'rgba(255,107,53,.1)' },
+  gold:     { cardBg:'linear-gradient(135deg,#0d0900 0%,#1e1400 100%)',                 accent:'#F5A623', lossC:'#EF4444', buyC:'#4ade80', sellC:'#EF4444', divC:'rgba(245,166,35,.18)',  logotxt:'#fff3cc',   dateC:'rgba(245,166,35,.7)',   instrC:'rgba(245,166,35,.7)',   pnlLblC:'rgba(245,166,35,.65)',  statLblC:'rgba(245,166,35,.55)', statValC:'#fff3cc', footerC:'rgba(245,166,35,.3)',    rowDiv:'rgba(245,166,35,.1)' },
+  crimson:  { cardBg:'linear-gradient(135deg,#0f0005 0%,#200010 100%)',                 accent:'#FF3860', lossC:'#FF8A00', buyC:'#4ade80', sellC:'#FF3860', divC:'rgba(255,56,96,.18)',   logotxt:'#ffd0da',   dateC:'rgba(255,56,96,.7)',    instrC:'rgba(255,56,96,.7)',    pnlLblC:'rgba(255,56,96,.65)',   statLblC:'rgba(255,56,96,.55)',  statValC:'#ffd0da', footerC:'rgba(255,56,96,.3)',     rowDiv:'rgba(255,56,96,.1)' },
+  violet:   { cardBg:'linear-gradient(135deg,#0a0514 0%,#180a30 100%)',                 accent:'#A855F7', lossC:'#FF4F7B', buyC:'#4ade80', sellC:'#FF4F7B', divC:'rgba(168,85,247,.18)',  logotxt:'#ead6ff',   dateC:'rgba(168,85,247,.7)',   instrC:'rgba(168,85,247,.7)',   pnlLblC:'rgba(168,85,247,.65)',  statLblC:'rgba(168,85,247,.55)', statValC:'#ead6ff', footerC:'rgba(168,85,247,.3)',    rowDiv:'rgba(168,85,247,.1)' },
+  minimal:  { cardBg:'#0A0A0A',                                                          accent:'#ffffff', lossC:'#EF4444', buyC:'#4ade80', sellC:'#EF4444', divC:'rgba(255,255,255,.07)', logotxt:'#ffffff',   dateC:'rgba(255,255,255,.45)', instrC:'rgba(255,255,255,.45)', pnlLblC:'rgba(255,255,255,.42)', statLblC:'rgba(255,255,255,.4)', statValC:'#ffffff', footerC:'rgba(255,255,255,.22)',  rowDiv:'rgba(255,255,255,.06)' },
 };
 
 // ── Helpers ────────────────────────────────────────────
@@ -1626,11 +1626,23 @@ document.getElementById('layout-picker').addEventListener('click', e => {
 });
 
 // ── Wire: theme ────────────────────────────────────────
+function applyMarkerColors(buyC, sellC) {
+  S.buyColor  = buyC;
+  S.sellColor = sellC;
+  document.getElementById('cp-sw-buy').style.background  = buyC;
+  document.getElementById('cp-sw-sell').style.background = sellC;
+  document.getElementById('cp-hx-buy').textContent  = buyC.slice(1).toUpperCase();
+  document.getElementById('cp-hx-sell').textContent = sellC.slice(1).toUpperCase();
+  document.getElementById('c-buy-color').value  = buyC;
+  document.getElementById('c-sell-color').value = sellC;
+}
 document.getElementById('theme-picker').addEventListener('click', e => {
   const btn = e.target.closest('[data-theme]'); if (!btn) return;
   document.querySelectorAll('[data-theme]').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   S.theme = btn.dataset.theme;
+  const t = THEMES[S.theme];
+  applyMarkerColors(t.buyC, t.sellC);
   refresh();
 });
 
