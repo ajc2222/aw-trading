@@ -290,7 +290,6 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 }
 #pnl-card.layout-square{width:1080px;height:1080px}
 #pnl-card.layout-story {width:675px; height:1200px}
-#pnl-card.layout-landscape{width:1200px;height:675px}
 
 .c-overlay{position:absolute;inset:0;pointer-events:none;z-index:1}
 .c-noise{
@@ -405,32 +404,26 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--
 
 /* ── Chart preset ── */
 .c-chart-nick{font-family:'IBM Plex Mono',monospace;font-weight:700;letter-spacing:.1em;color:var(--logo-txt)}
-.layout-square    .c-chart-nick{font-size:1.1rem}
-.layout-story     .c-chart-nick{font-size:.95rem}
-.layout-landscape .c-chart-nick{font-size:1rem}
+.layout-square .c-chart-nick{font-size:1.1rem}
+.layout-story  .c-chart-nick{font-size:.95rem}
 .c-chart-sep{color:var(--logo-txt);opacity:.55;margin:0 10px;font-family:'IBM Plex Mono',monospace}
 .c-chart-instr-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .c-chart-instr-name{font-family:'IBM Plex Mono',monospace;font-weight:600;letter-spacing:.08em;color:var(--stat-val-c)}
-.layout-square    .c-chart-instr-name{font-size:1.6rem}
-.layout-story     .c-chart-instr-name{font-size:1.35rem}
-.layout-landscape .c-chart-instr-name{font-size:1.4rem}
+.layout-square .c-chart-instr-name{font-size:1.6rem}
+.layout-story  .c-chart-instr-name{font-size:1.35rem}
 .c-chart-pnl-pill{display:inline-block;border-radius:12px;font-family:'IBM Plex Mono',monospace;font-weight:700;letter-spacing:-.01em;color:#fff;margin-bottom:16px}
-.layout-square    .c-chart-pnl-pill{font-size:3.6rem;padding:10px 24px;border-radius:14px;margin-bottom:20px}
-.layout-story     .c-chart-pnl-pill{font-size:2.9rem;padding:8px 20px;border-radius:12px;margin-bottom:16px}
-.layout-landscape .c-chart-pnl-pill{font-size:3rem;padding:10px 22px;border-radius:14px;margin-bottom:18px}
+.layout-square .c-chart-pnl-pill{font-size:3.6rem;padding:10px 24px;border-radius:14px;margin-bottom:20px}
+.layout-story  .c-chart-pnl-pill{font-size:2.9rem;padding:8px 20px;border-radius:12px;margin-bottom:16px}
 .c-chart-stats{display:flex;flex-direction:column;gap:0;margin-bottom:14px}
 .c-chart-stat-row{display:flex;justify-content:space-between;align-items:center}
-.layout-square    .c-chart-stat-row{padding:9px 0}
-.layout-story     .c-chart-stat-row{padding:7px 0}
-.layout-landscape .c-chart-stat-row{padding:8px 0}
+.layout-square .c-chart-stat-row{padding:9px 0}
+.layout-story  .c-chart-stat-row{padding:7px 0}
 .c-chart-stat-lbl{font-family:'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--stat-lbl-c)}
-.layout-square    .c-chart-stat-lbl{font-size:.82rem}
-.layout-story     .c-chart-stat-lbl{font-size:.75rem}
-.layout-landscape .c-chart-stat-lbl{font-size:.78rem}
+.layout-square .c-chart-stat-lbl{font-size:.82rem}
+.layout-story  .c-chart-stat-lbl{font-size:.75rem}
 .c-chart-stat-val{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--stat-val-c)}
-.layout-square    .c-chart-stat-val{font-size:1rem}
-.layout-story     .c-chart-stat-val{font-size:.9rem}
-.layout-landscape .c-chart-stat-val{font-size:.95rem}
+.layout-square .c-chart-stat-val{font-size:1rem}
+.layout-story  .c-chart-stat-val{font-size:.9rem}
 
 /* Fullscreen screenshot mode */
 #fullscreen-btn,#fullscreen-btn-nav{display:none}
@@ -657,9 +650,7 @@ function unlockGate(){
           <button class="pick-btn" data-layout="story">
             <div class="lay-ico" style="width:16px;height:28px"></div>Story
           </button>
-          <button class="pick-btn" data-layout="landscape">
-            <div class="lay-ico" style="width:28px;height:16px"></div>Landscape
-          </button>
+
         </div>
 
         <div class="s-label" style="margin-top:12px">Color Theme</div>
@@ -775,9 +766,8 @@ const S = {
 };
 
 const DIMS = {
-  square:    { w:1080, h:1080, label:'1080 × 1080' },
-  story:     { w:675,  h:1200, label:'675 × 1200'  },
-  landscape: { w:1200, h:675,  label:'1200 × 675'  },
+  square: { w:1080, h:1080, label:'1080 × 1080' },
+  story:  { w:675,  h:1200, label:'675 × 1200'  },
 };
 
 const THEMES = {
@@ -1349,7 +1339,7 @@ function renderCard() {
     const col     = pnlColor(pnlVal);
     const pnlTx   = fmtMoney(pnlVal, true);
     const canChart = !isNaN(cEntry) && !isNaN(cExit);
-    const flagH   = layout === 'story' ? 24 : layout === 'landscape' ? 26 : 30;
+    const flagH   = layout === 'story' ? 24 : 30;
     const instrLine = (showInstr && S.instr) ? `
       <div class="c-chart-instr-row">
         ${usFlagCircle(flagH)}
@@ -1368,65 +1358,33 @@ function renderCard() {
         </div>
       </div>` : '';
 
-    if (layout === 'landscape') {
-      // ── Landscape: left content panel / right chart ───
-      const leftW  = Math.round(cW * 0.54);
-      const rightW = cW - leftW;
-      const lsChart = canChart
-        ? buildChartSVG(cEntry||cExit, cExit||cEntry, cSide, rightW, cH, S.chartPrices, S.chartFills) : '';
-      card.innerHTML = `
-        <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.9) 0%,rgba(0,0,0,.9) ${leftW-80}px,rgba(0,0,0,.15) 100%);z-index:1"></div>
-        <div style="position:absolute;top:0;left:${leftW}px;width:${rightW}px;height:${cH}px;z-index:2">${lsChart}</div>
-        <div class="c-noise"></div>
-        <div style="position:absolute;inset:0;z-index:3;display:flex;flex-direction:column">
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:36px 48px 0;flex-shrink:0">
-            <div style="display:flex;align-items:center;gap:10px">
-              <div class="c-logo-mark">${LOGO_IMG(30)}</div>
-              <span class="c-chart-nick">AW Trading${nickStr}</span>
-            </div>
+    const chartH  = Math.round(cH * 0.63);
+    const topChart = canChart
+      ? buildChartSVG(cEntry||cExit, cExit||cEntry, cSide, cW, chartH, S.chartPrices, S.chartFills) : '';
+    const pad  = layout === 'square' ? '52px 72px' : '28px 52px';
+    const padB = layout === 'square' ? '0 72px 40px' : '0 52px 28px';
+    card.innerHTML = `
+      <div class="c-overlay" style="background:linear-gradient(to top,rgba(0,0,0,.92) 44%,rgba(0,0,0,.08) 100%)"></div>
+      ${topChart}
+      <div class="c-noise"></div>
+      <div class="c-inner" style="z-index:3;justify-content:space-between">
+        <div style="padding:${pad};display:flex;align-items:center;flex-shrink:0">
+          <div class="c-logo-mark" style="margin-right:8px">${LOGO_IMG(36)}</div>
+          <span class="c-chart-nick" style="font-size:1.3rem">AW Trading${nickStr}</span>
+        </div>
+        <div style="padding:${padB};display:flex;flex-direction:column">
+          ${instrLine}
+          <div class="c-chart-pnl-pill" style="background:${col}">${pnlTx}</div>
+          ${statsHtml}
+          <div style="padding-top:12px;margin-top:4px">
             <div class="c-footer-inner">
-              <div class="c-footer-logo">${LOGO_IMG(14)}</div>
+              <div class="c-footer-logo">${LOGO_IMG(16)}</div>
               <span class="c-footer-sep"></span>
               <span class="c-footer-txt"${uStyle}>${S.domain}</span>
             </div>
           </div>
-          <div style="width:${leftW}px;padding:36px 48px 44px;display:flex;flex-direction:column;flex:1;justify-content:flex-end">
-            ${instrLine}
-            <div class="c-chart-pnl-pill" style="background:${col}">${pnlTx}</div>
-            ${statsHtml}
-          </div>
-        </div>`;
-
-    } else {
-      // ── Square / Story: chart at top, content below ───
-      const chartH  = Math.round(cH * 0.63);
-      const topChart = canChart
-        ? buildChartSVG(cEntry||cExit, cExit||cEntry, cSide, cW, chartH, S.chartPrices, S.chartFills) : '';
-      const pad = layout === 'square' ? '52px 72px' : '28px 52px';
-      const padB = layout === 'square' ? '0 72px 40px' : '0 52px 28px';
-      card.innerHTML = `
-        <div class="c-overlay" style="background:linear-gradient(to top,rgba(0,0,0,.92) 44%,rgba(0,0,0,.08) 100%)"></div>
-        ${topChart}
-        <div class="c-noise"></div>
-        <div class="c-inner" style="z-index:3;justify-content:space-between">
-          <div style="padding:${pad};display:flex;align-items:center;flex-shrink:0">
-            <div class="c-logo-mark" style="margin-right:8px">${LOGO_IMG(36)}</div>
-            <span class="c-chart-nick" style="font-size:1.3rem">AW Trading${nickStr}</span>
-          </div>
-          <div style="padding:${padB};display:flex;flex-direction:column">
-            ${instrLine}
-            <div class="c-chart-pnl-pill" style="background:${col}">${pnlTx}</div>
-            ${statsHtml}
-            <div style="padding-top:12px;margin-top:4px">
-              <div class="c-footer-inner">
-                <div class="c-footer-logo">${LOGO_IMG(16)}</div>
-                <span class="c-footer-sep"></span>
-                <span class="c-footer-txt"${uStyle}>${S.domain}</span>
-              </div>
-            </div>
-          </div>
-        </div>`;
-    }
+        </div>
+      </div>`;
   }
 }
 
@@ -1689,9 +1647,8 @@ document.getElementById('bg-url-input').addEventListener('keydown', e => {
 
 // ── Preset backgrounds ─────────────────────────────────
 const PRESET_BG = {
-  square:    ['blue.jpg','eyes.jpg','knight.jpg'],
-  story:     ['berserk.jpg','man.jpg','roman.jpg'],
-  landscape: [],
+  square: ['blue.jpg','eyes.jpg','knight.jpg'],
+  story:  ['berserk.jpg','man.jpg','roman.jpg'],
 };
 
 function buildBgPresetGrid() {
