@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=484, height=860" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@900&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 484px; height: 860px; overflow: hidden; background: #070709; }
+
+      #progress-bar {
+        position: absolute;
+        top: 0; left: 0;
+        height: 2px;
+        background: #2E6BFF;
+        width: 0%;
+        z-index: 10;
+      }
+
+      .caption-wrap {
+        position: absolute;
+        bottom: 54px;
+        left: 0; right: 0;
+        display: flex;
+        justify-content: center;
+        padding: 0 18px;
+      }
+
+      .caption-line {
+        font-family: 'Archivo', sans-serif;
+        font-weight: 900;
+        font-size: 20px;
+        letter-spacing: -0.02em;
+        line-height: 1.45;
+        text-align: center;
+      }
+
+      .word {
+        display: inline-block;
+        color: #FFFFFF;
+        padding: 1px 3px;
+        border-radius: 3px;
+        transform-origin: center center;
+        margin-right: 0.08em;
+        text-shadow: -1px -1px 0 rgba(0,0,0,0.85), 1px -1px 0 rgba(0,0,0,0.85),-1px  1px 0 rgba(0,0,0,0.85), 1px  1px 0 rgba(0,0,0,0.85);
+      }
+      .word:last-child { margin-right: 0; }
+
+      .emoji {
+        display: inline-block;
+        margin-left: 0.18em;
+        font-style: normal;
+        text-shadow: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="27.4"
+      data-width="484"
+      data-height="860"
+    >
+      <video
+        id="a-roll"
+        class="clip"
+        src="Anyone else take this Free discord in bio %23trading %23ict %23nasdaq %23tradingtips %23propfirmtrader.mp4"
+        muted playsinline
+        data-start="0"
+        data-duration="27.4"
+        data-track-index="0"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"
+      ></video>
+      <audio
+        id="a-roll-audio"
+        src="Anyone else take this Free discord in bio %23trading %23ict %23nasdaq %23tradingtips %23propfirmtrader.mp4"
+        data-start="0"
+        data-duration="27.4"
+        data-track-index="2"
+        data-volume="1"
+      ></audio>
+
+      <div id="progress-bar"></div>
+
+      <div id="g0" class="clip caption-wrap" data-start="0.0" data-duration="1.2" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="0.0">Alright</span><span class="word" data-t="0.12">guys,</span><span class="word" data-t="0.44">we</span><span class="word" data-t="0.46">just</span><span class="word" data-t="0.6">wicked</span><span class="word" data-t="0.78">out</span><span class="word" data-t="0.96">of</span><span class="word" data-t="1.12">a</span></div>
+      </div>
+      <div id="g1" class="clip caption-wrap" data-start="1.22" data-duration="0.9" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="1.22">15</span><span class="word" data-t="1.42">minute</span><span class="word" data-t="1.6">gap.</span></div>
+      </div>
+      <div id="g2" class="clip caption-wrap" data-start="2.14" data-duration="1.94" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="2.14">We're</span><span class="word" data-t="2.26">just</span><span class="word" data-t="2.38">placing</span><span class="word" data-t="2.56">pretty</span><span class="word" data-t="2.82">hard</span><span class="word" data-t="3.06">here</span><span class="word" data-t="3.22">with</span><span class="word" data-t="3.4">CISD.</span></div>
+      </div>
+      <div id="g3" class="clip caption-wrap" data-start="4.1" data-duration="1.56" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="4.1">I'm</span><span class="word" data-t="4.18">gonna</span><span class="word" data-t="4.28">try</span><span class="word" data-t="4.52">and</span><span class="word" data-t="4.8">target</span><span class="word" data-t="5.04">the</span><span class="word" data-t="5.24">previous</span><span class="word" data-t="5.54">day</span><span class="emoji">💰</span></div>
+      </div>
+      <div id="g4" class="clip caption-wrap" data-start="5.68" data-duration="0.9" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="5.68">with</span><span class="word" data-t="5.82">these</span><span class="word" data-t="6.06">shorts.</span><span class="emoji">🐻</span></div>
+      </div>
+      <div id="g5" class="clip caption-wrap" data-start="8.1" data-duration="0.98" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="8.1">Order</span><span class="word" data-t="8.44">filled.</span><span class="emoji">✅</span></div>
+      </div>
+      <div id="g6" class="clip caption-wrap" data-start="9.4" data-duration="1.32" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="9.4">Alright,</span><span class="word" data-t="9.68">super</span><span class="word" data-t="9.8">clean</span><span class="word" data-t="10.02">displacement</span><span class="word" data-t="10.18">there.</span></div>
+      </div>
+      <div id="g7" class="clip caption-wrap" data-start="10.74" data-duration="1.2" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="10.74">I'm</span><span class="word" data-t="10.76">gonna</span><span class="word" data-t="10.88">go</span><span class="word" data-t="11.04">break</span><span class="word" data-t="11.24">one</span><span class="word" data-t="11.46">of</span><span class="word" data-t="11.52">this</span><span class="word" data-t="11.66">intermediate</span></div>
+      </div>
+      <div id="g8" class="clip caption-wrap" data-start="11.96" data-duration="0.52" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="11.96">low.</span></div>
+      </div>
+      <div id="g9" class="clip caption-wrap" data-start="12.5" data-duration="1.14" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="12.5">Really</span><span class="word" data-t="12.64">nice</span><span class="word" data-t="12.9">displacement</span><span class="word" data-t="13.28">here.</span></div>
+      </div>
+      <div id="g10" class="clip caption-wrap" data-start="13.66" data-duration="0.88" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="13.66">I</span><span class="word" data-t="13.66">have</span><span class="word" data-t="13.76">a</span><span class="word" data-t="13.78">two</span><span class="word" data-t="13.88">minute</span><span class="word" data-t="14.02">FUG.</span></div>
+      </div>
+      <div id="g11" class="clip caption-wrap" data-start="14.56" data-duration="1.54" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="14.56">I</span><span class="word" data-t="14.64">want</span><span class="word" data-t="14.78">us</span><span class="word" data-t="15.04">to</span><span class="word" data-t="15.06">just</span><span class="word" data-t="15.18">watch</span><span class="word" data-t="15.4">from</span><span class="word" data-t="15.64">here.</span></div>
+      </div>
+      <div id="g12" class="clip caption-wrap" data-start="16.36" data-duration="0.64" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="16.36">Ah!</span></div>
+      </div>
+      <div id="g13" class="clip caption-wrap" data-start="22.4" data-duration="0.98" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="22.4">Order</span><span class="word" data-t="22.74">filled.</span><span class="emoji">✅</span></div>
+      </div>
+      <div id="g14" class="clip caption-wrap" data-start="23.76" data-duration="0.94" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="23.76">I</span><span class="word" data-t="23.76">used</span><span class="word" data-t="23.96">to</span><span class="word" data-t="24.1">fuckin'</span><span class="word" data-t="24.4">slow.</span></div>
+      </div>
+      <div id="g15" class="clip caption-wrap" data-start="24.72" data-duration="1.18" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="24.72">I</span><span class="word" data-t="24.74">used</span><span class="word" data-t="24.92">to</span><span class="word" data-t="25.08">leave</span><span class="word" data-t="25.24">it</span><span class="word" data-t="25.38">in.</span></div>
+      </div>
+      <div id="g16" class="clip caption-wrap" data-start="25.94" data-duration="0.6" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="25.94">I</span><span class="word" data-t="26.04">used</span><span class="word" data-t="26.2">to</span><span class="word" data-t="26.34">hate</span><span class="word" data-t="26.5">it.</span></div>
+      </div>
+      <div id="g17" class="clip caption-wrap" data-start="26.56" data-duration="0.86" data-track-index="1">
+        <div class="caption-line"><span class="word" data-t="26.56">Order</span><span class="word" data-t="26.74">filled.</span><span class="emoji">✅</span></div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      tl.to('#progress-bar', { width: '100%', duration: 27.4, ease: 'none' }, 0);
+
+      document.querySelectorAll('.clip.caption-wrap').forEach(group => {
+        const gStart = parseFloat(group.dataset.start);
+        const gEnd   = gStart + parseFloat(group.dataset.duration);
+        const words  = [...group.querySelectorAll('.word')];
+
+        tl.fromTo(group, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.15, ease: 'power2.out' }, gStart);
+        tl.set(words, { backgroundColor: 'transparent' }, gStart);
+
+        words.forEach((w, i) => {
+          const wt   = Math.max(parseFloat(w.dataset.t), gStart);
+          const next = i < words.length - 1
+            ? Math.max(parseFloat(words[i + 1].dataset.t), gStart)
+            : gEnd - 0.15;
+
+          tl.to(w, { backgroundColor: '#2E6BFF', duration: 0.08, ease: 'power3.out' }, wt);
+          tl.to(w, { backgroundColor: 'transparent', duration: 0.1, ease: 'power2.in' }, next);
+        });
+
+        tl.to(group, { opacity: 0, y: -8, duration: 0.15, ease: 'power2.in' }, gEnd - 0.15);
+
+        const emoji = group.querySelector('.emoji');
+        if (emoji) {
+          tl.fromTo(emoji,
+            { scale: 0, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 0.35, ease: 'back.out(1.7)' },
+            gStart + 0.12
+          );
+        }
+      });
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
