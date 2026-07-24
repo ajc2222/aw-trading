@@ -973,8 +973,8 @@ async function fetchChartPrices() {
   if (!S.entryTs || !S.exitTs || !S.instr) return;
   S.chartLoading = true; S.chartPrices = null;
   const sym = toYahooSym(S.instr);
-  const p1  = S.entryTs - 7200;  // 2 hr buffer before entry
-  const p2  = S.exitTs  + 7200;  // 2 hr buffer after exit
+  const p1  = S.entryTs - 5400;  // 1.5 hr buffer before entry
+  const p2  = S.exitTs  + 5400;  // 1.5 hr buffer after exit
   try {
     const r    = await fetch(`/api/chart?symbol=${encodeURIComponent(sym)}&period1=${p1}&period2=${p2}`);
     const json = await r.json();
