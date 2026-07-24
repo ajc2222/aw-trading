@@ -1027,11 +1027,12 @@ function buildChartSVG(entry, exit, side, w, h, realPrices, chartFills) {
 
   let markersSvg;
   if (realPrices && chartFills && chartFills.length) {
-    // Snap marker to actual price line at the closest timestamp
+    // X from closest timestamp, Y from actual fill price (ensures same fill price = same height)
     const ts = realPrices.map(p => p.ts);
     markersSvg = chartFills.map(f => {
       const idx = ts.reduce((bi,t,i) => Math.abs(t-f.ts) < Math.abs(ts[bi]-f.ts) ? i : bi, 0);
-      const [cx, cy] = toXY(prices[idx], idx);
+      const [cx]    = toXY(prices[idx], idx);   // X only
+      const [, cy]  = toXY(f.price,    idx);    // Y from fill price
       const color = f.side === 'B' ? '#22C55E' : '#EF4444';
       return mkr(cx.toFixed(1), cy.toFixed(1), color, f.side);
     }).join('');
