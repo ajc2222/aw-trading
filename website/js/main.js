@@ -211,4 +211,18 @@ const GIVEAWAY_END = new Date('2026-07-31T20:00:00');
   })();
 
   /* ---------- (giveaway entry form removed — giveaway now redirects to Discord) ---------- */
+
+  /* ---------- CTA click tracking ---------- */
+  (function ctaTracking() {
+    document.querySelectorAll('[data-cta]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (typeof gtag === 'function') {
+          gtag('event', 'cta_click', {
+            cta_name: btn.dataset.cta,
+            page_path: window.location.pathname
+          });
+        }
+      });
+    });
+  })();
 })();
