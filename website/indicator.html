@@ -541,6 +541,15 @@ if(burger&&mobileNav){
   mobileNav.querySelectorAll('.mobile-nav-links a').forEach(a=>a.addEventListener('click',closeNav));
   window.addEventListener('scroll',()=>{if(mobileNav.classList.contains('open'))syncTop();},{passive:true});
 }
+document.querySelectorAll('[data-cta]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    if(typeof gtag==='function'){
+      gtag('event','cta_click',{cta_name:btn.dataset.cta,page_path:window.location.pathname});
+    }else{
+      console.warn('gtag not available — cta_click not sent for',btn.dataset.cta);
+    }
+  });
+});
 </script>
 </body>
 </html>

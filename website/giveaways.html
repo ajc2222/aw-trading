@@ -420,6 +420,15 @@ if(burger&&mobileNav){
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNav();});
   mobileNav.querySelectorAll('.mobile-nav-links a').forEach(a=>a.addEventListener('click',closeNav));
 }
+document.querySelectorAll('[data-cta]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    if(typeof gtag==='function'){
+      gtag('event','cta_click',{cta_name:btn.dataset.cta,page_path:window.location.pathname});
+    }else{
+      console.warn('gtag not available — cta_click not sent for',btn.dataset.cta);
+    }
+  });
+});
 </script>
 </body>
 </html>
