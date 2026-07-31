@@ -1,0 +1,144 @@
+//@version=6
+indicator("Synced CISD Tracker", overlay=true, max_labels_count=500)
+
+// ── Inputs ────────────────────────────────────────────────────
+grpCISD = "CISD Detection"
+maxLeg   = input.int(10, "Max Leg Length", minval=1, maxval=30, group=grpCISD)
+swingLen = input.int(20, "Swing Lookback", minval=5, maxval=50, group=grpCISD)
+
+grpAssets = "Assets"
+thisName   = input.string("NQ",              "This Chart Name", group=grpAssets)
+asset2Sym  = input.symbol("CME_MINI:ES1!",  "Asset 2 Symbol",  group=grpAssets)
+asset2Name = input.string("ES",              "Asset 2 Name",    group=grpAssets)
+asset3Sym  = input.symbol("CBOT_MINI:YM1!", "Asset 3 Symbol",  group=grpAssets)
+asset3Name = input.string("YM",              "Asset 3 Name",    group=grpAssets)
+
+grpLbl = "Labels"
+lblCol    = input.color(color.new(#b05050, 10), "Tag Color",  group=grpLbl)
+lblTxtCol = input.color(color.white,            "Text Color", group=grpLbl)
+
+tz = "America/New_York"
+
+// ── CISD Detection ────────────────────────────────────────────
+f_cisd(int ml, int sl) =>
+    var int   last_ll_bar = 0
+    var int   last_hh_bar = 0
+    var bool  pend_bull   = false
+    var float bull_low    = na
+    var bool  pend_bear   = false
+    var float bear_high   = na
+
+    bool is_ll = barstate.isconfirmed and low  < ta.lowest(low,  sl)[1] and (bar_index - last_ll_bar) >= sl and not pend_bull
+    bool is_hh = barstate.isconfirmed and high > ta.highest(high, sl)[1] and (bar_index - last_hh_bar) >= sl and not pend_bear
+
+    bool new_bull = false
+    bool new_bear = false
+
+    if is_ll
+        last_ll_bar := bar_index
+        int   bs = -1
+        float ho = na
+        for j = 1 to 50
+            if close[j] < open[j]
+                bs := j
+                break
+        if bs >= 0
+            for j = bs to bs + ml - 1
+                if close[j] < open[j]
+                    if na(ho) or open[j] > ho
+                        ho := open[j]
+                else
+                    break
+        if not na(ho)
+            new_bull  := true
+            pend_bull := true
+            bull_low  := low
+
+    if is_hh
+        last_hh_bar := bar_index
+        int   bs = -1
+        float lo = na
+        for j = 1 to 50
+            if close[j] > open[j]
+                bs := j
+                break
+        if bs >= 0
+            for j = bs to bs + ml - 1
+                if close[j] > open[j]
+                    if na(lo) or open[j] < lo
+                        lo := open[j]
+                else
+                    break
+        if not na(lo)
+            new_bear  := true
+            pend_bear := true
+            bear_high := high
+
+    if pend_bull and not na(bull_low) and low < bull_low
+        pend_bull := false
+        bull_low  := na
+    if pend_bear and not na(bear_high) and high > bear_high
+        pend_bear := false
+        bear_high := na
+
+    [new_bull, new_bear, pend_bull, pend_bear]
+
+[this_nb, this_nbe, this_bull, this_bear] = f_cisd(maxLeg, swingLen)
+[a2_nb,   a2_nbe,   a2_bull,   a2_bear]   = request.security(asset2Sym, timeframe.period, f_cisd(maxLeg, swingLen), lookahead=barmerge.lookahead_off)
+[a3_nb,   a3_nbe,   a3_bull,   a3_bear]   = request.security(asset3Sym, timeframe.period, f_cisd(maxLeg, swingLen), lookahead=barmerge.lookahead_off)
+
+bool bull_unlock  = this_nb  or a2_nb  or a3_nb
+bool bear_unlock  = this_nbe or a2_nbe or a3_nbe
+
+// Failure = pend was true last bar, now false
+bool bull_failure = (not this_bull and this_bull[1]) or (not a2_bull and a2_bull[1]) or (not a3_bull and a3_bull[1])
+bool bear_failure = (not this_bear and this_bear[1]) or (not a2_bear and a2_bear[1]) or (not a3_bear and a3_bear[1])
+
+f_active(bool t, bool a2, bool a3, string tn, string n2, string n3) =>
+    string s = ""
+    if t
+        s := tn
+    if a2
+        s += (s == "" ? "" : " + ") + n2
+    if a3
+        s += (s == "" ? "" : " + ") + n3
+    s
+
+string bull_assets = f_active(this_bull, a2_bull, a3_bull, thisName, asset2Name, asset3Name)
+string bear_assets = f_active(this_bear, a2_bear, a3_bear, thisName, asset2Name, asset3Name)
+string tNow = str.format_time(time, "HH:mm", tz)
+
+var label  bull_lbl  = na
+var string bull_time = ""
+var label  bear_lbl  = na
+var string bear_time = ""
+
+if bull_unlock and bull_assets != ""
+    if na(bull_lbl)
+        bull_time := tNow
+        bull_lbl  := label.new(bar_index, low, bull_time + " - " + bull_assets,
+             style=label.style_label_up, color=lblCol, textcolor=lblTxtCol, size=size.small)
+    else
+        label.set_text(bull_lbl, bull_time + " - " + bull_assets)
+
+if bull_failure and bull_assets == ""
+    label.delete(bull_lbl)
+    bull_lbl  := na
+    bull_time := ""
+
+if bear_unlock and bear_assets != ""
+    if na(bear_lbl)
+        bear_time := tNow
+        bear_lbl  := label.new(bar_index, high, bear_time + " - " + bear_assets,
+             style=label.style_label_down, color=lblCol, textcolor=lblTxtCol, size=size.small)
+    else
+        label.set_text(bear_lbl, bear_time + " - " + bear_assets)
+
+if bear_failure and bear_assets == ""
+    label.delete(bear_lbl)
+    bear_lbl  := na
+    bear_time := ""
+
+// ── Alerts ────────────────────────────────────────────────────
+alertcondition(bull_unlock and bull_assets != "", "Bullish CISD Unlock", "{{ticker}} bullish CISD unlocked")
+alertcondition(bear_unlock and bear_assets != "", "Bearish CISD Unlock", "{{ticker}} bearish CISD unlocked")
