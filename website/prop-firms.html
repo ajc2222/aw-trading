@@ -432,6 +432,7 @@ document.querySelectorAll('[data-cta]').forEach(function(btn){
     }else{
       console.warn('gtag not available — cta_click not sent for',btn.dataset.cta);
     }
+    window.va?.('event',{name:'cta_click',data:{target:btn.dataset.cta}});
   });
 });
 </script>
