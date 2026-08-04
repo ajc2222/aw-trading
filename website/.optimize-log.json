@@ -1,13 +1,17 @@
 {
-  "lastRun": null,
-  "branch": null,
-  "change": null,
+  "lastRun": "2026-08-04T00:00:00.000Z",
+  "branch": "optimize/2026-08-04",
+  "change": {
+    "file": "website/index.html",
+    "description": "Hero subheadline rewritten with specific community value props; hero primary CTA changed from 'Join Free Discord' to 'Join Free — 100+ Traders'",
+    "hypothesis": "Instagram visitors need context on what they're joining; naming daily bias/education/funding tools + showing member count reduces hesitation at the decision point"
+  },
   "baselineMetrics": {
-    "period": null,
-    "homeVisitors": null,
-    "indicatorVisits": null,
+    "period": "2026-07-28 to 2026-08-04",
+    "homeVisitors": 37,
+    "indicatorVisits": 6,
     "discordClicks": null,
     "indicatorClicks": null,
-    "topReferrer": null
+    "topReferrer": "l.instagram.com"
   }
 }
