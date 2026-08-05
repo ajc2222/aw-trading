@@ -117,6 +117,9 @@ nav,main,footer{position:relative;z-index:2}
 .lightbox{position:fixed;inset:0;background:rgba(3,3,6,.9);z-index:300;display:none;align-items:center;justify-content:center;padding:40px;cursor:zoom-out}
 .lightbox.active{display:flex}
 .lightbox img{max-width:90vw;max-height:88vh;border-radius:14px;box-shadow:0 40px 90px -20px rgba(0,0,0,.85)}
+.lightbox-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:50%;width:40px;height:40px;display:grid;place-items:center;cursor:pointer;font-size:1.2rem;line-height:1;transition:background .2s}
+.lightbox-close:hover{background:rgba(255,255,255,.2)}
+@media(max-width:640px){.discord-app{height:380px}}
 
 /* ---------- NAV ---------- */
 nav{position:sticky;top:0;left:0;right:0;z-index:100;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(255,255,255,.08) inset}
@@ -194,7 +197,7 @@ nav{position:sticky;top:0;left:0;right:0;z-index:100;background:linear-gradient(
 
 .d-channels{background:rgba(255,255,255,.02);border-right:1px solid var(--line);overflow-y:auto;padding:10px 6px;scrollbar-width:thin}
 .d-cat{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;color:var(--dim);padding:8px 8px 4px}
-.d-chan{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:7px;color:var(--muted);font-size:.78rem;cursor:pointer;transition:background .15s,color .15s}
+.d-chan{display:flex;align-items:center;gap:6px;padding:10px 8px;border-radius:7px;color:var(--muted);font-size:.78rem;cursor:pointer;transition:background .15s,color .15s;border:none;background:none;width:100%;text-align:left;font-family:inherit}
 .d-chan:hover{background:rgba(255,255,255,.04);color:var(--white)}
 .d-chan.active{background:rgba(255,255,255,.07);color:var(--white);box-shadow:inset 2px 0 0 var(--blue)}
 .d-chan .hash{opacity:.6}
@@ -335,7 +338,7 @@ footer{border-top:1px solid var(--line);padding:44px 0}
 @media(max-width:640px){.launch-cd{display:none}#testimonials{padding-top:0}#prop-firms{padding-top:0}}
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","name":"AW Trading","url":"https://joinawtrading.com","description":"ICT trading community offering live sessions, mentorship, and the AW+ Indicator for TradingView.","sameAs":["https://discord.gg/fn2qjH7MW4","https://www.youtube.com/@AWTradingYT","https://www.instagram.com/_awtrading/"]}
+{"@context":"https://schema.org","@type":"Organization","name":"AW Trading","url":"https://joinawtrading.com","description":"Free ICT trading community offering daily bias, education, and the AW+ Indicator for TradingView.","sameAs":["https://discord.gg/fn2qjH7MW4","https://www.youtube.com/@AWTradingYT","https://www.instagram.com/_awtrading/"]}
 </script>
   <script defer src="/_vercel/insights/script.js"></script>
   <script defer src="/_vercel/speed-insights/script.js"></script>
@@ -535,7 +538,7 @@ footer{border-top:1px solid var(--line);padding:44px 0}
   </div>
 </section>
 
-<div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt="Certificate"></div>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Certificate image"><button class="lightbox-close" id="lightboxClose" aria-label="Close image">&#x2715;</button><img id="lightboxImg" src="" alt="Certificate"></div>
 
 <section class="panel" id="indicator">
   <div class="wrap">
@@ -788,7 +791,10 @@ function renderChannels(){
         lock.textContent = '🔒';
         el.appendChild(lock);
       }
+      el.setAttribute('role', 'button');
+      el.setAttribute('tabindex', '0');
       el.addEventListener('click', ()=> selectChannel(ch.id));
+      el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); selectChannel(ch.id); } });
       dChannels.appendChild(el);
     });
   });
@@ -888,18 +894,17 @@ if(certTrack){
   });
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxClose = document.getElementById('lightboxClose');
+  let lightboxTrigger = null;
+  function openLightbox(img){ lightboxImg.src = img.src; lightboxTrigger = img; lightbox.classList.add('active'); lightboxClose.focus(); }
+  function closeLightbox(){ lightbox.classList.remove('active'); if(lightboxTrigger) lightboxTrigger.focus(); lightboxTrigger = null; }
   Promise.all(certImgs.map(whenLoaded)).then(()=>{
     const wasDragged = initScrollTrack(certTrack, 1);
-    certImgs.forEach(img=>{
-      img.addEventListener('click', ()=>{
-        if(wasDragged()) return;
-        lightboxImg.src = img.src;
-        lightbox.classList.add('active');
-      });
-    });
+    certImgs.forEach(img=>{ img.addEventListener('click', ()=>{ if(wasDragged()) return; openLightbox(img); }); });
   });
-  lightbox.addEventListener('click', ()=> lightbox.classList.remove('active'));
-  document.addEventListener('keydown', e=>{ if(e.key === 'Escape') lightbox.classList.remove('active'); });
+  lightboxClose.addEventListener('click', e=>{ e.stopPropagation(); closeLightbox(); });
+  lightbox.addEventListener('click', e=>{ if(e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
 }
 
 initScrollTrack(document.getElementById('testimonialTrack'), -1);
